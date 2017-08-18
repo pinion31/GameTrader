@@ -1,5 +1,5 @@
 {
-  "name": "voterific",
+  "name": "gametrader",
   "version": "1.0.0",
   "description": "An app for creating polls",
   "main": "app.js",
@@ -18,23 +18,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pinion31/Voterific.git"
+    "url": "git+https://github.com/pinion31/GameTrader.git"
   },
   "author": "Chris Cantu",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/pinion31/Voterific/issues"
+    "url": "https://github.com/pinion31/GameTrader/issues"
   },
-  "homepage": "https://github.com/pinion31/Voterific#readme",
+  "homepage": "https://github.com/pinion31/GameTrader#readme",
   "dependencies": {
     "babel-polyfill": "^6.23.0",
     "body-parser": "^1.17.2",
-    "bootstrap": "^3.3.7",
-    "d3-array": "1.2.0",
-    "d3-axis": "1.0.8",
-    "d3-scale": "1.0.6",
-    "d3-selection": "1.1.0",
-    "d3-svg": "0.2.2",
     "express": "^4.15.3",
     "mongo": "^0.1.0",
     "mongodb": "^2.2.30",
@@ -52,7 +46,6 @@
     "whatwg-fetch": "^2.0.3"
   },
   "devDependencies": {
-    "autoprefixer": "^7.1.2",
     "babel-cli": "^6.24.1",
     "babel-eslint": "^7.2.3",
     "babel-jest": "^20.0.3",

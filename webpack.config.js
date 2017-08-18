@@ -2,6 +2,8 @@
 
 const webpack = require('webpack');
 
+var path =  require('path');
+
 module.exports = {
   entry: {
     app: './js/source/app.js',
@@ -9,8 +11,8 @@ module.exports = {
       'react-router-bootstrap', 'react-router-dom'],
   },
   output: {
-    path: 'C:\\Users\\Chris\\Documents\\WebDev\\Voterific\\static',
-    // path: path.resolve(__dirname, 'static'),
+    //path: 'C:\\Users\\Chris\\Documents\\WebDev\\Voterific\\static',
+    path: path.resolve(__dirname, 'static'),
     filename: 'app.bundle.js',
   },
   plugins: [
