@@ -36,18 +36,18 @@ ReactDOM.render(
 store.dispatch(addGame([
   {
     name: 'Left For Dead',
-    id: '',
+    id: 'Left For Dead',
     description: 'this is a game'},
   {
     name: 'Skyrim',
-    id: '',
+    id: 'Skyrim',
     description: 'this is a game'
   }]));
 
 store.dispatch(addGame([
   {
     name: 'GTA 4',
-    id: '',
+    id: 'GTA 4',
     description: 'this is a game'
   }]));
 

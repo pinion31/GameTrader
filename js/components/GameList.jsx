@@ -13,7 +13,7 @@ class GameList extends Component {
     this.props.addGame([
       {
         name: 'Red Dead Redemption',
-        id: '',
+        id: 'Red Dead Redemption',
         description: 'Best Game Ever!'
       }]);
   }
