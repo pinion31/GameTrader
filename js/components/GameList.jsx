@@ -1,33 +1,48 @@
-"use strict"
+'use strict'
 
 import React, {Component} from 'react';
+import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
+import {Grid, Row, Col, Well, Thumbnail, Button} from 'react-bootstrap';
+import GameItem from './GameItem';
+import {addGame} from '../actions/gameActions';
 
 class GameList extends Component {
- /* constructor(props) {
-    super(props);
-    this.state = {
-      games: this.props.games,
-    };
+
+  handleOnClickAdd() {
+    this.props.addGame([
+      {
+        name: 'Red Dead Redemption',
+        id: '',
+        description: 'Best Game Ever!'
+      }]);
   }
 
-  componentDidMount() {
-    this.setState({
-      games: this.props.games,
-    });
-  }*/
-
   render() {
-    console.dir(this.props.games.games);
-    const list = this.props.games.games.map((game, key) => (
-      <h1 key={key}>{game.name}</h1>
-
-      ));
-
     return (
-    <div>
-    {list}
-    </div>
+      <Well>
+        <Grid>
+          <Row>
+            <Col sm={6} xs={12}>
+              <h1>My Games</h1>
+            </Col>
+            <Col sm={4} smOffset={2} xs={12}>
+              <Button onClick={this.handleOnClickAdd.bind(this)} bsStyle="primary">+ Add Game</Button>
+            </Col>
+          </Row>
+          <Row>
+            {this.props.games.games.map((game, key) => (
+              <Col sm={2} xs={6} key={key}>
+                <GameItem
+                  name={game.name}
+                  description={game.description}
+                />
+              </Col>
+            ))
+            }
+          </Row>
+        </Grid>
+      </Well>
     );
   }
 }
@@ -38,4 +53,10 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps)(GameList);
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({
+    addGame: addGame,
+  }, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(GameList);
