@@ -6,7 +6,7 @@ var path =  require('path');
 
 module.exports = {
   entry: {
-    app: './js/source/app.js',
+    app: './js/app.js',
     vendor: ['react', 'react-dom', 'whatwg-fetch', 'react-bootstrap', 'babel-polyfill', 'react-router',
       'react-router-bootstrap', 'react-router-dom'],
   },

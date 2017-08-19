@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest",
     "start": "node dist/server.js",
-    "start nodemon": "nodemon -w dist dist/server.js",
+    "nodemon": "nodemon -w dist dist/server.js",
     "compile": "webpack",
     "watch": "webpack-dev-server --hot --inline",
     "compile-server": "babel server --presets es2015-node4 --out-dir dist --source-maps",
@@ -29,9 +29,11 @@
   "dependencies": {
     "babel-polyfill": "^6.23.0",
     "body-parser": "^1.17.2",
+    "cookie-parser": "^1.4.3",
     "express": "^4.15.3",
     "mongo": "^0.1.0",
     "mongodb": "^2.2.30",
+    "morgan": "^1.8.2",
     "nodemon": "^1.11.0",
     "react": "^15.6.1",
     "react-bootstrap": "^0.31.0",
@@ -64,6 +66,7 @@
     "jest": "^20.0.4",
     "node-sass": "^4.5.3",
     "postcss-loader": "^2.0.6",
+    "redux-logger": "^3.0.6",
     "sass-loader": "^6.0.6",
     "source-map-support": "^0.4.15",
     "style-loader": "^0.18.2",
