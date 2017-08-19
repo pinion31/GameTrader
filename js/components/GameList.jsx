@@ -3,7 +3,7 @@
 import React, {Component} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
-import {Grid, Row, Col, Well, Thumbnail, Button} from 'react-bootstrap';
+import {Grid, Row, Col, Well, Button} from 'react-bootstrap';
 import GameItem from './GameItem';
 import {addGame} from '../actions/gameActions';
 

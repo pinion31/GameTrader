@@ -5,7 +5,9 @@ import {createStore, applyMiddleware} from 'redux';
 import {Provider} from 'react-redux';
 import RoutedApp from './components/RoutedApp';
 import rootReducer from './reducers/rootReducer';
+import {BrowserRouter} from 'react-router-dom';
 import {addGame} from './actions/gameActions';
+
 //import '../sass/style.scss';
 
 const middleware = applyMiddleware(logger);
@@ -24,7 +26,9 @@ game = {id:"", name:"",description:""};
 
 ReactDOM.render(
   <Provider store={store}>
-    <RoutedApp />
+    <BrowserRouter>
+      <RoutedApp />
+    </BrowserRouter>
   </Provider>,
   document.getElementById('app'),
 );
