@@ -55,7 +55,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
-    addGame: addGame,
+    addGame,
   }, dispatch);
 }
 

@@ -7,6 +7,7 @@ import RoutedApp from './components/RoutedApp';
 import rootReducer from './reducers/rootReducer';
 import {BrowserRouter} from 'react-router-dom';
 import {addGame} from './actions/gameActions';
+import {addRequest} from './actions/requestActions';
 
 //import '../sass/style.scss';
 
@@ -23,6 +24,7 @@ game = {id:"", name:"",description:""};
 
 //store.dispatch(addGame({games:{{name:'Left For Dead', id:''}, {name:'Skyrim', id:''}}}));
 
+//{games:[{},{},{}], requests:[{},{},{}]};
 
 ReactDOM.render(
   <Provider store={store}>
@@ -32,6 +34,12 @@ ReactDOM.render(
   </Provider>,
   document.getElementById('app'),
 );
+
+store.dispatch(addRequest([
+  {
+    status: 'pending',
+    requestedGame: 'Assassin\'s Creed',
+  }]));
 
 store.dispatch(addGame([
   {
@@ -50,6 +58,7 @@ store.dispatch(addGame([
     id: 'GTA 4',
     description: 'this is a game'
   }]));
+
 
 if (module.hot) {
   module.hot.accept();

@@ -1,14 +1,8 @@
 
 
-export const addGame = (games) => {
-  //let currentState = Object.assign({}, state, ...action.games);
-  return {
-     type: "ADD_GAME",
-     payload: games
-  };
-
-
-};
-
-
-
+export const addGame = game => (
+  {
+    type: 'ADD_GAME',
+    payload: game
+  }
+);

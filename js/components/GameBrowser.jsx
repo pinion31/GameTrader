@@ -1,8 +1,12 @@
+'use strict'
+
 import React, {Component} from 'react';
+import {bindActionCreators} from 'redux';
 import {Grid, Row, Col, Modal, Button, Well, FormGroup,
   FormControl, option, ControlLabel} from 'react-bootstrap';
 import {connect} from 'react-redux';
 import GameItem from './GameItem';
+import {addRequest} from '../actions/requestActions';
 
 const mockGameCollection =
   {
@@ -54,6 +58,11 @@ class GameBrowser extends Component {
       gameOffer:[],
       selectedGame:{}
     };
+
+    this.toggleModal = this.toggleModal.bind(this);
+    this.updateSelected = this.updateSelected.bind(this);
+    this.addGameToOffer= this.addGameToOffer.bind(this);
+    this.sendRequest= this.sendRequest.bind(this);
   }
 
   toggleModal(game={}) {
@@ -65,6 +74,7 @@ class GameBrowser extends Component {
 
   addGameToOffer() {
     let gamesToAdd = this.state.gameOffer;
+
     if (this.state.selectedGame) {
       gamesToAdd.push(this.state.selectedGame);
     }
@@ -86,10 +96,22 @@ class GameBrowser extends Component {
     });
   }
 
+  sendRequest() {
+    this.props.addRequest([{
+      status: 'pending',
+      requestedGame: mockGameCollection[this.state.requestedGame].name,
+    }]);
+
+    //close modal
+    this.setState({
+      showModal:!this.state.showModal,
+    })
+  }
+
   updateSelected(event) {
     this.setState({
       selectedGame: userMockCollection[event.target.value],
-    })
+    });
   }
 
   getRequestedGame() {
@@ -131,7 +153,7 @@ class GameBrowser extends Component {
 
         <Modal
           show={this.state.showModal}
-          onHide={this.toggleModal.bind(this)}
+          onHide={this.toggleModal}
         >
           <Modal.Header>
             <Modal.Title>Request Trade</Modal.Title>
@@ -149,7 +171,10 @@ class GameBrowser extends Component {
                         name={game.name}
                         description={game.description}
                       />
-                      <Button onClick={this.subtractGameFromOffer.bind(this, game)}>
+                      <Button
+                        bsStyle="danger"
+                        onClick={this.subtractGameFromOffer.bind(this, game)}
+                      >
                         Remove
                       </Button>
                     </Col>
@@ -161,7 +186,7 @@ class GameBrowser extends Component {
             <FormGroup controlId="formControlsSelect">
               <ControlLabel>Select Game</ControlLabel>
               <FormControl
-                onChange={this.updateSelected.bind(this)}
+                onChange={this.updateSelected}
                 componentClass="select"
                 placeholder="select">
                 {Object.keys(userMockCollection).map(game => (
@@ -171,16 +196,21 @@ class GameBrowser extends Component {
                 ))
                 }
               </FormControl>
-                <Button onClick={this.addGameToOffer.bind(this)}>
+                <Button bsStyle="primary" onClick={this.addGameToOffer}>
                   Add Game
                 </Button>
             </FormGroup>
           </Modal.Body>
           <Modal.Footer>
-            <Button onClick={this.toggleModal.bind(this)}>
+            <Button onClick={this.toggleModal}>
               Close
             </Button>
-            <Button bsStyle="primary">Send Trade Request</Button>
+            <Button
+              bsStyle="primary"
+              onClick={this.sendRequest}
+            >
+              Send Trade Request
+            </Button>
           </Modal.Footer>
         </Modal>
       </div>
@@ -189,7 +219,15 @@ class GameBrowser extends Component {
 }
 
 function mapPropstoState() {
+  return {
 
+  };
 }
 
-export default GameBrowser;
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({
+    addRequest,
+  }, dispatch);
+}
+
+export default connect(mapPropstoState, mapDispatchToProps)(GameBrowser);
