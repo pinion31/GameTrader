@@ -8,13 +8,15 @@ class GameItem extends Component {
       showModal: false,
     };
 
-  this.toggleModal = this.toggleModal.bind(this);
+    this.toggleModal = this.toggleModal.bind(this);
   }
 
   toggleModal() {
-    this.setState({
-      showModal: !this.state.showModal,
-    });
+    if (this.props.canOpenModal) {
+      this.setState({
+        showModal: !this.state.showModal,
+      });
+    }
   }
   render() {
     return (

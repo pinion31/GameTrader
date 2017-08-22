@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {Thumbnail, Modal, Button} from 'react-bootstrap';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import {addGame} from '../actions/gameActions';
+import {addGame, removeGame} from '../actions/gameActions';
 import {removeRequest} from '../actions/requestActions';
 
 class RequestItem extends Component {
@@ -25,14 +25,20 @@ class RequestItem extends Component {
   acceptTrade() {
     this.props.addGame([
     {
-      name: this.props.requestedGame,
-      id: this.props.requestedGame,
+      name: this.props.requestedGame.name,
+      id: this.props.requestedGame.id,
       description: 'accepted game'
     }]);
 
     this.props.removeRequest({
       requestToRemove: this.props.requestedGame,
      });
+
+    //removed offered game from user's library
+    this.props.removeGame({
+      id:this.props.offeredGame.id,
+
+    });
 
     //close modal after action
     this.toggleModal();
@@ -43,8 +49,9 @@ class RequestItem extends Component {
     return (
       <div>
         <a onClick={this.toggleModal}>
-          <Thumbnail src="" alt={this.props.requestedGame}>
-            <h5>{this.props.status}</h5>
+          <Thumbnail src="" alt={this.props.requestedGame.name}>
+            <p>Status:{this.props.status}</p>
+            <p>{this.props.requestedGame.name}</p>
           </Thumbnail>
         </a>
         <Modal
@@ -52,11 +59,15 @@ class RequestItem extends Component {
             onHide={this.toggleModal}
         >
             <Modal.Header>
-              <Modal.Title>{this.props.requestedGame}</Modal.Title>
+              <Modal.Title>{this.props.requestedGame.name}</Modal.Title>
             </Modal.Header>
 
             <Modal.Body>
-              <h5>{this.props.status}</h5>
+                <h5>Status:{this.props.status}</h5>
+                <p>{this.props.imageLink}</p>
+                <p>Owner: Big Queen</p>
+                <p>Your Offer:</p>
+                <p>{this.props.offeredGame.name}</p>
             </Modal.Body>
 
             <Modal.Footer>
@@ -79,6 +90,7 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     addGame,
     removeRequest,
+    removeGame,
   }, dispatch);
 }
 export default connect(mapStateToProps, mapDispatchToProps)(RequestItem);

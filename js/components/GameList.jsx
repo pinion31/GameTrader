@@ -36,6 +36,7 @@ class GameList extends Component {
                 <GameItem
                   name={game.name}
                   description={game.description}
+                  canOpenModal={true}
                 />
               </Col>
             ))

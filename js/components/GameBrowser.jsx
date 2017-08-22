@@ -40,10 +40,10 @@ const userMockCollection =
         id: 'Skyrim',
         description: 'this is a game'
       },
-    WalkingDead:
+    GTA4:
       {
-        name: 'Walking Dead',
-        id: 'WalkingDead',
+        name: 'GTA 4',
+        id: 'GTA4',
         description: 'this is a game'
       }
 
@@ -56,7 +56,7 @@ class GameBrowser extends Component {
       showModal:false,
       requestedGame:{},
       gameOffer:[],
-      selectedGame:{}
+      offeredGame:{}
     };
 
     this.toggleModal = this.toggleModal.bind(this);
@@ -73,10 +73,14 @@ class GameBrowser extends Component {
   }
 
   addGameToOffer() {
-    let gamesToAdd = this.state.gameOffer;
+    let gamesToAdd = Array.from(this.state.gameOffer);
 
-    if (this.state.selectedGame) {
-      gamesToAdd.push(this.state.selectedGame);
+    if (this.state.offeredGame) {
+      //1st line to offer multiple games
+      //gamesToAdd.push(this.state.offeredGame);
+
+      //for only one game offer per trade
+      gamesToAdd[0] = this.state.offeredGame;
     }
 
     this.setState({
@@ -99,7 +103,8 @@ class GameBrowser extends Component {
   sendRequest() {
     this.props.addRequest([{
       status: 'pending',
-      requestedGame: mockGameCollection[this.state.requestedGame].name,
+      requestedGame: mockGameCollection[this.state.requestedGame],
+      offeredGame: userMockCollection[this.state.offeredGame.id],
     }]);
 
     //close modal
@@ -110,7 +115,7 @@ class GameBrowser extends Component {
 
   updateSelected(event) {
     this.setState({
-      selectedGame: userMockCollection[event.target.value],
+      offeredGame: userMockCollection[event.target.value],
     });
   }
 
@@ -142,6 +147,7 @@ class GameBrowser extends Component {
                     <GameItem
                       name={mockGameCollection[game].name}
                       description={mockGameCollection[game].description}
+                      canOpenModal={false}
                     />
                   </a>
                 </Col>

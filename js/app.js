@@ -38,13 +38,22 @@ ReactDOM.render(
 store.dispatch(addRequest([
   {
     status: 'pending',
-    requestedGame: 'Assassin\'s Creed',
+    requestedGame:   {
+        name: 'Assassin\'s Creed',
+        id: 'AssassinsCreed',
+        description: 'this is a game',
+      },
+    offeredGame: {
+        name: 'Fallout 3',
+        id: 'Fallout3',
+        description: 'this is a game',
+      },
   }]));
 
 store.dispatch(addGame([
   {
     name: 'Left For Dead',
-    id: 'Left For Dead',
+    id: 'LeftForDead',
     description: 'this is a game'},
   {
     name: 'Skyrim',
@@ -55,7 +64,7 @@ store.dispatch(addGame([
 store.dispatch(addGame([
   {
     name: 'GTA 4',
-    id: 'GTA 4',
+    id: 'GTA4',
     description: 'this is a game'
   }]));
 

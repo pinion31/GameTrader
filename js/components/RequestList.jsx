@@ -25,6 +25,8 @@ class RequestList extends Component {
                       owner={'me'}
                       status={request.status}
                       requestedGame={request.requestedGame}
+                      imageLink={'pic here'}
+                      offeredGame={request.offeredGame}
                     />
                   </Col>
                 );

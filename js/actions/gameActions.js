@@ -6,3 +6,10 @@ export const addGame = game => (
     payload: game
   }
 );
+
+export const removeGame = game => (
+  {
+    type: 'REMOVE_GAME',
+    payload: game
+  }
+);
