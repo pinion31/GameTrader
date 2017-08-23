@@ -18,14 +18,14 @@ app.use(cookieParser());
 //app.use(express.static(path.join(__dirname, '../static')));
 app.use(express.static('static'));
 
-app.get('/findGame/:term', (req,res) => {
+app.get('/findGame/:console/:game', (req,res) => {
 
   let searchResults = [];
 
   /*
   client.platforms({
     fields: '*' , // Return all fields
-   // search: req.params.term,
+   // search: req.params.game,
     limit: 50, // Limit to 5 results
     offset: 100 // Index offset for results
     }).then((response) => {
@@ -35,11 +35,12 @@ app.get('/findGame/:term', (req,res) => {
 
      });*/
 
+
   client.games({
     fields: ['id', 'name', 'cover', 'summary', 'developers', 'publishers'] , // Return all fields
-    search: req.params.term,
+    search: req.params.game,
     filters: {
-      'release_dates.platform-eq':49
+      'release_dates.platform-eq': req.params.console,
     },
     limit: 15, // Limit to 5 results
     offset: 0 // Index offset for results
@@ -54,13 +55,14 @@ app.get('/findGame/:term', (req,res) => {
               'cover_small',
               'jpg'
             );
-
+            console.log(req.params.console);
             searchResults = searchResults.concat([
             {
               id: game.id,
               name:game.name,
               summary:game.summary,
               cover:coverImage,
+              gameConsole: req.params.console,
               //developer: result.developer,
               //publisher: result.publishers,
             }]);

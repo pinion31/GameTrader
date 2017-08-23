@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {Thumbnail, Modal, Button} from 'react-bootstrap';
+import {gameConsoles} from '../constants/gameConsoles';
 
 class GameItem extends Component {
   constructor(props) {
@@ -17,12 +18,24 @@ class GameItem extends Component {
     });
   }
 
+  convertConsoleNumToConsoleName(id) {
+    let publisher = "";
+
+    gameConsoles.map(gameConsole => {
+      if (gameConsole.id.toString() === this.props.gameConsole) {
+       publisher = gameConsole.name;
+      }
+    });
+
+    console.log(publisher);
+    return publisher;
+  }
+
   render() {
     return (
       <div>
         <a onClick={this.toggleModal}>
-          <Thumbnail src="" alt={this.props.name}>
-            <h5>{this.props.name}</h5>
+          <Thumbnail src={this.props.cover} alt={this.props.name}>
           </Thumbnail>
         </a>
         <Modal

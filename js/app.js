@@ -35,6 +35,7 @@ ReactDOM.render(
   document.getElementById('app'),
 );
 
+/*
 store.dispatch(addRequest([
   {
     status: 'pending',
@@ -49,7 +50,8 @@ store.dispatch(addRequest([
       description: 'this is a game',
     },
   }]));
-
+*/
+/*
 store.dispatch(addGame([
   {
     name: 'Left For Dead',
@@ -67,7 +69,7 @@ store.dispatch(addGame([
     id: 'GTA4',
     description: 'this is a game'
   }]));
-
+*/
 
 if (module.hot) {
   module.hot.accept();
