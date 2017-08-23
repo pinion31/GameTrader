@@ -5,6 +5,7 @@ import {bindActionCreators} from 'redux';
 import {Grid, Row, Col, Modal, Button, Well, FormGroup,
   FormControl, option, ControlLabel} from 'react-bootstrap';
 import {connect} from 'react-redux';
+import GameRequestItem from './GameRequestItem';
 import GameItem from './GameItem';
 import {addRequest} from '../actions/requestActions';
 
@@ -53,16 +54,16 @@ class GameBrowser extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      showModal:false,
-      requestedGame:{},
-      gameOffer:[],
-      offeredGame:{}
+      showModal: false,
+      requestedGame: {},
+      gameOffer: [],
+      offeredGame: {}
     };
 
     this.toggleModal = this.toggleModal.bind(this);
     this.updateSelected = this.updateSelected.bind(this);
-    this.addGameToOffer= this.addGameToOffer.bind(this);
-    this.sendRequest= this.sendRequest.bind(this);
+    this.addGameToOffer = this.addGameToOffer.bind(this);
+    this.sendRequest = this.sendRequest.bind(this);
   }
 
   toggleModal(game={}) {
@@ -107,10 +108,15 @@ class GameBrowser extends Component {
       offeredGame: userMockCollection[this.state.offeredGame.id],
     }]);
 
-    //close modal
+    // temp code to change status of requestedGame; use setState
+    mockGameCollection[this.state.requestedGame].status = 'requested';
+    console.dir(mockGameCollection[this.state.requestedGame]);
+
+
+    // close modal
     this.setState({
-      showModal:!this.state.showModal,
-    })
+      showModal: !this.state.showModal,
+    });
   }
 
   updateSelected(event) {
@@ -121,7 +127,7 @@ class GameBrowser extends Component {
 
   getRequestedGame() {
     if (mockGameCollection[this.state.requestedGame] !== undefined) {
-      return <GameItem
+      return <GameRequestItem
         name={mockGameCollection[this.state.requestedGame].name}
         description={mockGameCollection[this.state.requestedGame].description}
       />
@@ -144,10 +150,10 @@ class GameBrowser extends Component {
                 <Col sm={2} xs={6} key={key}>
                   {/** activate modal**/}
                   <a onClick={this.toggleModal.bind(this, game)}>
-                    <GameItem
+                    <GameRequestItem
                       name={mockGameCollection[game].name}
                       description={mockGameCollection[game].description}
-                      canOpenModal={false}
+                      status={'available'}
                     />
                   </a>
                 </Col>

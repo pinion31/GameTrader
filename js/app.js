@@ -38,16 +38,16 @@ ReactDOM.render(
 store.dispatch(addRequest([
   {
     status: 'pending',
-    requestedGame:   {
-        name: 'Assassin\'s Creed',
-        id: 'AssassinsCreed',
-        description: 'this is a game',
-      },
+    requestedGame: {
+      name: 'Assassin\'s Creed',
+      id: 'AssassinsCreed',
+      description: 'this is a game',
+    },
     offeredGame: {
-        name: 'Fallout 3',
-        id: 'Fallout3',
-        description: 'this is a game',
-      },
+      name: 'Fallout 3',
+      id: 'Fallout3',
+      description: 'this is a game',
+    },
   }]));
 
 store.dispatch(addGame([

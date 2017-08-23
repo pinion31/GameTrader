@@ -12,12 +12,11 @@ class GameItem extends Component {
   }
 
   toggleModal() {
-    if (this.props.canOpenModal) {
-      this.setState({
-        showModal: !this.state.showModal,
-      });
-    }
+    this.setState({
+      showModal: !this.state.showModal,
+    });
   }
+
   render() {
     return (
       <div>
