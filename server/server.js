@@ -3,7 +3,43 @@ const path = require('path');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/local');
+mongoose.Promise = global.Promise;
 import igdb from 'igdb-api-node';
+import User from './models/User';
+
+
+/*
+var test = new User({
+  'test': {
+     username: 'chriscantu',
+      password: 'moondog1',
+      email: 'pinion31@gmail.com',
+      city: 'Manor',
+      state: 'TX',
+      requests: {},
+      games: {
+        1234:
+          {
+            name: 'Fallout 4',
+            id: 1234,
+            cover: '',
+            owner: 'chriscantu',
+            gameconsole: 'xbox',
+            summary: '',
+          },
+      }
+  }
+
+});
+
+test.save(err) => {
+  if (err) {throw err}
+  else {
+    console.log('test saved');
+  }
+});*/
 
 const app = express();
 
@@ -47,15 +83,14 @@ app.get('/findGame/:console/:game', (req,res) => {
     }).then((response) => {
       let result = response.body;
 
-       result.forEach(game => {
-          if (game.cover) {
+      result.forEach(game => {
+        if (game.cover) {
+          let coverImage = client.image({
+            cloudinary_id: game.cover.cloudinary_id},
+            'cover_small',
+            'jpg'
+          );
 
-            let coverImage = client.image({
-              cloudinary_id: game.cover.cloudinary_id},
-              'cover_small',
-              'jpg'
-            );
-            console.log(req.params.console);
             searchResults = searchResults.concat([
             {
               id: game.id,
@@ -72,6 +107,58 @@ app.get('/findGame/:console/:game', (req,res) => {
 }).catch(error => {
         throw error;
 });
+});
+
+app.post('/addUser', (req,res) => {
+  const user = new User(
+    {
+      username: req.body.username,
+      password: req.body.password,
+      email: req.body.email,
+      city: req.body.city,
+      state: req.body.state,
+      requests: {},
+      games: {}
+    }
+  );
+
+  user.save((err) => {
+    if (err) {throw err};
+  });
+});
+
+app.post('/addGame', (req, res) => {
+
+  User.findOne({username:'chris'}).lean()
+    .then(user => {
+      console.dir(user.username);
+      let modifiedUser = Object.assign({}, user);
+
+      //console.dir(modifiedUser.games);
+      //console.log(typeof modifiedUser.games);
+
+      if (modifiedUser.games === null) {
+        modifiedUser.games = Array.from(req.body);
+      }
+      else {
+
+        modifiedUser.games = Array.from(modifiedUser.games).concat(req.body);
+        console.dir(modifiedUser.games);
+      }
+       //modifiedUser.games = Object.assign({}, ...modifiedUser.games,);
+        //req.body);
+
+      User.findOneAndUpdate({username:'chris'}, {games: modifiedUser.games})
+        .then(response => {
+           res.json(req.body);
+        });
+    });
+
+/*
+  User.findOneAndUpdate({username:'chris'}, {games: req.body})
+    .then(response => {
+      res.json(req.body);
+    });*/
 });
 
 app.get('*', (req, res) => {

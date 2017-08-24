@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import logger from 'redux-logger';
 import {createStore, applyMiddleware} from 'redux';
+import thunk from 'redux-thunk';
 import {Provider} from 'react-redux';
 import RoutedApp from './components/RoutedApp';
 import rootReducer from './reducers/rootReducer';
@@ -11,7 +12,7 @@ import {addRequest} from './actions/requestActions';
 
 //import '../sass/style.scss';
 
-const middleware = applyMiddleware(logger);
+const middleware = applyMiddleware(thunk, logger);
 const store = createStore(rootReducer, middleware);
 
 //initial State

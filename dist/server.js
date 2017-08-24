@@ -4,6 +4,10 @@ var _igdbApiNode = require('igdb-api-node');
 
 var _igdbApiNode2 = _interopRequireDefault(_igdbApiNode);
 
+var _User = require('./models/User');
+
+var _User2 = _interopRequireDefault(_User);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var express = require('express');
@@ -11,7 +15,41 @@ var path = require('path');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/local');
+mongoose.Promise = global.Promise;
 
+
+/*
+var test = new User({
+  'test': {
+     username: 'chriscantu',
+      password: 'moondog1',
+      email: 'pinion31@gmail.com',
+      city: 'Manor',
+      state: 'TX',
+      requests: {},
+      games: {
+        1234:
+          {
+            name: 'Fallout 4',
+            id: 1234,
+            cover: '',
+            owner: 'chriscantu',
+            gameconsole: 'xbox',
+            summary: '',
+          },
+      }
+  }
+
+});
+
+test.save(err) => {
+  if (err) {throw err}
+  else {
+    console.log('test saved');
+  }
+});*/
 
 var app = express();
 
@@ -53,10 +91,9 @@ app.get('/findGame/:console/:game', function (req, res) {
 
     result.forEach(function (game) {
       if (game.cover) {
-
         var coverImage = client.image({
           cloudinary_id: game.cover.cloudinary_id }, 'cover_small', 'jpg');
-        console.log(req.params.console);
+
         searchResults = searchResults.concat([{
           id: game.id,
           name: game.name,
@@ -72,6 +109,55 @@ app.get('/findGame/:console/:game', function (req, res) {
   }).catch(function (error) {
     throw error;
   });
+});
+
+app.post('/addUser', function (req, res) {
+  var user = new _User2.default({
+    username: req.body.username,
+    password: req.body.password,
+    email: req.body.email,
+    city: req.body.city,
+    state: req.body.state,
+    requests: {},
+    games: {}
+  });
+
+  user.save(function (err) {
+    if (err) {
+      throw err;
+    };
+  });
+});
+
+app.post('/addGame', function (req, res) {
+
+  _User2.default.findOne({ username: 'chris' }).lean().then(function (user) {
+    console.dir(user.username);
+    var modifiedUser = Object.assign({}, user);
+
+    //console.dir(modifiedUser.games);
+    //console.log(typeof modifiedUser.games);
+
+    if (modifiedUser.games === null) {
+      modifiedUser.games = Array.from(req.body);
+    } else {
+
+      modifiedUser.games = Array.from(modifiedUser.games).concat(req.body);
+      console.dir(modifiedUser.games);
+    }
+    //modifiedUser.games = Object.assign({}, ...modifiedUser.games,);
+    //req.body);
+
+    _User2.default.findOneAndUpdate({ username: 'chris' }, { games: modifiedUser.games }).then(function (response) {
+      res.json(req.body);
+    });
+  });
+
+  /*
+    User.findOneAndUpdate({username:'chris'}, {games: req.body})
+      .then(response => {
+        res.json(req.body);
+      });*/
 });
 
 app.get('*', function (req, res) {

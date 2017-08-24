@@ -1,7 +1,47 @@
 import React, {Component} from 'react';
-import {Grid, Row, Col, FormGroup, FormControl, ControlLabel} from 'react-bootstrap';
+import {connect} from 'react-redux';
+import bindActionCreators from 'redux';
+import 'whatwg-fetch';
+import {Grid, Row, Col, FormGroup, FormControl, Button} from 'react-bootstrap';
 
 class SignUp extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      newUser: {
+        username: '',
+        password: '',
+        email: '',
+        city: '',
+        state: '',
+      },
+    };
+
+    this.handleChange = this.handleChange.bind(this);
+    this.sendUserInfoToDB = this.sendUserInfoToDB.bind(this);
+  }
+
+  handleChange(event) {
+    const user = Object.assign({}, this.state.newUser);
+    user[event.target.name] = event.target.value;
+
+    this.setState({
+      newUser: user,
+    });
+  }
+
+  sendUserInfoToDB() {
+    fetch('/addUser', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(this.state.newUser),
+    }).then((res) => {
+      if (res.ok) {
+        console.log('user added');
+      }
+    }).catch(err => `Error in sending data to server:${err.message}`);
+  }
+
   render() {
     return (
       <Grid>
@@ -9,9 +49,10 @@ class SignUp extends Component {
           <Col sm={6} smOffset={3} xs={6} xsOffset={3}>
             <FormGroup>
               <FormControl
-                name="name"
+                name="username"
                 type="text"
                 placeholder="Username"
+                onChange={this.handleChange}
               />
             </FormGroup>
           </Col>
@@ -23,6 +64,7 @@ class SignUp extends Component {
                 name="password"
                 type="password"
                 placeholder="Password"
+                onChange={this.handleChange}
               />
             </FormGroup>
           </Col>
@@ -34,6 +76,7 @@ class SignUp extends Component {
                 name="password"
                 type="password"
                 placeholder="Reenter Password"
+                onChange={this.handleChange}
               />
             </FormGroup>
           </Col>
@@ -45,6 +88,7 @@ class SignUp extends Component {
                 name="email"
                 type="text"
                 placeholder="Email"
+                onChange={this.handleChange}
               />
             </FormGroup>
           </Col>
@@ -56,6 +100,7 @@ class SignUp extends Component {
                 name="city"
                 type="text"
                 placeholder="city"
+                onChange={this.handleChange}
               />
             </FormGroup>
           </Col>
@@ -65,31 +110,28 @@ class SignUp extends Component {
                 name="state"
                 type="text"
                 placeholder="state"
+                onChange={this.handleChange}
               />
             </FormGroup>
           </Col>
         </Row>
         <Row>
-          <Col sm={6} smOffset={3} xs={6} xsOffset={3}>
-            <FormGroup controlId="formControlsSelect">
-              <ControlLabel>Game Console</ControlLabel>
-              <FormControl
-                componentClass="select">
-                <option value="Wii">Nintendo Wii</option>
-                <option value="Wii">Nintendo Switch</option>
-                <option value="PS4">Playstation 2</option>
-                <option value="PS3">Playstation 3</option>
-                <option value="PS4">Playstation 4</option>
-                <option value="Xbox">Xbox</option>
-                <option value="Xbox360">Xbox 360</option>
-                <option value="XboxOne">Xbox One</option>
-              </FormControl>
-            </FormGroup>
-          </Col>
+          <Button bsStyle="primary" onClick={this.sendUserInfoToDB}>
+            Submit
+          </Button>
         </Row>
       </Grid>
     );
   }
 }
+
+ /*
+function mapStateToProps() {
+
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({
+    addUser*/
 
 export default SignUp;
