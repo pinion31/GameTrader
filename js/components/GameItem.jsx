@@ -26,8 +26,6 @@ class GameItem extends Component {
        publisher = gameConsole.name;
       }
     });
-
-    console.log(publisher);
     return publisher;
   }
 
@@ -47,7 +45,7 @@ class GameItem extends Component {
           </Modal.Header>
 
           <Modal.Body>
-            <p>{this.props.description}</p>
+            <p>{this.props.summary}</p>
           </Modal.Body>
 
           <Modal.Footer>

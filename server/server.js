@@ -55,22 +55,7 @@ app.use(cookieParser());
 app.use(express.static('static'));
 
 app.get('/findGame/:console/:game', (req,res) => {
-
   let searchResults = [];
-
-  /*
-  client.platforms({
-    fields: '*' , // Return all fields
-   // search: req.params.game,
-    limit: 50, // Limit to 5 results
-    offset: 100 // Index offset for results
-    }).then((response) => {
-        console.dir(response);
-
-
-
-     });*/
-
 
   client.games({
     fields: ['id', 'name', 'cover', 'summary', 'developers', 'publishers'] , // Return all fields
@@ -80,32 +65,33 @@ app.get('/findGame/:console/:game', (req,res) => {
     },
     limit: 15, // Limit to 5 results
     offset: 0 // Index offset for results
-    }).then((response) => {
-      let result = response.body;
+  }).then((response) => {
+    const result = response.body;
 
-      result.forEach(game => {
-        if (game.cover) {
-          let coverImage = client.image({
-            cloudinary_id: game.cover.cloudinary_id},
-            'cover_small',
-            'jpg'
-          );
+    result.forEach((game) => {
+      if (game.cover) {
+        let coverImage = client.image({
+          cloudinary_id: game.cover.cloudinary_id},
+          'cover_small',
+          'jpg'
+        );
 
-            searchResults = searchResults.concat([
-            {
-              id: game.id,
-              name:game.name,
-              summary:game.summary,
-              cover:coverImage,
-              gameConsole: req.params.console,
-              //developer: result.developer,
-              //publisher: result.publishers,
-            }]);
-          }
-      });
-       res.json(JSON.stringify(searchResults));
-}).catch(error => {
-        throw error;
+        searchResults = searchResults.concat([
+          {
+            id: game.id,
+            name: game.name,
+            summary: game.summary,
+            cover: coverImage,
+            gameConsole: req.params.console,
+            // developer: result.developer,
+            // publisher: result.publishers,
+          }]);
+      }
+    });
+
+    res.json(JSON.stringify(searchResults));
+  }).catch((error) => {
+    throw error;
 });
 });
 
@@ -127,38 +113,27 @@ app.post('/addUser', (req,res) => {
   });
 });
 
+app.get('/getUserGames/:user', (req,res) => {
+  User.findOne({username:`${req.params.user}`}).lean()
+    .then(user => {
+      res.json(user.games);
+    });
+});
+
 app.post('/addGame', (req, res) => {
 
-  User.findOne({username:'chris'}).lean()
-    .then(user => {
-      console.dir(user.username);
-      let modifiedUser = Object.assign({}, user);
+  User.findOne({username: 'chris'}).lean()
+    .then((user) => {
+      const modifiedUser = Object.assign({}, user);
 
-      //console.dir(modifiedUser.games);
-      //console.log(typeof modifiedUser.games);
+      const newGameColl = modifiedUser.games === null?Array.from(req.body):
+        Array.from(modifiedUser.games).concat(req.body);
 
-      if (modifiedUser.games === null) {
-        modifiedUser.games = Array.from(req.body);
-      }
-      else {
-
-        modifiedUser.games = Array.from(modifiedUser.games).concat(req.body);
-        console.dir(modifiedUser.games);
-      }
-       //modifiedUser.games = Object.assign({}, ...modifiedUser.games,);
-        //req.body);
-
-      User.findOneAndUpdate({username:'chris'}, {games: modifiedUser.games})
-        .then(response => {
-           res.json(req.body);
+      User.findOneAndUpdate({username: 'chris'}, {games: newGameColl})
+        .then((response) => {
+          res.json(req.body);
         });
     });
-
-/*
-  User.findOneAndUpdate({username:'chris'}, {games: req.body})
-    .then(response => {
-      res.json(req.body);
-    });*/
 });
 
 app.get('*', (req, res) => {
@@ -170,3 +145,15 @@ app.listen(3000, () => {
 });
 
 
+ /*
+  client.platforms({
+    fields: '*' , // Return all fields
+   // search: req.params.game,
+    limit: 50, // Limit to 5 results
+    offset: 100 // Index offset for results
+    }).then((response) => {
+        console.dir(response);
+
+
+
+     });*/

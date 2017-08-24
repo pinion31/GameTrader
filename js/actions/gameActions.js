@@ -2,28 +2,31 @@
 
 import axios from 'axios';
 
-export const addGame = game => {
-  return (dispatch) => {
+export const addGame = game => (
+  (dispatch) => {
     axios.post('/addGame', game)
-      .then(res => {
-        dispatch({type:'ADD_GAME', payload: res.data});
-      })
-      .catch(err => {
-        console.log('error dispatching');
+      .then((res) => {
+        dispatch({type: 'ADD_GAME', payload: res.data});
+      }).catch((err) => {
         throw err;
       });
   }
-
-/*
-  return {
-    type: 'ADD_GAME',
-    payload: game
-  }*/
-};
+);
 
 export const removeGame = game => (
   {
     type: 'REMOVE_GAME',
     payload: game
+  }
+);
+
+export const getUserGames = () => (
+  (dispatch) => {
+    axios.get('/getUserGames/chris')
+      .then((res) => {
+        dispatch({type: 'GET_USER_GAMES', payload: res.data});
+      }).catch((err) => {
+        throw err;
+      });
   }
 );

@@ -8,7 +8,7 @@ import 'whatwg-fetch';
 import {Thumbnail, Modal, Grid, Row, Col, Well,
   Button, FormControl, FormGroup, ControlLabel} from 'react-bootstrap';
 import GameItem from './GameItem';
-import {addGame} from '../actions/gameActions';
+import {addGame, getUserGames, removeGame } from '../actions/gameActions';
 import {gameConsoles} from '../constants/gameConsoles';
 
 class GameList extends Component {
@@ -17,7 +17,7 @@ class GameList extends Component {
     this.state = {
       showModal: false,
       searchTerm: '',
-      list: [],
+      searchList: [],
       selectedGame: {},
       selectedConsole: 59,
 
@@ -31,10 +31,14 @@ class GameList extends Component {
     this.updateConsole = this.updateConsole.bind(this);
   }
 
+  componentDidMount() {
+    this.props.getUserGames();
+  }
+
   toggleModal() {
     this.setState({
       showModal: !this.state.showModal,
-      list: [], // erases search result after every toggle
+      searchList: [], // erases search result after every toggle
     });
   }
 
@@ -47,7 +51,7 @@ class GameList extends Component {
       .then((res) => {
         res.json().then((result) => {
           this.setState({
-            list: JSON.parse(result),
+            searchList: JSON.parse(result),
           });
         });
       }).catch((err) => {
@@ -64,7 +68,7 @@ class GameList extends Component {
   highlightGame(highlightedGame){
 
     // unhighlights previously selected game
-    this.state.list.map(game => {
+    this.state.searchList.map(game => {
       ReactDOM.findDOMNode(this.refs[game.id]).style.backgroundColor = 'transparent';
     });
     ReactDOM.findDOMNode(this.refs[highlightedGame.id]).style.backgroundColor = 'lightblue';
@@ -79,7 +83,7 @@ class GameList extends Component {
       {
         name: this.state.selectedGame.name,
         id: this.state.selectedGame.id,
-        description: this.state.selectedGame.summary,
+        summary: this.state.selectedGame.summary,
         cover: this.state.selectedGame.cover,
         gameConsole: this.state.selectedGame.gameConsole
       }]);
@@ -113,6 +117,7 @@ class GameList extends Component {
                     summary={game.summary}
                     cover={game.cover}
                     gameConsole={game.gameConsole}
+                    key={key}
                   />
                 </Col>
               ))
@@ -166,7 +171,7 @@ class GameList extends Component {
                 <Col sm={9} xs={12} md={7}>
                   <Well>
                     <Row>
-                      {this.state.list.map(game => (
+                      {this.state.searchList.map(game => (
                         <a onClick={()=> {this.highlightGame(game)}} key={game.id}>
                           <Col sm={4} xs={4} md={4}>
                             <Thumbnail ref={game.id}>
@@ -202,6 +207,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     addGame,
+    getUserGames,
   }, dispatch);
 }
 

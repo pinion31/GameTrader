@@ -64,19 +64,7 @@ app.use(cookieParser());
 app.use(express.static('static'));
 
 app.get('/findGame/:console/:game', function (req, res) {
-
   var searchResults = [];
-
-  /*
-  client.platforms({
-    fields: '*' , // Return all fields
-   // search: req.params.game,
-    limit: 50, // Limit to 5 results
-    offset: 100 // Index offset for results
-    }).then((response) => {
-        console.dir(response);
-  
-     });*/
 
   client.games({
     fields: ['id', 'name', 'cover', 'summary', 'developers', 'publishers'], // Return all fields
@@ -100,11 +88,12 @@ app.get('/findGame/:console/:game', function (req, res) {
           summary: game.summary,
           cover: coverImage,
           gameConsole: req.params.console
-          //developer: result.developer,
-          //publisher: result.publishers,
+          // developer: result.developer,
+          // publisher: result.publishers,
         }]);
       }
     });
+
     res.json(JSON.stringify(searchResults));
   }).catch(function (error) {
     throw error;
@@ -129,35 +118,23 @@ app.post('/addUser', function (req, res) {
   });
 });
 
+app.get('/getUserGames/:user', function (req, res) {
+  _User2.default.findOne({ username: '' + req.params.user }).lean().then(function (user) {
+    res.json(user.games);
+  });
+});
+
 app.post('/addGame', function (req, res) {
 
   _User2.default.findOne({ username: 'chris' }).lean().then(function (user) {
-    console.dir(user.username);
     var modifiedUser = Object.assign({}, user);
 
-    //console.dir(modifiedUser.games);
-    //console.log(typeof modifiedUser.games);
+    var newGameColl = modifiedUser.games === null ? Array.from(req.body) : Array.from(modifiedUser.games).concat(req.body);
 
-    if (modifiedUser.games === null) {
-      modifiedUser.games = Array.from(req.body);
-    } else {
-
-      modifiedUser.games = Array.from(modifiedUser.games).concat(req.body);
-      console.dir(modifiedUser.games);
-    }
-    //modifiedUser.games = Object.assign({}, ...modifiedUser.games,);
-    //req.body);
-
-    _User2.default.findOneAndUpdate({ username: 'chris' }, { games: modifiedUser.games }).then(function (response) {
+    _User2.default.findOneAndUpdate({ username: 'chris' }, { games: newGameColl }).then(function (response) {
       res.json(req.body);
     });
   });
-
-  /*
-    User.findOneAndUpdate({username:'chris'}, {games: req.body})
-      .then(response => {
-        res.json(req.body);
-      });*/
 });
 
 app.get('*', function (req, res) {
@@ -167,4 +144,15 @@ app.get('*', function (req, res) {
 app.listen(3000, function () {
   console.log('App started again');
 });
+
+/*
+ client.platforms({
+   fields: '*' , // Return all fields
+  // search: req.params.game,
+   limit: 50, // Limit to 5 results
+   offset: 100 // Index offset for results
+   }).then((response) => {
+       console.dir(response);
+
+     });*/
 //# sourceMappingURL=server.js.map
