@@ -63,6 +63,27 @@ app.use(cookieParser());
 //app.use(express.static(path.join(__dirname, '../static')));
 app.use(express.static('static'));
 
+//**** USER ACTIONS ***///
+app.post('/addUser', function (req, res) {
+  var user = new _User2.default({
+    username: req.body.username,
+    password: req.body.password,
+    email: req.body.email,
+    city: req.body.city,
+    state: req.body.state,
+    requests: {},
+    games: {}
+  });
+
+  user.save(function (err) {
+    if (err) {
+      throw err;
+    };
+  });
+});
+
+//** GAME ACTIONS ***//
+
 app.get('/findGame/:console/:game', function (req, res) {
   var searchResults = [];
 
@@ -100,21 +121,19 @@ app.get('/findGame/:console/:game', function (req, res) {
   });
 });
 
-app.post('/addUser', function (req, res) {
-  var user = new _User2.default({
-    username: req.body.username,
-    password: req.body.password,
-    email: req.body.email,
-    city: req.body.city,
-    state: req.body.state,
-    requests: {},
-    games: {}
-  });
+app.get('/getAllGames', function (req, res) {
+  var allGames = [];
 
-  user.save(function (err) {
-    if (err) {
-      throw err;
-    };
+  _User2.default.find({}).lean().then(function (users) {
+    users.forEach(function (user) {
+      if (user.games) {
+        allGames = allGames.concat(user.games);
+      }
+    });
+
+    res.json(allGames);
+  }).catch(function (err) {
+    throw err;
   });
 });
 

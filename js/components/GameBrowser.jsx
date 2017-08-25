@@ -9,43 +9,25 @@ import GameRequestItem from './GameRequestItem';
 import GameItem from './GameItem';
 import {addRequest} from '../actions/requestActions';
 
-const mockGameCollection =
-  {
-    DukeNukem :
-      {
-        name: 'Duke Nukem',
-        id: 'DukeNukem',
-        description: 'this is a game'
-      }
-    ,
-    Fallout4:
-      {
-        name: 'Fallout 4',
-        id: 'Fallout4',
-        description: 'this is a game'
-      }
-    ,
-  };
-
 const userMockCollection =
   {
     LeftForDead:
       {
         name: 'Left For Dead',
         id: 'LeftForDead',
-        description: 'this is a game',
+        summary: 'this is a game',
       },
     Skyrim:
       {
         name: 'Skyrim',
         id: 'Skyrim',
-        description: 'this is a game'
+        summary: 'this is a game'
       },
     GTA4:
       {
         name: 'GTA 4',
         id: 'GTA4',
-        description: 'this is a game'
+        summary: 'this is a game'
       }
 
   };
@@ -57,7 +39,8 @@ class GameBrowser extends Component {
       showModal: false,
       requestedGame: {},
       gameOffer: [],
-      offeredGame: {}
+      offeredGame: {},
+      allGames: {}
     };
 
     this.toggleModal = this.toggleModal.bind(this);
@@ -68,10 +51,41 @@ class GameBrowser extends Component {
 
   toggleModal(game={}) {
     this.setState({
-      showModal:!this.state.showModal,
+      showModal: !this.state.showModal,
       requestedGame: game,
-    })
+    });
   }
+
+  componentDidMount() {
+    let retrievedGames = {};
+
+    //get all Games
+    fetch('/getAllGames')
+      .then(res => {
+        if (res.ok) {
+          res.json().
+            then(games => {
+
+              games.forEach(game => {
+                let retrievedGame = {
+                  [game.id]: {
+                    name: game.name,
+                    id: game.id,
+                    summary: game.summary,
+                    cover: game.cover,
+                  }
+                };
+                retrievedGames = Object.assign({}, retrievedGames, retrievedGame);
+              });
+
+              this.setState({
+                allGames: retrievedGames,
+              });
+            });
+        }
+      });
+  }
+
 
   addGameToOffer() {
     let gamesToAdd = Array.from(this.state.gameOffer);
@@ -104,18 +118,17 @@ class GameBrowser extends Component {
   sendRequest() {
     this.props.addRequest([{
       status: 'pending',
-      requestedGame: mockGameCollection[this.state.requestedGame],
+      requestedGame: this.state.allGames[this.state.requestedGame],
       offeredGame: userMockCollection[this.state.offeredGame.id],
     }]);
 
-    // temp code to change status of requestedGame; use setState
-    mockGameCollection[this.state.requestedGame].status = 'requested';
-    console.dir(mockGameCollection[this.state.requestedGame]);
+    let gameCollection = Object.assign({}, this.state.allGames);
+    gameCollection[this.state.requestedGame].status = 'requested';
 
-
-    // close modal
+    // update allGame Collection and close modal
     this.setState({
       showModal: !this.state.showModal,
+      allGames: gameCollection,
     });
   }
 
@@ -126,10 +139,10 @@ class GameBrowser extends Component {
   }
 
   getRequestedGame() {
-    if (mockGameCollection[this.state.requestedGame] !== undefined) {
+    if (this.state.allGames[this.state.requestedGame] !== undefined) {
       return <GameRequestItem
-        name={mockGameCollection[this.state.requestedGame].name}
-        description={mockGameCollection[this.state.requestedGame].description}
+        name={this.state.allGames[this.state.requestedGame].name}
+        summary={this.state.allGames[this.state.requestedGame].summary}
       />
     }
     return null;
@@ -146,14 +159,15 @@ class GameBrowser extends Component {
               </Col>
             </Row>
             <Row>   {/** show all games available**/}
-              {Object.keys(mockGameCollection).map((game, key) => (
+              {Object.keys(this.state.allGames).map((game, key) => (
                 <Col sm={2} xs={6} key={key}>
-                  {/** activate modal**/}
                   <a onClick={this.toggleModal.bind(this, game)}>
                     <GameRequestItem
-                      name={mockGameCollection[game].name}
-                      description={mockGameCollection[game].description}
+                      name={this.state.allGames[game].name}
+                      summary={this.state.allGames[game].summary}
                       status={'available'}
+                      cover={this.state.allGames[game].cover}
+                      key={key}
                     />
                   </a>
                 </Col>
@@ -172,7 +186,7 @@ class GameBrowser extends Component {
           </Modal.Header>
           <Modal.Body>
             <h2>Requested Game</h2>
-            {this.getRequestedGame()}
+            {/*this.getRequestedGame()*/}
             <h2>Your Offer</h2>{/**games to offer**/}
             <Well>
               <Grid>
@@ -181,7 +195,7 @@ class GameBrowser extends Component {
                     <Col sm={2} xs={6} key={key}>
                       <GameItem
                         name={game.name}
-                        description={game.description}
+                        summary={game.summary}
                       />
                       <Button
                         bsStyle="danger"
@@ -243,3 +257,18 @@ function mapDispatchToProps(dispatch) {
 }
 
 export default connect(mapPropstoState, mapDispatchToProps)(GameBrowser);
+
+/*
+{Object.keys(this.state.allGames).map((game, key) => (
+                <Col sm={2} xs={6} key={key}>
+                  <a onClick={this.toggleModal.bind(this, game)}>
+                    <GameRequestItem
+                      name={this.state.allGames[game].name}
+                      summary={this.state.allGames[game].summary}
+                      status={'available'}
+                      cover={this.state.allGames[game].cover}
+                    />
+                  </a>
+                </Col>
+              ))
+              }*/

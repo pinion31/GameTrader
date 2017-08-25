@@ -54,6 +54,27 @@ app.use(cookieParser());
 //app.use(express.static(path.join(__dirname, '../static')));
 app.use(express.static('static'));
 
+//**** USER ACTIONS ***///
+app.post('/addUser', (req,res) => {
+  const user = new User(
+    {
+      username: req.body.username,
+      password: req.body.password,
+      email: req.body.email,
+      city: req.body.city,
+      state: req.body.state,
+      requests: {},
+      games: {}
+    }
+  );
+
+  user.save((err) => {
+    if (err) {throw err};
+  });
+});
+
+//** GAME ACTIONS ***//
+
 app.get('/findGame/:console/:game', (req,res) => {
   let searchResults = [];
 
@@ -95,22 +116,23 @@ app.get('/findGame/:console/:game', (req,res) => {
 });
 });
 
-app.post('/addUser', (req,res) => {
-  const user = new User(
-    {
-      username: req.body.username,
-      password: req.body.password,
-      email: req.body.email,
-      city: req.body.city,
-      state: req.body.state,
-      requests: {},
-      games: {}
-    }
-  );
+app.get('/getAllGames', (req,res) => {
+  let allGames = [];
 
-  user.save((err) => {
-    if (err) {throw err};
-  });
+  User.find({}).lean()
+    .then((users) => {
+      users.forEach((user) => {
+        if (user.games) {
+          allGames = allGames.concat(user.games);
+        }
+      })
+
+      res.json(allGames);
+
+    }).catch((err) => {
+      throw err;
+    });
+
 });
 
 app.get('/getUserGames/:user', (req,res) => {

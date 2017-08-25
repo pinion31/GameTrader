@@ -30,3 +30,14 @@ export const getUserGames = () => (
       });
   }
 );
+
+export const getAllGames = () => (
+  (dispatch) => {
+    axios.get('/getAllGames')
+      .then((res) => {
+        dispatch({type: 'GET_ALL_GAMES', payload: res.data});
+      }).catch((err) => {
+        throw err;
+      });
+  }
+);
