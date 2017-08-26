@@ -194,16 +194,18 @@ app.post('/removeRequest/:user', (req, res) => {
   User.findOne({username: req.params.user}).lean()
     .then((user) => {
       const retrievedUser = Object.assign({}, user);
-
+      console.dir(req.body);
       let userRequests = user.requests.filter((request) => {
-        if (request.requestedGame.id != req.body.requestedGame.id) {
+          console.dir(request);
+        if (request.requestedGame.id != req.body.requestedGameId &&
+            request.offeredGame.id != req.body.offeredGameId) {
           return request;
         }
       });
 
       User.findOneAndUpdate({username: req.params.user}, {requests: userRequests})
         .then(() => {
-          res.json(req.body);
+          res.json(userRequests);
         });
     });
 });

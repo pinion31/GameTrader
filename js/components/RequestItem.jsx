@@ -12,14 +12,25 @@ class RequestItem extends Component {
       showModal: false,
     };
 
-  this.toggleModal = this.toggleModal.bind(this);
-  this.acceptTrade = this.acceptTrade.bind(this);
+    this.toggleModal = this.toggleModal.bind(this);
+    this.acceptTrade = this.acceptTrade.bind(this);
+    this.rejectTrade = this.rejectTrade.bind(this);
   }
 
   toggleModal() {
     this.setState({
       showModal: !this.state.showModal,
     });
+  }
+
+  rejectTrade() {
+    this.props.removeRequest({
+      requestedGameId: this.props.requestedGame.id,
+      offeredGameId: this.props.offeredGame.id,
+     });
+
+    //close modal after action
+    this.toggleModal();
   }
 
   acceptTrade() {
@@ -74,8 +85,9 @@ class RequestItem extends Component {
             </Modal.Body>
 
             <Modal.Footer>
-              <Button onClick={this.toggleModal}>Close</Button>
+              <Button bsStyle="danger" onClick={this.rejectTrade}>Reject Trade</Button>
               <Button bsStyle="primary" onClick={this.acceptTrade}>Accept Trade</Button>
+              <Button onClick={this.toggleModal}>Close</Button>
             </Modal.Footer>
         </Modal>
       </div>

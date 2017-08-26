@@ -6,12 +6,7 @@ export const requestReducer = (state={requests:[]}, action) => {
     case ADD_REQUEST:
       return {requests:[...state.requests,...action.payload]};
     case REMOVE_REQUEST:
-      let remainingRequests = Array.from(state.requests).filter(request => {
-        if (request.requestedGame.id != action.payload.requestToRemove.id) {
-          return request;
-        }
-      });
-      return {requests:remainingRequests};
+      return {requests:[...action.payload]};
     case GET_USER_REQUESTS:
       return {requests:[...action.payload]};
     default:

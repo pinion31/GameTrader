@@ -186,15 +186,16 @@ app.post('/addRequest/:user', function (req, res) {
 app.post('/removeRequest/:user', function (req, res) {
   _User2.default.findOne({ username: req.params.user }).lean().then(function (user) {
     var retrievedUser = Object.assign({}, user);
-
+    console.dir(req.body);
     var userRequests = user.requests.filter(function (request) {
-      if (request.requestedGame.id != req.body.requestedGame.id) {
+      console.dir(request);
+      if (request.requestedGame.id != req.body.requestedGameId && request.offeredGame.id != req.body.offeredGameId) {
         return request;
       }
     });
 
     _User2.default.findOneAndUpdate({ username: req.params.user }, { requests: userRequests }).then(function () {
-      res.json(req.body);
+      res.json(userRequests);
     });
   });
 });

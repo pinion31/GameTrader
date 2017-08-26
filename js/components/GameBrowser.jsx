@@ -63,7 +63,6 @@ class GameBrowser extends Component {
   componentDidMount() {
     let retrievedGames = {};
     this.props.getUserGames();
-    console.dir(this.props.userGames);
 
     //get all Games
     fetch('/getAllGames')
@@ -137,7 +136,6 @@ class GameBrowser extends Component {
     this.props.addRequest([{
       status: 'pending',
       requestedGame: this.state.allGames[this.state.requestedGame],
-      //offeredGame: this.state.allGames[this.state.offeredGame.id],
       offeredGame: this.getOfferedGameFromUserLib(),
     }]);
 
@@ -217,6 +215,7 @@ class GameBrowser extends Component {
                       <GameItem
                         cover={game.cover}
                         name={game.name}
+                        key={key}
                       />
                       <Button
                         bsStyle="danger"
