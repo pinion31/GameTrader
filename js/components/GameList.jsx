@@ -158,7 +158,7 @@ class GameList extends Component {
                       onChange={this.updateConsole}
                       componentClass="select">
                       {gameConsoles.map(consoleNum => (
-                        <option value={consoleNum.id}>
+                        <option value={consoleNum.id} key={consoleNum.id}>
                           {consoleNum.name}
                         </option>
                       ))

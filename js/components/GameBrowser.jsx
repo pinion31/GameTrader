@@ -5,8 +5,11 @@ import {bindActionCreators} from 'redux';
 import {Grid, Row, Col, Modal, Button, Well, FormGroup,
   FormControl, option, ControlLabel} from 'react-bootstrap';
 import {connect} from 'react-redux';
-import GameRequestItem from './GameRequestItem';
+import GameRequestDescription from './GameRequestDescription';
+// import GameRequestItem from './GameRequestItem';
+import GameRequestIcon from './GameRequestIcon';
 import GameItem from './GameItem';
+import {getUserGames} from '../actions/gameActions';
 import {addRequest} from '../actions/requestActions';
 
 const userMockCollection =
@@ -47,6 +50,7 @@ class GameBrowser extends Component {
     this.updateSelected = this.updateSelected.bind(this);
     this.addGameToOffer = this.addGameToOffer.bind(this);
     this.sendRequest = this.sendRequest.bind(this);
+    this.getOfferedGameFromUserLib = this.getOfferedGameFromUserLib.bind(this);
   }
 
   toggleModal(game={}) {
@@ -58,6 +62,8 @@ class GameBrowser extends Component {
 
   componentDidMount() {
     let retrievedGames = {};
+    this.props.getUserGames();
+    console.dir(this.props.userGames);
 
     //get all Games
     fetch('/getAllGames')
@@ -115,11 +121,24 @@ class GameBrowser extends Component {
     });
   }
 
+  getOfferedGameFromUserLib() {
+    let offGame = {};
+
+    this.props.userGames.games.map((game) => {
+      if (game.id === this.state.offeredGame.id) {
+        offGame = game;
+      }
+    });
+
+    return offGame;
+  }
+
   sendRequest() {
     this.props.addRequest([{
       status: 'pending',
       requestedGame: this.state.allGames[this.state.requestedGame],
-      offeredGame: userMockCollection[this.state.offeredGame.id],
+      //offeredGame: this.state.allGames[this.state.offeredGame.id],
+      offeredGame: this.getOfferedGameFromUserLib(),
     }]);
 
     let gameCollection = Object.assign({}, this.state.allGames);
@@ -134,15 +153,17 @@ class GameBrowser extends Component {
 
   updateSelected(event) {
     this.setState({
-      offeredGame: userMockCollection[event.target.value],
+      offeredGame: this.state.allGames[event.target.value],
     });
   }
 
   getRequestedGame() {
     if (this.state.allGames[this.state.requestedGame] !== undefined) {
-      return <GameRequestItem
+      return <GameRequestDescription
         name={this.state.allGames[this.state.requestedGame].name}
         summary={this.state.allGames[this.state.requestedGame].summary}
+        cover={this.state.allGames[this.state.requestedGame].cover}
+        key={this.state.allGames[this.state.requestedGame].id}
       />
     }
     return null;
@@ -162,7 +183,7 @@ class GameBrowser extends Component {
               {Object.keys(this.state.allGames).map((game, key) => (
                 <Col sm={2} xs={6} key={key}>
                   <a onClick={this.toggleModal.bind(this, game)}>
-                    <GameRequestItem
+                    <GameRequestIcon
                       name={this.state.allGames[game].name}
                       summary={this.state.allGames[game].summary}
                       status={'available'}
@@ -186,7 +207,7 @@ class GameBrowser extends Component {
           </Modal.Header>
           <Modal.Body>
             <h2>Requested Game</h2>
-            {/*this.getRequestedGame()*/}
+            {this.getRequestedGame()}
             <h2>Your Offer</h2>{/**games to offer**/}
             <Well>
               <Grid>
@@ -194,8 +215,8 @@ class GameBrowser extends Component {
                   {this.state.gameOffer.map((game, key) => (
                     <Col sm={2} xs={6} key={key}>
                       <GameItem
+                        cover={game.cover}
                         name={game.name}
-                        summary={game.summary}
                       />
                       <Button
                         bsStyle="danger"
@@ -215,9 +236,9 @@ class GameBrowser extends Component {
                 onChange={this.updateSelected}
                 componentClass="select"
                 placeholder="select">
-                {Object.keys(userMockCollection).map(game => (
-                  <option value={userMockCollection[game].id}>
-                    {userMockCollection[game].name}
+                {this.props.userGames.games.map(game => (
+                  <option value={game.id}>
+                    {game.name}
                   </option>
                 ))
                 }
@@ -244,15 +265,16 @@ class GameBrowser extends Component {
   }
 }
 
-function mapPropstoState() {
+function mapPropstoState(state) {
   return {
-
+    userGames: state.games
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     addRequest,
+    getUserGames,
   }, dispatch);
 }
 
@@ -262,7 +284,7 @@ export default connect(mapPropstoState, mapDispatchToProps)(GameBrowser);
 {Object.keys(this.state.allGames).map((game, key) => (
                 <Col sm={2} xs={6} key={key}>
                   <a onClick={this.toggleModal.bind(this, game)}>
-                    <GameRequestItem
+                    <GameRequestIcon
                       name={this.state.allGames[game].name}
                       summary={this.state.allGames[game].summary}
                       status={'available'}

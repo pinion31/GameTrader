@@ -125,7 +125,7 @@ app.get('/getAllGames', (req,res) => {
         if (user.games) {
           allGames = allGames.concat(user.games);
         }
-      })
+      });
 
       res.json(allGames);
 

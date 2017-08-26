@@ -27,7 +27,9 @@ class RequestItem extends Component {
     {
       name: this.props.requestedGame.name,
       id: this.props.requestedGame.id,
-      description: 'accepted game'
+      summary: this.props.requestedGame.summary,
+      cover: this.props.requestedGame.cover,
+      gameConsole: this.props.requestedGame.gameConsole
     }]);
 
     this.props.removeRequest({
@@ -49,7 +51,7 @@ class RequestItem extends Component {
     return (
       <div>
         <a onClick={this.toggleModal}>
-          <Thumbnail src="" alt={this.props.requestedGame.name}>
+          <Thumbnail src={this.props.requestedGame.cover} alt={this.props.requestedGame.name}>
             <p>Status:{this.props.status}</p>
             <p>{this.props.requestedGame.name}</p>
           </Thumbnail>
@@ -63,11 +65,12 @@ class RequestItem extends Component {
             </Modal.Header>
 
             <Modal.Body>
-                <h5>Status:{this.props.status}</h5>
-                <p>{this.props.imageLink}</p>
+                <h4>Your Request:</h4>
+                <Thumbnail src={this.props.requestedGame.cover} alt={this.props.requestedGame.name} />
                 <p>Owner: Big Queen</p>
-                <p>Your Offer:</p>
-                <p>{this.props.offeredGame.name}</p>
+                <p>Status:{this.props.status}</p>
+                <h4>Your Offer:</h4>
+                <Thumbnail src={this.props.offeredGame.cover} alt={this.props.offeredGame.name} />
             </Modal.Body>
 
             <Modal.Footer>

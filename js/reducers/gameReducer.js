@@ -14,7 +14,7 @@ export const gameReducer = (state={games:[]}, action) => {
       return {games:gameCollection};
     case GET_USER_GAMES:
       // payload is collection of games retrieved from db
-      return {games:[...state.games, ...action.payload]};
+      return {games:[...action.payload]};
     default:
       return state;
   }
