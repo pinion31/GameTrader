@@ -6,12 +6,7 @@ export const gameReducer = (state={games:[]}, action) => {
       // payload is the added game
       return {games:[...state.games, ...action.payload]};
     case REMOVE_GAME:
-      let gameCollection = Array.from(state.games).filter(game => {
-        if (action.payload.id != game.id) {
-          return game;
-        }
-      });
-      return {games:gameCollection};
+      return {games:[...action.payload]};
     case GET_USER_GAMES:
       // payload is collection of games retrieved from db
       return {games:[...action.payload]};

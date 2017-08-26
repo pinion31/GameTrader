@@ -154,6 +154,24 @@ app.post('/addGame/:user', function (req, res) {
   });
 });
 
+app.post('/removeGame/:user', function (req, res) {
+  _User2.default.findOne({ username: req.params.user }).lean().then(function (user) {
+    var modifiedUser = Object.assign({}, user);
+
+    var newGameColl = Array.from(modifiedUser.games).filter(function (game) {
+      if (req.body.id != game.id) {
+        return game;
+      }
+    });
+
+    _User2.default.findOneAndUpdate({ username: req.params.user }, { games: newGameColl }).then(function () {
+      res.json(newGameColl);
+    });
+  });
+});
+
+//**** REQUEST ACTIONS *****/////
+
 app.post('/addRequest/:user', function (req, res) {
   _User2.default.findOne({ username: req.params.user }).lean().then(function (user) {
     var retrievedUser = Object.assign({}, user);

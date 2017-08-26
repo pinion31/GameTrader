@@ -114,6 +114,7 @@ class GameList extends Component {
                 <Col sm={2} xs={6} key={key}>
                   <GameItem
                     name={game.name}
+                    id ={game.id}
                     summary={game.summary}
                     cover={game.cover}
                     gameConsole={game.gameConsole}

@@ -22,12 +22,6 @@ export const removeGame = game => (
         throw err;
       });
   }
-
-/*
-  {
-    type: 'REMOVE_GAME',
-    payload: game
-  }*/
 );
 
 export const getUserGames = () => (

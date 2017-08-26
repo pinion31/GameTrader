@@ -1,6 +1,9 @@
 import React, {Component} from 'react';
 import {Thumbnail, Modal, Button} from 'react-bootstrap';
 import {gameConsoles} from '../constants/gameConsoles';
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import {removeGame} from '../actions/gameActions';
 
 class GameItem extends Component {
   constructor(props) {
@@ -10,6 +13,7 @@ class GameItem extends Component {
     };
 
     this.toggleModal = this.toggleModal.bind(this);
+    this.handleOnClick = this.handleOnClick.bind(this);
   }
 
   toggleModal() {
@@ -27,6 +31,14 @@ class GameItem extends Component {
       }
     });
     return publisher;
+  }
+
+  handleOnClick() {
+    this.props.removeGame({
+      id: this.props.id,
+    });
+
+    this.toggleModal();
   }
 
   render() {
@@ -49,6 +61,7 @@ class GameItem extends Component {
           </Modal.Body>
 
           <Modal.Footer>
+            <Button bsStyle="danger" onClick={this.handleOnClick}>Remove Game</Button>
             <Button onClick={this.toggleModal}>Close</Button>
           </Modal.Footer>
         </Modal>
@@ -57,4 +70,16 @@ class GameItem extends Component {
   }
 }
 
-export default GameItem;
+function mapStateToProps(state) {
+  return {
+
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators({
+    removeGame,
+  }, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(GameItem);
