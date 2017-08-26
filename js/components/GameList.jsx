@@ -208,6 +208,7 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     addGame,
     getUserGames,
+    removeGame,
   }, dispatch);
 }
 

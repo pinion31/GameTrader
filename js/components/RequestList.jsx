@@ -3,10 +3,15 @@
 import React, {Component} from 'react';
 import {Grid, Row, Col, Well} from 'react-bootstrap';
 import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
 import RequestItem from './RequestItem';
-
+import {getUserRequests, addRequest, removeRequest} from '../actions/requestActions';
 
 class RequestList extends Component {
+  componentDidMount() {
+    this.props.getUserRequests();
+  }
+
   render() {
     return (
       <Well>
@@ -47,7 +52,11 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-
+  return bindActionCreators({
+    getUserRequests,
+    addRequest,
+    removeRequest,
+  }, dispatch);
 }
 
-export default connect(mapStateToProps)(RequestList);
+export default connect(mapStateToProps, mapDispatchToProps)(RequestList);

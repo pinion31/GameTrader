@@ -1,4 +1,4 @@
-import {ADD_REQUEST, REMOVE_REQUEST} from '../constants/actionTypes';
+import {ADD_REQUEST, REMOVE_REQUEST, GET_USER_REQUESTS} from '../constants/actionTypes';
 
 // ******* ADD REQUEST ****//
 export const requestReducer = (state={requests:[]}, action) => {
@@ -12,6 +12,8 @@ export const requestReducer = (state={requests:[]}, action) => {
         }
       });
       return {requests:remainingRequests};
+    case GET_USER_REQUESTS:
+      return {requests:[...action.payload]};
     default:
       return state;
   }

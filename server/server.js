@@ -63,8 +63,8 @@ app.post('/addUser', (req,res) => {
       email: req.body.email,
       city: req.body.city,
       state: req.body.state,
-      requests: {},
-      games: {}
+      requests: null,
+      games: null
     }
   );
 
@@ -136,25 +136,62 @@ app.get('/getAllGames', (req,res) => {
 });
 
 app.get('/getUserGames/:user', (req,res) => {
-  User.findOne({username:`${req.params.user}`}).lean()
+  User.findOne({username:req.params.user}).lean()
     .then(user => {
       res.json(user.games);
     });
 });
 
-app.post('/addGame', (req, res) => {
-
-  User.findOne({username: 'chris'}).lean()
+app.post('/addGame/:user', (req, res) => {
+  User.findOne({username: req.params.user}).lean()
     .then((user) => {
       const modifiedUser = Object.assign({}, user);
-
       const newGameColl = modifiedUser.games === null?Array.from(req.body):
         Array.from(modifiedUser.games).concat(req.body);
 
-      User.findOneAndUpdate({username: 'chris'}, {games: newGameColl})
-        .then((response) => {
+      User.findOneAndUpdate({username: req.params.user}, {games: newGameColl})
+        .then(() => {
           res.json(req.body);
         });
+    });
+});
+
+app.post('/addRequest/:user', (req, res) => {
+  User.findOne({username: req.params.user}).lean()
+    .then((user) => {
+      const retrievedUser = Object.assign({}, user);
+      const userRequests = retrievedUser.requests === null?Array.from(req.body):
+        Array.from(retrievedUser.requests).concat(req.body);
+
+      User.findOneAndUpdate({username: req.params.user}, {requests: userRequests})
+        .then(() => {
+          res.json(req.body);
+        });
+    });
+});
+
+app.post('/removeRequest/:user', (req, res) => {
+  User.findOne({username: req.params.user}).lean()
+    .then((user) => {
+      const retrievedUser = Object.assign({}, user);
+
+      let userRequests = user.requests.filter((request) => {
+        if (request.requestedGame.id != req.body.requestedGame.id) {
+          return request;
+        }
+      });
+
+      User.findOneAndUpdate({username: req.params.user}, {requests: userRequests})
+        .then(() => {
+          res.json(req.body);
+        });
+    });
+});
+
+app.get('/getUserRequests/:user', (req,res) => {
+  User.findOne({username: req.params.user}).lean()
+    .then(user => {
+      res.json(user.requests);
     });
 });
 

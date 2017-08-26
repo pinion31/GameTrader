@@ -71,8 +71,8 @@ app.post('/addUser', function (req, res) {
     email: req.body.email,
     city: req.body.city,
     state: req.body.state,
-    requests: {},
-    games: {}
+    requests: null,
+    games: null
   });
 
   user.save(function (err) {
@@ -138,21 +138,52 @@ app.get('/getAllGames', function (req, res) {
 });
 
 app.get('/getUserGames/:user', function (req, res) {
-  _User2.default.findOne({ username: '' + req.params.user }).lean().then(function (user) {
+  _User2.default.findOne({ username: req.params.user }).lean().then(function (user) {
     res.json(user.games);
   });
 });
 
-app.post('/addGame', function (req, res) {
-
-  _User2.default.findOne({ username: 'chris' }).lean().then(function (user) {
+app.post('/addGame/:user', function (req, res) {
+  _User2.default.findOne({ username: req.params.user }).lean().then(function (user) {
     var modifiedUser = Object.assign({}, user);
-
     var newGameColl = modifiedUser.games === null ? Array.from(req.body) : Array.from(modifiedUser.games).concat(req.body);
 
-    _User2.default.findOneAndUpdate({ username: 'chris' }, { games: newGameColl }).then(function (response) {
+    _User2.default.findOneAndUpdate({ username: req.params.user }, { games: newGameColl }).then(function () {
       res.json(req.body);
     });
+  });
+});
+
+app.post('/addRequest/:user', function (req, res) {
+  _User2.default.findOne({ username: req.params.user }).lean().then(function (user) {
+    var retrievedUser = Object.assign({}, user);
+    var userRequests = retrievedUser.requests === null ? Array.from(req.body) : Array.from(retrievedUser.requests).concat(req.body);
+
+    _User2.default.findOneAndUpdate({ username: req.params.user }, { requests: userRequests }).then(function () {
+      res.json(req.body);
+    });
+  });
+});
+
+app.post('/removeRequest/:user', function (req, res) {
+  _User2.default.findOne({ username: req.params.user }).lean().then(function (user) {
+    var retrievedUser = Object.assign({}, user);
+
+    var userRequests = user.requests.filter(function (request) {
+      if (request.requestedGame.id != req.body.requestedGame.id) {
+        return request;
+      }
+    });
+
+    _User2.default.findOneAndUpdate({ username: req.params.user }, { requests: userRequests }).then(function () {
+      res.json(req.body);
+    });
+  });
+});
+
+app.get('/getUserRequests/:user', function (req, res) {
+  _User2.default.findOne({ username: req.params.user }).lean().then(function (user) {
+    res.json(user.requests);
   });
 });
 
