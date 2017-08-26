@@ -19,37 +19,11 @@ var mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/local');
 mongoose.Promise = global.Promise;
 
+var session = require('express-session');
+var MongoStore = require('connect-mongo')(session);
 
-/*
-var test = new User({
-  'test': {
-     username: 'chriscantu',
-      password: 'moondog1',
-      email: 'pinion31@gmail.com',
-      city: 'Manor',
-      state: 'TX',
-      requests: {},
-      games: {
-        1234:
-          {
-            name: 'Fallout 4',
-            id: 1234,
-            cover: '',
-            owner: 'chriscantu',
-            gameconsole: 'xbox',
-            summary: '',
-          },
-      }
-  }
+var db = mongoose.connection;
 
-});
-
-test.save(err) => {
-  if (err) {throw err}
-  else {
-    console.log('test saved');
-  }
-});*/
 
 var app = express();
 
@@ -63,7 +37,69 @@ app.use(cookieParser());
 //app.use(express.static(path.join(__dirname, '../static')));
 app.use(express.static('static'));
 
+app.use(session({
+  secret: 'noodles',
+  saveUninitialized: true,
+  resave: true,
+  cookie: { maxAge: 1000 * 60 * 60 * 24 * 2, httpOnly: false }, // 2 days
+  store: new MongoStore({ mongooseConnection: db, ttl: 2 * 24 * 60 * 60 })
+}));
+
 //**** USER ACTIONS ***///
+app.post('/loginUser', function (req, res) {
+  if (typeof req.session.user === 'undefined') {
+    req.session.user = req.body.username;
+    console.log('resaving session');
+    req.session.save(function (err) {
+
+      if (err) {
+        console.log('error with session');
+      } else {
+        res.json({ redirect: '/' });
+      }
+    });
+  } else if (req.session.user != req.body.username) {
+    req.session.user = req.body.username;
+    req.session.save(function (err) {
+      if (err) {
+        console.log('error with session');
+      } else {
+        res.json({ redirect: '/' });
+      }
+    });
+    /*req.session.destroy((err) => {
+      if (err) {throw err};
+         req.session.user = req.body.username;
+        console.log('resaving session with new user');
+        req.session.save((err) => {
+          if(err){
+            console.log('error with session');
+          }
+          else {
+            res.json({redirect: '/'});
+          }
+        });
+     });*/
+  } else {
+    res.json({ redirect: '/' });
+  }
+
+  console.dir(req.session);
+
+  //console.log('redirecting...');
+  //res.json({redirect: '/'});
+  //res.redirect('/');
+
+
+  /*req.session.user = req.body.username;
+  req.session.save((err) => {
+    if(err){
+      console.log('error with session');
+    }
+  });*/
+  //res.json(req.session);
+});
+
 app.post('/addUser', function (req, res) {
   var user = new _User2.default({
     username: req.body.username,
@@ -138,24 +174,28 @@ app.get('/getAllGames', function (req, res) {
 });
 
 app.get('/getUserGames/:user', function (req, res) {
-  _User2.default.findOne({ username: req.params.user }).lean().then(function (user) {
-    res.json(user.games);
+  _User2.default.findOne({ username: req.session.user }).lean().then(function (user) {
+    if (user.games) {
+      res.json(user.games);
+    } else {
+      res.json([]);
+    }
   });
 });
 
 app.post('/addGame/:user', function (req, res) {
-  _User2.default.findOne({ username: req.params.user }).lean().then(function (user) {
+  _User2.default.findOne({ username: req.session.user }).lean().then(function (user) {
     var modifiedUser = Object.assign({}, user);
     var newGameColl = modifiedUser.games === null ? Array.from(req.body) : Array.from(modifiedUser.games).concat(req.body);
 
-    _User2.default.findOneAndUpdate({ username: req.params.user }, { games: newGameColl }).then(function () {
+    _User2.default.findOneAndUpdate({ username: req.session.user }, { games: newGameColl }).then(function () {
       res.json(req.body);
     });
   });
 });
 
 app.post('/removeGame/:user', function (req, res) {
-  _User2.default.findOne({ username: req.params.user }).lean().then(function (user) {
+  _User2.default.findOne({ username: req.session.user }).lean().then(function (user) {
     var modifiedUser = Object.assign({}, user);
 
     var newGameColl = Array.from(modifiedUser.games).filter(function (game) {
@@ -164,7 +204,7 @@ app.post('/removeGame/:user', function (req, res) {
       }
     });
 
-    _User2.default.findOneAndUpdate({ username: req.params.user }, { games: newGameColl }).then(function () {
+    _User2.default.findOneAndUpdate({ username: req.session.user }, { games: newGameColl }).then(function () {
       res.json(newGameColl);
     });
   });
@@ -173,18 +213,18 @@ app.post('/removeGame/:user', function (req, res) {
 //**** REQUEST ACTIONS *****/////
 
 app.post('/addRequest/:user', function (req, res) {
-  _User2.default.findOne({ username: req.params.user }).lean().then(function (user) {
+  _User2.default.findOne({ username: req.session.user }).lean().then(function (user) {
     var retrievedUser = Object.assign({}, user);
     var userRequests = retrievedUser.requests === null ? Array.from(req.body) : Array.from(retrievedUser.requests).concat(req.body);
 
-    _User2.default.findOneAndUpdate({ username: req.params.user }, { requests: userRequests }).then(function () {
+    _User2.default.findOneAndUpdate({ username: req.session.user }, { requests: userRequests }).then(function () {
       res.json(req.body);
     });
   });
 });
 
 app.post('/removeRequest/:user', function (req, res) {
-  _User2.default.findOne({ username: req.params.user }).lean().then(function (user) {
+  _User2.default.findOne({ username: req.session.user }).lean().then(function (user) {
     var retrievedUser = Object.assign({}, user);
     console.dir(req.body);
     var userRequests = user.requests.filter(function (request) {
@@ -194,15 +234,19 @@ app.post('/removeRequest/:user', function (req, res) {
       }
     });
 
-    _User2.default.findOneAndUpdate({ username: req.params.user }, { requests: userRequests }).then(function () {
+    _User2.default.findOneAndUpdate({ username: req.session.user }, { requests: userRequests }).then(function () {
       res.json(userRequests);
     });
   });
 });
 
 app.get('/getUserRequests/:user', function (req, res) {
-  _User2.default.findOne({ username: req.params.user }).lean().then(function (user) {
-    res.json(user.requests);
+  _User2.default.findOne({ username: req.session.user }).lean().then(function (user) {
+    if (user.requests) {
+      res.json(user.requests);
+    } else {
+      res.json([]);
+    }
   });
 });
 

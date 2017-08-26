@@ -6,40 +6,13 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/local');
 mongoose.Promise = global.Promise;
+
+const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
+
+const db = mongoose.connection;
 import igdb from 'igdb-api-node';
 import User from './models/User';
-
-
-/*
-var test = new User({
-  'test': {
-     username: 'chriscantu',
-      password: 'moondog1',
-      email: 'pinion31@gmail.com',
-      city: 'Manor',
-      state: 'TX',
-      requests: {},
-      games: {
-        1234:
-          {
-            name: 'Fallout 4',
-            id: 1234,
-            cover: '',
-            owner: 'chriscantu',
-            gameconsole: 'xbox',
-            summary: '',
-          },
-      }
-  }
-
-});
-
-test.save(err) => {
-  if (err) {throw err}
-  else {
-    console.log('test saved');
-  }
-});*/
 
 const app = express();
 
@@ -54,8 +27,78 @@ app.use(cookieParser());
 //app.use(express.static(path.join(__dirname, '../static')));
 app.use(express.static('static'));
 
+app.use(session({
+  secret: 'noodles',
+  saveUninitialized: true,
+  resave: true,
+  cookie: {maxAge: 1000 * 60 * 60 * 24 * 2, httpOnly: false}, // 2 days
+  store: new MongoStore({mongooseConnection: db, ttl: 2 * 24 * 60 * 60})
+}));
+
 //**** USER ACTIONS ***///
-app.post('/addUser', (req,res) => {
+app.post('/loginUser', (req, res) => {
+  if (typeof req.session.user === 'undefined') {
+    req.session.user = req.body.username;
+    console.log('resaving session');
+    req.session.save((err) => {
+
+      if(err){
+        console.log('error with session');
+      }
+      else {
+        res.json({redirect: '/'});
+      }
+
+    });
+  }
+  else if (req.session.user != req.body.username) {
+      req.session.user = req.body.username;
+      req.session.save((err) => {
+          if(err){
+            console.log('error with session');
+          }
+          else {
+            res.json({redirect: '/'});
+          }
+        });
+    /*req.session.destroy((err) => {
+      if (err) {throw err};
+
+        req.session.user = req.body.username;
+        console.log('resaving session with new user');
+        req.session.save((err) => {
+          if(err){
+            console.log('error with session');
+          }
+          else {
+            res.json({redirect: '/'});
+          }
+        });
+
+    });*/
+  } else {
+    res.json({redirect: '/'});
+  }
+
+
+
+  console.dir(req.session);
+
+  //console.log('redirecting...');
+  //res.json({redirect: '/'});
+  //res.redirect('/');
+
+
+  /*req.session.user = req.body.username;
+  req.session.save((err) => {
+    if(err){
+      console.log('error with session');
+    }
+  });*/
+  //res.json(req.session);
+});
+
+app.post('/addUser', (req, res) => {
   const user = new User(
     {
       username: req.body.username,
@@ -135,21 +178,25 @@ app.get('/getAllGames', (req,res) => {
 
 });
 
-app.get('/getUserGames/:user', (req,res) => {
-  User.findOne({username:req.params.user}).lean()
-    .then(user => {
-      res.json(user.games);
+app.get('/getUserGames/:user', (req, res) => {
+  User.findOne({username: req.session.user}).lean()
+    .then((user) => {
+      if (user.games) {
+        res.json(user.games);
+      } else {
+        res.json([]);
+      }
     });
 });
 
 app.post('/addGame/:user', (req, res) => {
-  User.findOne({username: req.params.user}).lean()
+  User.findOne({username: req.session.user}).lean()
     .then((user) => {
       const modifiedUser = Object.assign({}, user);
       const newGameColl = modifiedUser.games === null?Array.from(req.body):
         Array.from(modifiedUser.games).concat(req.body);
 
-      User.findOneAndUpdate({username: req.params.user}, {games: newGameColl})
+      User.findOneAndUpdate({username: req.session.user}, {games: newGameColl})
         .then(() => {
           res.json(req.body);
         });
@@ -157,7 +204,7 @@ app.post('/addGame/:user', (req, res) => {
 });
 
 app.post('/removeGame/:user', (req, res) => {
-  User.findOne({username: req.params.user}).lean()
+  User.findOne({username: req.session.user}).lean()
     .then((user) => {
       const modifiedUser = Object.assign({}, user);
 
@@ -167,7 +214,7 @@ app.post('/removeGame/:user', (req, res) => {
         }
       });
 
-      User.findOneAndUpdate({username: req.params.user}, {games: newGameColl})
+      User.findOneAndUpdate({username: req.session.user}, {games: newGameColl})
         .then(() => {
           res.json(newGameColl);
         });
@@ -177,13 +224,13 @@ app.post('/removeGame/:user', (req, res) => {
 //**** REQUEST ACTIONS *****/////
 
 app.post('/addRequest/:user', (req, res) => {
-  User.findOne({username: req.params.user}).lean()
+  User.findOne({username: req.session.user}).lean()
     .then((user) => {
       const retrievedUser = Object.assign({}, user);
       const userRequests = retrievedUser.requests === null?Array.from(req.body):
         Array.from(retrievedUser.requests).concat(req.body);
 
-      User.findOneAndUpdate({username: req.params.user}, {requests: userRequests})
+      User.findOneAndUpdate({username: req.session.user}, {requests: userRequests})
         .then(() => {
           res.json(req.body);
         });
@@ -191,7 +238,7 @@ app.post('/addRequest/:user', (req, res) => {
 });
 
 app.post('/removeRequest/:user', (req, res) => {
-  User.findOne({username: req.params.user}).lean()
+  User.findOne({username: req.session.user}).lean()
     .then((user) => {
       const retrievedUser = Object.assign({}, user);
       console.dir(req.body);
@@ -203,17 +250,21 @@ app.post('/removeRequest/:user', (req, res) => {
         }
       });
 
-      User.findOneAndUpdate({username: req.params.user}, {requests: userRequests})
+      User.findOneAndUpdate({username: req.session.user}, {requests: userRequests})
         .then(() => {
           res.json(userRequests);
         });
     });
 });
 
-app.get('/getUserRequests/:user', (req,res) => {
-  User.findOne({username: req.params.user}).lean()
-    .then(user => {
-      res.json(user.requests);
+app.get('/getUserRequests/:user', (req, res) => {
+  User.findOne({username: req.session.user}).lean()
+    .then((user) => {
+      if (user.requests) {
+        res.json(user.requests);
+      } else {
+        res.json([]);
+      }
     });
 });
 

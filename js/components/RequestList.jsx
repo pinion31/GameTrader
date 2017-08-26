@@ -23,7 +23,7 @@ class RequestList extends Component {
           </Row>
           <Row>
             {this.props.requests.requests.map((request, key) => {
-              if (request.status) {
+             // if (request.status) {
                 return (
                   <Col sm={2} xs={6} key={key}>
                     <RequestItem
@@ -35,7 +35,7 @@ class RequestList extends Component {
                     />
                   </Col>
                 );
-              }
+              //}
             })
             }
           </Row>
