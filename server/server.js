@@ -225,6 +225,75 @@ app.post('/removeGame/:user', (req, res) => {
     });
 });
 
+// complete trade for trader after tradee accepts trade
+app.post('/completeTrade', (req,res) => {
+  const traderGameToReceive = Object.assign({},req.body.offeredGame); //from tradee to trader
+  const tradeeGameToReceive = Object.assign({},req.body.requestedGame); //from trader to tradee
+  const gameTradee = req.session.user; req.body.requestedGame.owner;
+  const gameTrader = req.body.requestedGame.owner;
+
+  console.log('gameTrader:' + gameTrader);
+  console.log('gameTradee:' + gameTradee);
+
+  // perform exchange on trader library
+  User.findOne({username: gameTrader}).lean()
+    .then((trader) => {
+      let traderGames = Array.from(trader.games);
+      let traderRequests = Array.from(trader.requests);
+
+
+      // remove game from trader's library
+      traderGames = traderGames.filter((game) => {
+        if (game.id != tradeeGameToReceive.id) {
+          return game;
+        }
+      });
+
+      // remove request from trader's library
+      traderRequests = traderRequests.filter((request) => {
+        if (request.requestedGame.id != traderGameToReceive.id &&
+            request.offeredGame.id != tradeeGameToReceive.id) {
+          return request;
+        }
+      });
+
+      //change owner of game to new owner
+      traderGameToReceive.owner = gameTrader;
+
+      // add game to trader's library
+      traderGames = traderGames.concat([traderGameToReceive]);
+
+      User.findOneAndUpdate({username: gameTrader}, {games: traderGames, requests: traderRequests})
+        .then(() => {
+
+            // perform exchange on tradee library
+            User.findOne({username: gameTradee}).lean()
+              .then((tradee) => {
+                let tradeeGames = Array.from(tradee.games);
+
+                // remove game from tradee's library
+                tradeeGames = tradeeGames.filter((game) => {
+                  if (game.id != traderGameToReceive.id) {
+                    return game;
+                  }
+                });
+
+                //change owner of game to new owner
+                tradeeGameToReceive.owner = gameTradee;
+
+                // add game to tradee's library
+                tradeeGames = tradeeGames.concat([tradeeGameToReceive]);
+
+                User.findOneAndUpdate({username: gameTradee}, {games: tradeeGames})
+                  .then(() => {
+                    res.json(tradeeGames);
+                  });
+                });
+        });
+    });
+
+});
+
 //**** REQUEST ACTIONS *****/////
 
 app.post('/addRequest/:user', (req, res) => {
@@ -246,10 +315,6 @@ app.post('/addRequest/:user', (req, res) => {
             path: 'incoming',
           };
 
-          console.log('req.session.user = ' + req.session.user);
-          //console.log('req.body.requestedGame.owner = ' + req.body.requestedGame.owner);
-          console.dir(incomingRequest);
-
           // find target owner of requested game
           User.findOne({username: incomingRequest.requestedGame.owner}).lean()
             .then(user => {
@@ -258,11 +323,9 @@ app.post('/addRequest/:user', (req, res) => {
               // add request
               const targetUserRequests = targetUser.requests === null?Array.from([newRequest]):
                 Array.from(targetUser.requests).concat([newRequest]);
-               // console.dir(targetUserRequests);
               // update target owner's request
               User.findOneAndUpdate({username: incomingRequest.requestedGame.owner}, {requests: targetUserRequests})
                 .then(() => {
-                  //console.dir(targetUserRequests);
                   res.json(req.body);
                 })
             });
@@ -274,9 +337,7 @@ app.post('/removeRequest/:user', (req, res) => {
   User.findOne({username: req.session.user}).lean()
     .then((user) => {
       const retrievedUser = Object.assign({}, user);
-      console.dir(req.body);
       let userRequests = user.requests.filter((request) => {
-          console.dir(request);
         if (request.requestedGame.id != req.body.requestedGameId &&
             request.offeredGame.id != req.body.offeredGameId) {
           return request;

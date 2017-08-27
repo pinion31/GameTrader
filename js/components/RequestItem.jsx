@@ -2,11 +2,12 @@ import React, {Component} from 'react';
 import {Thumbnail, Modal, Button} from 'react-bootstrap';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import {addGame, removeGame} from '../actions/gameActions';
+import {addGame, removeGame, completeTrade} from '../actions/gameActions';
 import {removeRequest} from '../actions/requestActions';
+import {OUTGOING, INCOMING, CANCEL_TRADE, ACCEPT_TRADE, DECLINE_TRADE} from '../constants/requestStrings';
 
 class RequestItem extends Component {
-   constructor(props) {
+  constructor(props) {
     super(props);
     this.state = {
       showModal: false,
@@ -15,6 +16,7 @@ class RequestItem extends Component {
     this.toggleModal = this.toggleModal.bind(this);
     this.acceptTrade = this.acceptTrade.bind(this);
     this.rejectTrade = this.rejectTrade.bind(this);
+    this.getActionButtons = this.getActionButtons.bind(this);
   }
 
   toggleModal() {
@@ -34,28 +36,40 @@ class RequestItem extends Component {
   }
 
   acceptTrade() {
-    this.props.addGame([
-    {
-      name: this.props.requestedGame.name,
-      id: this.props.requestedGame.id,
-      summary: this.props.requestedGame.summary,
-      cover: this.props.requestedGame.cover,
-      gameConsole: this.props.requestedGame.gameConsole
-    }]);
-
-    this.props.removeRequest({
-      requestToRemove: this.props.requestedGame,
-     });
-
-    //removed offered game from user's library
-    this.props.removeGame({
-      id:this.props.offeredGame.id,
-
+    // sends info for backend process of transaction for trader
+    this.props.completeTrade({
+      offeredGame: this.props.offeredGame,
+      requestedGame: this.props.requestedGame
     });
 
-    //close modal after action
-    this.toggleModal();
+    this.props.removeRequest({
+      requestedGameId: this.props.requestedGame.id,
+      offeredGameId: this.props.offeredGame.id,
+     });
 
+    // close modal after action
+    this.toggleModal();
+  }
+
+  getActionButtons() {
+    if (this.props.path === OUTGOING) {
+      return (
+        <Button bsStyle="danger" onClick={this.rejectTrade}>{CANCEL_TRADE}</Button>
+      );
+    }
+    else if (this.props.path === INCOMING) {
+      return (
+        <div>
+          <Button bsStyle="danger" onClick={this.rejectTrade}>{DECLINE_TRADE}</Button>
+          <Button bsStyle="primary" onClick={this.acceptTrade}>{ACCEPT_TRADE}</Button>
+        </div>
+      );
+
+
+    }
+    else {
+      return <div />;
+    }
   }
 
   render() {
@@ -78,15 +92,14 @@ class RequestItem extends Component {
             <Modal.Body>
                 <h4>Your Request:</h4>
                 <Thumbnail src={this.props.requestedGame.cover} alt={this.props.requestedGame.name} />
-                <p>Owner: Big Queen</p>
+                <p>Owner: {this.props.requestedGame.owner}</p>
                 <p>Status:{this.props.status}</p>
                 <h4>Your Offer:</h4>
                 <Thumbnail src={this.props.offeredGame.cover} alt={this.props.offeredGame.name} />
             </Modal.Body>
 
             <Modal.Footer>
-              <Button bsStyle="danger" onClick={this.rejectTrade}>Reject Trade</Button>
-              <Button bsStyle="primary" onClick={this.acceptTrade}>Accept Trade</Button>
+              {this.getActionButtons()}
               <Button onClick={this.toggleModal}>Close</Button>
             </Modal.Footer>
         </Modal>
@@ -106,6 +119,7 @@ function mapDispatchToProps(dispatch) {
     addGame,
     removeRequest,
     removeGame,
+    completeTrade,
   }, dispatch);
 }
 export default connect(mapStateToProps, mapDispatchToProps)(RequestItem);

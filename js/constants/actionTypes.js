@@ -1,6 +1,7 @@
 
 export const ADD_GAME = 'ADD_GAME';
 export const REMOVE_GAME = 'REMOVE_GAME';
+export const COMPLETE_TRADE = 'COMPLETE_TRADE';
 export const GET_USER_GAMES = 'GET_USER_GAMES';
 export const GET_USER_REQUESTS = 'GET_USER_REQUESTS';
 export const ADD_REQUEST = 'ADD_REQUEST';

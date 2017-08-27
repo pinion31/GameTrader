@@ -35,11 +35,23 @@ export const getUserGames = () => (
   }
 );
 
+/*
 export const getAllGames = () => (
   (dispatch) => {
     axios.get('/getAllGames')
       .then((res) => {
         dispatch({type: 'GET_ALL_GAMES', payload: res.data});
+      }).catch((err) => {
+        throw err;
+      });
+  }
+);*/
+
+export const completeTrade = (request) => (
+  (dispatch) => {
+    axios.post('/completeTrade', request)
+      .then((res) => {
+        dispatch({type: 'COMPLETE_TRADE', payload: res.data});
       }).catch((err) => {
         throw err;
       });

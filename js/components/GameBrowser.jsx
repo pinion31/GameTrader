@@ -12,29 +12,6 @@ import GameItem from './GameItem';
 import {getUserGames} from '../actions/gameActions';
 import {addRequest} from '../actions/requestActions';
 
-const userMockCollection =
-  {
-    LeftForDead:
-      {
-        name: 'Left For Dead',
-        id: 'LeftForDead',
-        summary: 'this is a game',
-      },
-    Skyrim:
-      {
-        name: 'Skyrim',
-        id: 'Skyrim',
-        summary: 'this is a game'
-      },
-    GTA4:
-      {
-        name: 'GTA 4',
-        id: 'GTA4',
-        summary: 'this is a game'
-      }
-
-  };
-
 class GameBrowser extends Component {
   constructor(props) {
     super(props);
@@ -47,13 +24,12 @@ class GameBrowser extends Component {
     };
 
     this.toggleModal = this.toggleModal.bind(this);
-    this.updateSelected = this.updateSelected.bind(this);
     this.addGameToOffer = this.addGameToOffer.bind(this);
     this.sendRequest = this.sendRequest.bind(this);
     this.getOfferedGameFromUserLib = this.getOfferedGameFromUserLib.bind(this);
   }
 
-  toggleModal(game={}) {
+  toggleModal(game= {}) {
     this.setState({
       showModal: !this.state.showModal,
       requestedGame: game,
@@ -70,7 +46,6 @@ class GameBrowser extends Component {
         if (res.ok) {
           res.json().
             then(games => {
-
               games.forEach(game => {
                 let retrievedGame = {
                   [game.id]: {
@@ -94,34 +69,20 @@ class GameBrowser extends Component {
   }
 
 
-  addGameToOffer() {
-    let gamesToAdd = Array.from(this.state.gameOffer);
+  addGameToOffer(event) {
+    const gamesToAdd = Array.from(this.state.gameOffer);
 
     if (this.state.offeredGame) {
-      //1st line to offer multiple games
-      //gamesToAdd.push(this.state.offeredGame);
-
-      //for only one game offer per trade
-      gamesToAdd[0] = this.state.offeredGame;
+      // for only one game offer per trade
+      gamesToAdd[0] = this.state.allGames[event.target.value];
     }
 
     this.setState({
       gameOffer: gamesToAdd
-    })
-  }
-
-  subtractGameFromOffer(gameToRemove) {
-    let gameOffered = this.state.gameOffer.filter(game => {
-      if (game.id != gameToRemove.id) {
-        return game;
-      }
-    });
-
-    this.setState({
-      gameOffer: gameOffered
     });
   }
 
+  // keep function for future feature (offering multiple games at once in trade)
   getOfferedGameFromUserLib() {
     let offGame = {};
 
@@ -130,7 +91,6 @@ class GameBrowser extends Component {
         offGame = game;
       }
     });
-
     return offGame;
   }
 
@@ -138,7 +98,7 @@ class GameBrowser extends Component {
     this.props.addRequest([{
       status: 'Pending',
       requestedGame: this.state.allGames[this.state.requestedGame],
-      offeredGame: this.getOfferedGameFromUserLib(),
+      offeredGame: this.state.gameOffer[0],
       path: 'outgoing',
     }]);
 
@@ -149,12 +109,6 @@ class GameBrowser extends Component {
     this.setState({
       showModal: !this.state.showModal,
       allGames: gameCollection,
-    });
-  }
-
-  updateSelected(event) {
-    this.setState({
-      offeredGame: this.state.allGames[event.target.value],
     });
   }
 
@@ -220,12 +174,6 @@ class GameBrowser extends Component {
                         name={game.name}
                         key={key}
                       />
-                      <Button
-                        bsStyle="danger"
-                        onClick={this.subtractGameFromOffer.bind(this, game)}
-                      >
-                        Remove
-                      </Button>
                     </Col>
                   ))
                   }
@@ -233,11 +181,11 @@ class GameBrowser extends Component {
               </Grid>
             </Well>
             <FormGroup controlId="formControlsSelect">
-              <ControlLabel>Select Game</ControlLabel>
               <FormControl
-                onChange={this.updateSelected}
+                onChange={this.addGameToOffer}
                 componentClass="select"
                 placeholder="select">
+                <option>Select Game</option>
                 {this.props.userGames.games.map(game => (
                   <option value={game.id}>
                     {game.name}
@@ -245,9 +193,6 @@ class GameBrowser extends Component {
                 ))
                 }
               </FormControl>
-                <Button bsStyle="primary" onClick={this.addGameToOffer}>
-                  Add Game
-                </Button>
             </FormGroup>
           </Modal.Body>
           <Modal.Footer>
@@ -295,4 +240,13 @@ export default connect(mapPropstoState, mapDispatchToProps)(GameBrowser);
                   </a>
                 </Col>
               ))
-              }*/
+              }
+
+    <Button
+                        bsStyle="danger"
+                        onClick={this.subtractGameFromOffer.bind(this, game)}
+                      >
+                        Remove
+                      </Button>
+
+              */

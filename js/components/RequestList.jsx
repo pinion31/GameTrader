@@ -30,6 +30,7 @@ class RequestList extends Component {
                   requestedGame={request.requestedGame}
                   imageLink={'pic here'}
                   offeredGame={request.offeredGame}
+                  path={request.path}
                 />
               </Col>
             ))

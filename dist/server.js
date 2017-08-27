@@ -214,6 +214,68 @@ app.post('/removeGame/:user', function (req, res) {
   });
 });
 
+// complete trade for trader after tradee accepts trade
+app.post('/completeTrade', function (req, res) {
+  var traderGameToReceive = Object.assign({}, req.body.offeredGame); //from tradee to trader
+  var tradeeGameToReceive = Object.assign({}, req.body.requestedGame); //from trader to tradee
+  var gameTradee = req.session.user;req.body.requestedGame.owner;
+  var gameTrader = req.body.requestedGame.owner;
+
+  console.log('gameTrader:' + gameTrader);
+  console.log('gameTradee:' + gameTradee);
+
+  // perform exchange on trader library
+  _User2.default.findOne({ username: gameTrader }).lean().then(function (trader) {
+    var traderGames = Array.from(trader.games);
+    var traderRequests = Array.from(trader.requests);
+
+    // remove game from trader's library
+    traderGames = traderGames.filter(function (game) {
+      if (game.id != tradeeGameToReceive.id) {
+        return game;
+      }
+    });
+
+    // remove request from trader's library
+    traderRequests = traderRequests.filter(function (request) {
+      if (request.requestedGame.id != traderGameToReceive.id && request.offeredGame.id != tradeeGameToReceive.id) {
+        return request;
+      }
+    });
+
+    //change owner of game to new owner
+    traderGameToReceive.owner = gameTrader;
+
+    // add game to trader's library
+    traderGames = traderGames.concat([traderGameToReceive]);
+
+    _User2.default.findOneAndUpdate({ username: gameTrader }, { games: traderGames, requests: traderRequests }).then(function () {
+
+      // perform exchange on tradee library
+      _User2.default.findOne({ username: gameTradee }).lean().then(function (tradee) {
+        var tradeeGames = Array.from(tradee.games);
+
+        // remove game from tradee's library
+        tradeeGames = tradeeGames.filter(function (game) {
+          if (game.id != traderGameToReceive.id) {
+            return game;
+          }
+        });
+
+        //change owner of game to new owner
+        tradeeGameToReceive.owner = gameTradee;
+
+        // add game to tradee's library
+        tradeeGames = tradeeGames.concat([tradeeGameToReceive]);
+
+        _User2.default.findOneAndUpdate({ username: gameTradee }, { games: tradeeGames }).then(function () {
+          res.json(tradeeGames);
+        });
+      });
+    });
+  });
+});
+
 //**** REQUEST ACTIONS *****/////
 
 app.post('/addRequest/:user', function (req, res) {
@@ -232,20 +294,14 @@ app.post('/addRequest/:user', function (req, res) {
         path: 'incoming'
       };
 
-      console.log('req.session.user = ' + req.session.user);
-      //console.log('req.body.requestedGame.owner = ' + req.body.requestedGame.owner);
-      console.dir(incomingRequest);
-
       // find target owner of requested game
       _User2.default.findOne({ username: incomingRequest.requestedGame.owner }).lean().then(function (user) {
         var targetUser = Object.assign({}, user);
 
         // add request
         var targetUserRequests = targetUser.requests === null ? Array.from([newRequest]) : Array.from(targetUser.requests).concat([newRequest]);
-        // console.dir(targetUserRequests);
         // update target owner's request
         _User2.default.findOneAndUpdate({ username: incomingRequest.requestedGame.owner }, { requests: targetUserRequests }).then(function () {
-          //console.dir(targetUserRequests);
           res.json(req.body);
         });
       });
@@ -256,9 +312,7 @@ app.post('/addRequest/:user', function (req, res) {
 app.post('/removeRequest/:user', function (req, res) {
   _User2.default.findOne({ username: req.session.user }).lean().then(function (user) {
     var retrievedUser = Object.assign({}, user);
-    console.dir(req.body);
     var userRequests = user.requests.filter(function (request) {
-      console.dir(request);
       if (request.requestedGame.id != req.body.requestedGameId && request.offeredGame.id != req.body.offeredGameId) {
         return request;
       }
