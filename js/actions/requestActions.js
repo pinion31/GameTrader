@@ -5,7 +5,7 @@ import axios from 'axios';
 export const addRequest = request => (
   (dispatch) => {
     console.dir(request);
-    axios.post('/addRequest/chris', request)
+    axios.post('/addRequest', request)
       .then((res) => {
         dispatch({type: 'ADD_REQUEST', payload: res.data});
       }).catch((err) => {
@@ -22,7 +22,7 @@ export const addRequest = request => (
 
 export const removeRequest = request => (
   (dispatch) => {
-    axios.post('/removeRequest/chris', request)
+    axios.post('/removeRequest', request)
       .then((res) => {
         dispatch({type: 'REMOVE_REQUEST', payload: res.data});
       }).catch((err) => {
@@ -38,7 +38,7 @@ export const removeRequest = request => (
 
 export const getUserRequests = () => (
   (dispatch) => {
-    axios.get('/getUserRequests/chris')
+    axios.get('/getUserRequests')
       .then((res) => {
         dispatch({type: 'GET_USER_REQUESTS', payload: res.data});
       }).catch((err) => {

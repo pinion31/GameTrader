@@ -4,7 +4,7 @@ import axios from 'axios';
 
 export const addGame = game => (
   (dispatch) => {
-    axios.post('/addGame/chris', game)
+    axios.post('/addGame', game)
       .then((res) => {
         dispatch({type: 'ADD_GAME', payload: res.data});
       }).catch((err) => {
@@ -15,7 +15,7 @@ export const addGame = game => (
 
 export const removeGame = game => (
   (dispatch) => {
-    axios.post('/removeGame/chris', game)
+    axios.post('/removeGame', game)
       .then((res) => {
         dispatch({type: 'REMOVE_GAME', payload: res.data});
       }).catch((err) => {
@@ -26,7 +26,7 @@ export const removeGame = game => (
 
 export const getUserGames = () => (
   (dispatch) => {
-    axios.get('/getUserGames/chris')
+    axios.get('/getUserGames')
       .then((res) => {
         dispatch({type: 'GET_USER_GAMES', payload: res.data});
       }).catch((err) => {

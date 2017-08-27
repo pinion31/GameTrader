@@ -23,7 +23,7 @@ class GameItem extends Component {
   }
 
   convertConsoleNumToConsoleName(id) {
-    let publisher = "";
+    let publisher = '';
 
     gameConsoles.map(gameConsole => {
       if (gameConsole.id.toString() === this.props.gameConsole) {

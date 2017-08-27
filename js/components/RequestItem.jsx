@@ -64,8 +64,6 @@ class RequestItem extends Component {
           <Button bsStyle="primary" onClick={this.acceptTrade}>{ACCEPT_TRADE}</Button>
         </div>
       );
-
-
     }
     else {
       return <div />;

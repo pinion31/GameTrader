@@ -67,19 +67,6 @@ app.post('/loginUser', function (req, res) {
         res.json({ redirect: '/' });
       }
     });
-    /*req.session.destroy((err) => {
-      if (err) {throw err};
-         req.session.user = req.body.username;
-        console.log('resaving session with new user');
-        req.session.save((err) => {
-          if(err){
-            console.log('error with session');
-          }
-          else {
-            res.json({redirect: '/'});
-          }
-        });
-     });*/
   } else {
     res.json({ redirect: '/' });
   }
@@ -159,11 +146,15 @@ app.get('/findGame/:console/:game', function (req, res) {
 
 app.get('/getAllGames', function (req, res) {
   var allGames = [];
-
+  console.dir(req);
   _User2.default.find({}).lean().then(function (users) {
     users.forEach(function (user) {
       if (user.games) {
-        allGames = allGames.concat(user.games);
+        console.log(user.games[0].owner);
+        console.log(req.session.user);
+        if (user.games[0].owner != req.session.user) {
+          allGames = allGames.concat(user.games);
+        }
       }
     });
 
@@ -173,7 +164,7 @@ app.get('/getAllGames', function (req, res) {
   });
 });
 
-app.get('/getUserGames/:user', function (req, res) {
+app.get('/getUserGames', function (req, res) {
   _User2.default.findOne({ username: req.session.user }).lean().then(function (user) {
     if (user.games) {
       res.json(user.games);
@@ -183,7 +174,7 @@ app.get('/getUserGames/:user', function (req, res) {
   });
 });
 
-app.post('/addGame/:user', function (req, res) {
+app.post('/addGame', function (req, res) {
   _User2.default.findOne({ username: req.session.user }).lean().then(function (user) {
     var modifiedUser = Object.assign({}, user);
 
@@ -198,7 +189,7 @@ app.post('/addGame/:user', function (req, res) {
   });
 });
 
-app.post('/removeGame/:user', function (req, res) {
+app.post('/removeGame', function (req, res) {
   _User2.default.findOne({ username: req.session.user }).lean().then(function (user) {
     var modifiedUser = Object.assign({}, user);
 
@@ -220,9 +211,6 @@ app.post('/completeTrade', function (req, res) {
   var tradeeGameToReceive = Object.assign({}, req.body.requestedGame); //from trader to tradee
   var gameTradee = req.session.user;req.body.requestedGame.owner;
   var gameTrader = req.body.requestedGame.owner;
-
-  console.log('gameTrader:' + gameTrader);
-  console.log('gameTradee:' + gameTradee);
 
   // perform exchange on trader library
   _User2.default.findOne({ username: gameTrader }).lean().then(function (trader) {
@@ -278,7 +266,7 @@ app.post('/completeTrade', function (req, res) {
 
 //**** REQUEST ACTIONS *****/////
 
-app.post('/addRequest/:user', function (req, res) {
+app.post('/addRequest', function (req, res) {
   _User2.default.findOne({ username: req.session.user }).lean().then(function (user) {
     var retrievedUser = Object.assign({}, user);
     var userRequests = retrievedUser.requests === null ? Array.from(req.body) : Array.from(retrievedUser.requests).concat(req.body);
@@ -309,7 +297,7 @@ app.post('/addRequest/:user', function (req, res) {
   });
 });
 
-app.post('/removeRequest/:user', function (req, res) {
+app.post('/removeRequest', function (req, res) {
   _User2.default.findOne({ username: req.session.user }).lean().then(function (user) {
     var retrievedUser = Object.assign({}, user);
     var userRequests = user.requests.filter(function (request) {
@@ -324,7 +312,7 @@ app.post('/removeRequest/:user', function (req, res) {
   });
 });
 
-app.get('/getUserRequests/:user', function (req, res) {
+app.get('/getUserRequests', function (req, res) {
   _User2.default.findOne({ username: req.session.user }).lean().then(function (user) {
     if (user.requests) {
       res.json(user.requests);

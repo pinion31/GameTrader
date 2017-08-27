@@ -41,8 +41,11 @@ class GameBrowser extends Component {
     this.props.getUserGames();
 
     //get all Games
-    fetch('/getAllGames')
-      .then(res => {
+    fetch('/getAllGames', {
+      method: 'GET',
+      headers: {'Content-Type': 'application/json'},
+      credentials: 'include', // need for session info to persist
+    }).then(res => {
         if (res.ok) {
           res.json().
             then(games => {
