@@ -193,8 +193,12 @@ app.post('/addGame/:user', (req, res) => {
   User.findOne({username: req.session.user}).lean()
     .then((user) => {
       const modifiedUser = Object.assign({}, user);
-      const newGameColl = modifiedUser.games === null?Array.from(req.body):
-        Array.from(modifiedUser.games).concat(req.body);
+
+      const gametoAdd = Array.from(req.body);
+      gametoAdd[0].owner = req.session.user; //append owner info to added game
+
+      const newGameColl = modifiedUser.games === null? gametoAdd:
+        Array.from(modifiedUser.games).concat(gametoAdd);
 
       User.findOneAndUpdate({username: req.session.user}, {games: newGameColl})
         .then(() => {
@@ -232,7 +236,36 @@ app.post('/addRequest/:user', (req, res) => {
 
       User.findOneAndUpdate({username: req.session.user}, {requests: userRequests})
         .then(() => {
-          res.json(req.body);
+
+          const incomingRequest = Object.assign({},req.body[0]);
+          //create request for recipient of trade offer and append to their requests
+          const newRequest = {
+            status: 'Pending',
+            requestedGame: incomingRequest.offeredGame,
+            offeredGame: incomingRequest.requestedGame,
+            path: 'incoming',
+          };
+
+          console.log('req.session.user = ' + req.session.user);
+          //console.log('req.body.requestedGame.owner = ' + req.body.requestedGame.owner);
+          console.dir(incomingRequest);
+
+          // find target owner of requested game
+          User.findOne({username: incomingRequest.requestedGame.owner}).lean()
+            .then(user => {
+              const targetUser = Object.assign({}, user);
+
+              // add request
+              const targetUserRequests = targetUser.requests === null?Array.from([newRequest]):
+                Array.from(targetUser.requests).concat([newRequest]);
+               // console.dir(targetUserRequests);
+              // update target owner's request
+              User.findOneAndUpdate({username: incomingRequest.requestedGame.owner}, {requests: targetUserRequests})
+                .then(() => {
+                  //console.dir(targetUserRequests);
+                  res.json(req.body);
+                })
+            });
         });
     });
 });

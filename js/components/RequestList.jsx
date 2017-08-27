@@ -22,21 +22,17 @@ class RequestList extends Component {
             </Col>
           </Row>
           <Row>
-            {this.props.requests.requests.map((request, key) => {
-             // if (request.status) {
-                return (
-                  <Col sm={2} xs={6} key={key}>
-                    <RequestItem
-                      owner={'me'}
-                      status={request.status}
-                      requestedGame={request.requestedGame}
-                      imageLink={'pic here'}
-                      offeredGame={request.offeredGame}
-                    />
-                  </Col>
-                );
-              //}
-            })
+            {this.props.requests.requests.map((request, key) => (
+              <Col sm={2} xs={6} key={key}>
+                <RequestItem
+                  owner={'me'}
+                  status={request.status}
+                  requestedGame={request.requestedGame}
+                  imageLink={'pic here'}
+                  offeredGame={request.offeredGame}
+                />
+              </Col>
+            ))
             }
           </Row>
         </Grid>

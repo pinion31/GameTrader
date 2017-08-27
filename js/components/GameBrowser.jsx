@@ -78,6 +78,8 @@ class GameBrowser extends Component {
                     id: game.id,
                     summary: game.summary,
                     cover: game.cover,
+                    owner: game.owner,
+                    gameConsole: game.gameConsole,
                   }
                 };
                 retrievedGames = Object.assign({}, retrievedGames, retrievedGame);
@@ -134,9 +136,10 @@ class GameBrowser extends Component {
 
   sendRequest() {
     this.props.addRequest([{
-      status: 'pending',
+      status: 'Pending',
       requestedGame: this.state.allGames[this.state.requestedGame],
       offeredGame: this.getOfferedGameFromUserLib(),
+      path: 'outgoing',
     }]);
 
     let gameCollection = Object.assign({}, this.state.allGames);

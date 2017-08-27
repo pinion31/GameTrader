@@ -186,7 +186,11 @@ app.get('/getUserGames/:user', function (req, res) {
 app.post('/addGame/:user', function (req, res) {
   _User2.default.findOne({ username: req.session.user }).lean().then(function (user) {
     var modifiedUser = Object.assign({}, user);
-    var newGameColl = modifiedUser.games === null ? Array.from(req.body) : Array.from(modifiedUser.games).concat(req.body);
+
+    var gametoAdd = Array.from(req.body);
+    gametoAdd[0].owner = req.session.user; //append owner info to added game
+
+    var newGameColl = modifiedUser.games === null ? gametoAdd : Array.from(modifiedUser.games).concat(gametoAdd);
 
     _User2.default.findOneAndUpdate({ username: req.session.user }, { games: newGameColl }).then(function () {
       res.json(req.body);
@@ -218,7 +222,33 @@ app.post('/addRequest/:user', function (req, res) {
     var userRequests = retrievedUser.requests === null ? Array.from(req.body) : Array.from(retrievedUser.requests).concat(req.body);
 
     _User2.default.findOneAndUpdate({ username: req.session.user }, { requests: userRequests }).then(function () {
-      res.json(req.body);
+
+      var incomingRequest = Object.assign({}, req.body[0]);
+      //create request for recipient of trade offer and append to their requests
+      var newRequest = {
+        status: 'Pending',
+        requestedGame: incomingRequest.offeredGame,
+        offeredGame: incomingRequest.requestedGame,
+        path: 'incoming'
+      };
+
+      console.log('req.session.user = ' + req.session.user);
+      //console.log('req.body.requestedGame.owner = ' + req.body.requestedGame.owner);
+      console.dir(incomingRequest);
+
+      // find target owner of requested game
+      _User2.default.findOne({ username: incomingRequest.requestedGame.owner }).lean().then(function (user) {
+        var targetUser = Object.assign({}, user);
+
+        // add request
+        var targetUserRequests = targetUser.requests === null ? Array.from([newRequest]) : Array.from(targetUser.requests).concat([newRequest]);
+        // console.dir(targetUserRequests);
+        // update target owner's request
+        _User2.default.findOneAndUpdate({ username: incomingRequest.requestedGame.owner }, { requests: targetUserRequests }).then(function () {
+          //console.dir(targetUserRequests);
+          res.json(req.body);
+        });
+      });
     });
   });
 });

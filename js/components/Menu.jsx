@@ -18,6 +18,9 @@ class Menu extends Component {
            <LinkContainer to="/">
             <NavItem>My Games</NavItem>
           </LinkContainer>
+          <LinkContainer to="/Login">
+            <NavItem>Sign In</NavItem>
+          </LinkContainer>
           <NavItem>Sign out</NavItem>
         </Nav>
       </Navbar>
