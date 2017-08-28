@@ -75,19 +75,25 @@ class GameBrowser extends Component {
   addGameToOffer(event) {
     const gamesToAdd = Array.from(this.state.gameOffer);
 
-    if (this.state.offeredGame) {
-      // for only one game offer per trade
-      gamesToAdd[0] = this.state.allGames[event.target.value];
-    }
+    // for only one game offer per trade
+    this.props.userGames.games.map((game) => {
+      if (game.id.toString() === event.target.value) {
+        gamesToAdd[0] = game;
+      }
+    });
 
     this.setState({
-      gameOffer: gamesToAdd
+      gameOffer: gamesToAdd,
     });
   }
 
   // keep function for future feature (offering multiple games at once in trade)
   getOfferedGameFromUserLib() {
     let offGame = {};
+
+    //console.dir(this.props.userGames.games);
+   //console.log(game.id);
+   // console.log(this.state.offeredGame.id);
 
     this.props.userGames.games.map((game) => {
       if (game.id === this.state.offeredGame.id) {

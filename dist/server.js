@@ -71,7 +71,7 @@ app.post('/loginUser', function (req, res) {
     res.json({ redirect: '/' });
   }
 
-  console.dir(req.session);
+  //console.dir(req.session);
 
   //console.log('redirecting...');
   //res.json({redirect: '/'});
@@ -146,12 +146,9 @@ app.get('/findGame/:console/:game', function (req, res) {
 
 app.get('/getAllGames', function (req, res) {
   var allGames = [];
-  console.dir(req);
   _User2.default.find({}).lean().then(function (users) {
     users.forEach(function (user) {
       if (user.games) {
-        console.log(user.games[0].owner);
-        console.log(req.session.user);
         if (user.games[0].owner != req.session.user) {
           allGames = allGames.concat(user.games);
         }
@@ -224,10 +221,10 @@ app.post('/completeTrade', function (req, res) {
       }
     });
 
-    // remove request from trader's library
-    traderRequests = traderRequests.filter(function (request) {
-      if (request.requestedGame.id != traderGameToReceive.id && request.offeredGame.id != tradeeGameToReceive.id) {
-        return request;
+    // change status for request to accept
+    traderRequests.map(function (request) {
+      if (request.requestedGame.id === traderGameToReceive.id && request.offeredGame.id === tradeeGameToReceive.id) {
+        request.status = 'Accepted';
       }
     });
 

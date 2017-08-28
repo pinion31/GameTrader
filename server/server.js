@@ -67,7 +67,7 @@ app.post('/loginUser', (req, res) => {
 
 
 
-  console.dir(req.session);
+  //console.dir(req.session);
 
   //console.log('redirecting...');
   //res.json({redirect: '/'});
@@ -146,13 +146,10 @@ app.get('/findGame/:console/:game', (req,res) => {
 
 app.get('/getAllGames', (req, res) => {
   let allGames = [];
-  console.dir(req);
   User.find({}).lean()
     .then((users) => {
       users.forEach((user) => {
         if (user.games) {
-          console.log(user.games[0].owner);
-          console.log(req.session.user);
           if (user.games[0].owner != req.session.user) {
             allGames = allGames.concat(user.games);
           }
@@ -160,7 +157,6 @@ app.get('/getAllGames', (req, res) => {
       });
 
       res.json(allGames);
-
     }).catch((err) => {
       throw err;
     });
@@ -234,11 +230,11 @@ app.post('/completeTrade', (req,res) => {
         }
       });
 
-      // remove request from trader's library
-      traderRequests = traderRequests.filter((request) => {
-        if (request.requestedGame.id != traderGameToReceive.id &&
-            request.offeredGame.id != tradeeGameToReceive.id) {
-          return request;
+      // change status for request to accept
+      traderRequests.map((request) => {
+        if (request.requestedGame.id === traderGameToReceive.id &&
+            request.offeredGame.id === tradeeGameToReceive.id) {
+          request.status = 'Accepted';
         }
       });
 
