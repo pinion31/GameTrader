@@ -25,6 +25,19 @@ export const removeRequest = request => (
 
 );
 
+export const declineTrade = request => (
+  (dispatch) => {
+    console.dir(request);
+    axios.post('/declineTrade', request)
+      .then((res) => {
+        console.dir(res.data);
+        dispatch({type: 'DECLINE_TRADE', payload: res.data});
+      }).catch((err) => {
+        throw err;
+      });
+  }
+);
+
 export const getUserRequests = () => (
   (dispatch) => {
     axios.get('/getUserRequests')

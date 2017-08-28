@@ -3,21 +3,22 @@ import {Thumbnail, Modal, Button} from 'react-bootstrap';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {addGame, removeGame, completeTrade} from '../actions/gameActions';
-import {removeRequest} from '../actions/requestActions';
-import {OUTGOING, INCOMING, CANCEL_TRADE, ACCEPT_TRADE, DECLINE_TRADE, PENDING,
-  ACCEPTED, DECLINED} from '../constants/requestStrings';
+import {removeRequest, declineTrade} from '../actions/requestActions';
+import {OUTGOING, INCOMING, CANCEL_TRADE, ACCEPT_TRADE, DECLINE_TRADE_OFFER, PENDING,
+  ACCEPTED, DECLINED, CANCELLED} from '../constants/requestStrings';
 
 class RequestItem extends Component {
   constructor(props) {
     super(props);
     this.state = {
       showModal: false,
-      statusMessage:'',
+      statusMessage: '',
     };
 
     this.toggleModal = this.toggleModal.bind(this);
     this.acceptTrade = this.acceptTrade.bind(this);
-    this.rejectTrade = this.rejectTrade.bind(this);
+    this.declineTrade = this.declineTrade.bind(this);
+    this.removeTrade = this.removeTrade.bind(this);
     this.getActionButtons = this.getActionButtons.bind(this);
     this.getStatusMessage = this.getStatusMessage.bind(this);
   }
@@ -28,7 +29,7 @@ class RequestItem extends Component {
     });
   }
 
-  rejectTrade() {
+  removeTrade() {
     this.props.removeRequest({
       requestedGameId: this.props.requestedGame.id,
       offeredGameId: this.props.offeredGame.id,
@@ -36,6 +37,14 @@ class RequestItem extends Component {
 
     //close modal after action
     this.toggleModal();
+  }
+
+  declineTrade(type) {
+    this.props.declineTrade({
+      type,
+      offeredGame: this.props.offeredGame,
+      requestedGame: this.props.requestedGame
+    });
   }
 
   acceptTrade() {
@@ -58,9 +67,10 @@ class RequestItem extends Component {
     if (this.props.status === ACCEPTED) {
       return 'Congratulations! Your trade offer was accepted!';
     } else if (this.props.status === DECLINED) {
-      return 'Unfortunately, your trade offer was declined';
-    }
-    else {
+      return 'Unfortunately, your trade offer was declined.';
+    } else if (this.props.status === CANCELLED) {
+      return 'Unfortunately, this trade offer was cancelled by its owner.';
+    } else {
       return '';
     }
   }
@@ -69,25 +79,25 @@ class RequestItem extends Component {
     if (this.props.status === PENDING) {
       if (this.props.path === OUTGOING) {
         return (
-          <Button bsStyle="danger" onClick={this.rejectTrade}>{CANCEL_TRADE}</Button>
+          <Button bsStyle="danger" onClick={() => {this.declineTrade('Cancelled')}}>{CANCEL_TRADE}</Button>
         );
       }
       else if (this.props.path === INCOMING) {
         return (
           <div>
-            <Button bsStyle="danger" onClick={this.rejectTrade}>{DECLINE_TRADE}</Button>
+            <Button bsStyle="danger" onClick={() => {this.declineTrade('Declined')}}>{DECLINE_TRADE_OFFER}</Button>
             <Button bsStyle="primary" onClick={this.acceptTrade}>{ACCEPT_TRADE}</Button>
           </div>
         );
       }
     } else if (this.props.status === ACCEPTED) {
         return (
-          <Button bsStyle="danger" onClick={this.rejectTrade}>Remove</Button>
+          <Button bsStyle="danger" onClick={this.removeTrade}>Remove</Button>
         );
 
-    } else if (this.props.status === DECLINED) {
+    } else if (this.props.status === DECLINED || this.props.status === CANCELLED) {
         return (
-          <Button bsStyle="danger" onClick={this.rejectTrade}>Remove</Button>
+          <Button bsStyle="danger" onClick={this.removeTrade}>Remove</Button>
         );
     }
 
@@ -142,6 +152,7 @@ function mapDispatchToProps(dispatch) {
     removeRequest,
     removeGame,
     completeTrade,
+    declineTrade,
   }, dispatch);
 }
 export default connect(mapStateToProps, mapDispatchToProps)(RequestItem);

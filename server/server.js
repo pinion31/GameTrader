@@ -64,23 +64,6 @@ app.post('/loginUser', (req, res) => {
   } else {
     res.json({redirect: '/'});
   }
-
-
-
-  //console.dir(req.session);
-
-  //console.log('redirecting...');
-  //res.json({redirect: '/'});
-  //res.redirect('/');
-
-
-  /*req.session.user = req.body.username;
-  req.session.save((err) => {
-    if(err){
-      console.log('error with session');
-    }
-  });*/
-  //res.json(req.session);
 });
 
 app.post('/addUser', (req, res) => {
@@ -210,6 +193,41 @@ app.post('/removeGame', (req, res) => {
     });
 });
 
+app.post('/declineTrade', (req,res) => {
+  const traderGameToReceive = Object.assign({}, req.body.offeredGame); //from tradee to trader
+  const tradeeGameToReceive = Object.assign({}, req.body.requestedGame); //from trader to tradee
+
+  User.findOne({username: req.session.user}).lean()
+    .then((user) => {
+      let userRequests = user.requests.filter((request) => {
+        if (request.requestedGame.id != req.body.requestedGame.id &&
+            request.offeredGame.id != req.body.offeredGame.id) {
+          return request;
+        }
+      });
+
+      User.findOneAndUpdate({username: req.session.user}, {requests: userRequests})
+        .then(() => {
+          User.findOne({username: req.body.requestedGame.owner}).lean()
+            .then((owner) => {
+              let ownerRequests = Array.from(owner.requests);
+              ownerRequests.map((request) => {
+                if (request.requestedGame.id === traderGameToReceive.id &&
+                  request.offeredGame.id === tradeeGameToReceive.id) {
+                  request.status = req.body.type;
+                }
+              });
+
+              User.findOneAndUpdate({username: req.body.requestedGame.owner}, {requests: ownerRequests})
+                .then(() => {
+                  res.json(userRequests);
+                });
+            });
+        });
+    });
+
+});
+
 // complete trade for trader after tradee accepts trade
 app.post('/completeTrade', (req,res) => {
   const traderGameToReceive = Object.assign({},req.body.offeredGame); //from tradee to trader
@@ -317,7 +335,6 @@ app.post('/addRequest', (req, res) => {
 app.post('/removeRequest', (req, res) => {
   User.findOne({username: req.session.user}).lean()
     .then((user) => {
-      const retrievedUser = Object.assign({}, user);
       let userRequests = user.requests.filter((request) => {
         if (request.requestedGame.id != req.body.requestedGameId &&
             request.offeredGame.id != req.body.offeredGameId) {

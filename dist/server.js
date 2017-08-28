@@ -70,21 +70,6 @@ app.post('/loginUser', function (req, res) {
   } else {
     res.json({ redirect: '/' });
   }
-
-  //console.dir(req.session);
-
-  //console.log('redirecting...');
-  //res.json({redirect: '/'});
-  //res.redirect('/');
-
-
-  /*req.session.user = req.body.username;
-  req.session.save((err) => {
-    if(err){
-      console.log('error with session');
-    }
-  });*/
-  //res.json(req.session);
 });
 
 app.post('/addUser', function (req, res) {
@@ -202,6 +187,34 @@ app.post('/removeGame', function (req, res) {
   });
 });
 
+app.post('/declineTrade', function (req, res) {
+  var traderGameToReceive = Object.assign({}, req.body.offeredGame); //from tradee to trader
+  var tradeeGameToReceive = Object.assign({}, req.body.requestedGame); //from trader to tradee
+
+  _User2.default.findOne({ username: req.session.user }).lean().then(function (user) {
+    var userRequests = user.requests.filter(function (request) {
+      if (request.requestedGame.id != req.body.requestedGame.id && request.offeredGame.id != req.body.offeredGame.id) {
+        return request;
+      }
+    });
+
+    _User2.default.findOneAndUpdate({ username: req.session.user }, { requests: userRequests }).then(function () {
+      _User2.default.findOne({ username: req.body.requestedGame.owner }).lean().then(function (owner) {
+        var ownerRequests = Array.from(owner.requests);
+        ownerRequests.map(function (request) {
+          if (request.requestedGame.id === traderGameToReceive.id && request.offeredGame.id === tradeeGameToReceive.id) {
+            request.status = req.body.type;
+          }
+        });
+
+        _User2.default.findOneAndUpdate({ username: req.body.requestedGame.owner }, { requests: ownerRequests }).then(function () {
+          res.json(userRequests);
+        });
+      });
+    });
+  });
+});
+
 // complete trade for trader after tradee accepts trade
 app.post('/completeTrade', function (req, res) {
   var traderGameToReceive = Object.assign({}, req.body.offeredGame); //from tradee to trader
@@ -296,7 +309,6 @@ app.post('/addRequest', function (req, res) {
 
 app.post('/removeRequest', function (req, res) {
   _User2.default.findOne({ username: req.session.user }).lean().then(function (user) {
-    var retrievedUser = Object.assign({}, user);
     var userRequests = user.requests.filter(function (request) {
       if (request.requestedGame.id != req.body.requestedGameId && request.offeredGame.id != req.body.offeredGameId) {
         return request;
