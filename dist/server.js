@@ -96,7 +96,8 @@ app.get('/findGame/:console/:game', function (req, res) {
   var searchResults = [];
 
   client.games({
-    fields: ['id', 'name', 'cover', 'summary', 'developers', 'publishers'], // Return all fields
+    fields: ['id', 'name', 'cover', 'summary', 'developers', 'screenshots'],
+    // fields: '*',
     search: req.params.game,
     filters: {
       'release_dates.platform-eq': req.params.console
@@ -111,12 +112,24 @@ app.get('/findGame/:console/:game', function (req, res) {
         var coverImage = client.image({
           cloudinary_id: game.cover.cloudinary_id }, 'cover_small', 'jpg');
 
+        //convert and add screenshots
+        var screenShots = [];
+
+        if (game.screenshots) {
+          game.screenshots.map(function (screenshot) {
+            var screenShotURL = client.image({
+              cloudinary_id: screenshot.cloudinary_id }, 'logo_med', 'jpg');
+            screenShots.push(screenShotURL);
+          });
+        }
+
         searchResults = searchResults.concat([{
           id: game.id,
           name: game.name,
           summary: game.summary,
           cover: coverImage,
-          gameConsole: req.params.console
+          gameConsole: req.params.console,
+          screenshots: screenShots
           // developer: result.developer,
           // publisher: result.publishers,
         }]);

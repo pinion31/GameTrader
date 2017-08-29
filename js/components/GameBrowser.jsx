@@ -58,6 +58,7 @@ class GameBrowser extends Component {
                     cover: game.cover,
                     owner: game.owner,
                     gameConsole: game.gameConsole,
+                    screenshots: game.screenshots,
                   }
                 };
                 retrievedGames = Object.assign({}, retrievedGames, retrievedGame);
@@ -128,6 +129,7 @@ class GameBrowser extends Component {
         summary={this.state.allGames[this.state.requestedGame].summary}
         cover={this.state.allGames[this.state.requestedGame].cover}
         key={this.state.allGames[this.state.requestedGame].id}
+        screenshots={this.state.allGames[this.state.requestedGame].screenshots}
       />
     }
     return null;

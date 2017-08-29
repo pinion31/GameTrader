@@ -85,9 +85,10 @@ class GameList extends Component {
         id: this.state.selectedGame.id,
         summary: this.state.selectedGame.summary,
         cover: this.state.selectedGame.cover,
-        gameConsole: this.state.selectedGame.gameConsole
+        gameConsole: this.state.selectedGame.gameConsole,
+        screenshots: this.state.selectedGame.screenshots
       }]);
-    this.toggleModal(); //close modal
+    this.toggleModal(); // close modal
   }
 
   updateConsole(event) {
@@ -119,6 +120,7 @@ class GameList extends Component {
                     cover={game.cover}
                     gameConsole={game.gameConsole}
                     key={key}
+                    screenshots={game.screenshots}
                   />
                 </Col>
               ))

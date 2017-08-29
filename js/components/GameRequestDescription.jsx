@@ -8,6 +8,10 @@ class GameRequestDescription extends Component {
         <Row>
           <Col sm={4} xs={4} md={2}>
             <Thumbnail src={this.props.cover} alt={this.props.name}>
+              {this.props.screenshots.map((screenshot) => (
+                <img src={screenshot} alt={this.props.name} />
+              ))
+              }
               <h4>{this.props.name}</h4>
             </Thumbnail>
           </Col>
