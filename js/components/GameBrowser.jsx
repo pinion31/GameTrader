@@ -143,12 +143,12 @@ class GameBrowser extends Component {
           <Grid>
             <Row>
               <Col sm={6} xs={12}>
-                <h1>Available Games</h1>
+                <h1 className="section-header">Available Games</h1>
               </Col>
             </Row>
             <Row>   {/** show all games available**/}
               {Object.keys(this.state.allGames).map((game, key) => (
-                <Col sm={2} xs={6} key={key}>
+                <Col sm={2} xs={2} key={key}>
                   <a onClick={this.toggleModal.bind(this, game)}>
                     <GameRequestIcon
                       name={this.state.allGames[game].name}

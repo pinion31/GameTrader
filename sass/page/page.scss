@@ -1,0 +1,64 @@
+body {
+  background-color: $bgcolor;
+  color: $main-text-color;
+  text-overflow: hidden;
+}
+a {
+  color: $request-text-color;
+  text-decoration: none;
+}
+.well {
+  background-color: $well-bg-color;
+  border: none;
+}
+
+.navbar {
+  background-color: $well-bg-color;
+  border: none;
+}
+
+.footer {
+  background-color: $well-bg-color;
+  border: none;
+}
+
+.thumbnail {
+  background-color: $well-bg-color;
+  border: none;
+}
+
+a:hover {
+  color: $request-text-color;
+  text-decoration: none;
+}
+
+a:focus {
+  outline: none;
+  outline-offset: 0px;
+}
+
+.thumbnail .caption {
+  color: $request-text-color;
+  padding:2px;
+}
+
+.modal-content {
+  background-color: $bgcolor;
+}
+
+.footer-style p {
+  text-align: center;
+}
+
+.section-header {
+  margin-bottom: 40px;
+  color:white;
+}
+
+.modal-header {
+  border-color: $border-color;
+}
+
+.modal-footer {
+  border: none;
+}

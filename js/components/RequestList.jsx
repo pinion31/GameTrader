@@ -18,7 +18,7 @@ class RequestList extends Component {
         <Grid>
           <Row>
             <Col sm={6} xs={12}>
-              <h1>My Requests</h1>
+              <h1 className="section-header">My Requests</h1>
             </Col>
           </Row>
           <Row>

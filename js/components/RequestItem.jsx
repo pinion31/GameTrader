@@ -22,6 +22,7 @@ class RequestItem extends Component {
     this.removeTrade = this.removeTrade.bind(this);
     this.getActionButtons = this.getActionButtons.bind(this);
     this.getStatusMessage = this.getStatusMessage.bind(this);
+    this.setStatusBackgroundColor = this.setStatusBackgroundColor.bind(this);
   }
 
   toggleModal() {
@@ -76,6 +77,16 @@ class RequestItem extends Component {
     }
   }
 
+  setStatusBackgroundColor(status) {
+    if (status === PENDING) {
+      return 'request-pending';
+     } else if (status === ACCEPTED) {
+      return 'request-accepted';
+    } else if (status === DECLINED || status === CANCELLED) {
+      return 'request-declined';
+    }
+  }
+
   getActionButtons() {
     if (this.props.status === PENDING) {
       if (this.props.path === OUTGOING) {
@@ -101,17 +112,14 @@ class RequestItem extends Component {
           <Button bsStyle="danger" onClick={this.removeTrade}>Remove</Button>
         );
     }
-
   }
 
   render() {
     return (
-      <div>
+      <div className={['request-image ' + this.setStatusBackgroundColor(this.props.status)]}>
         <a onClick={this.toggleModal}>
-          <Thumbnail src={this.props.requestedGame.cover} alt={this.props.requestedGame.name}>
-            <p>Status:{this.props.status}</p>
-            <p>{this.props.requestedGame.name}</p>
-          </Thumbnail>
+          <img src={this.props.requestedGame.cover} alt={this.props.requestedGame.name} />
+          <p>{this.props.status}</p>
         </a>
         <Modal
             show={this.state.showModal}

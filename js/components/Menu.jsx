@@ -7,9 +7,7 @@ class Menu extends Component {
     return (
       <Navbar>
         <Navbar.Header>
-          <Navbar.Brand>
-            <NavItem>GameTrader</NavItem>
-          </Navbar.Brand>
+          <Navbar.Brand>GameTrader</Navbar.Brand>
         </Navbar.Header>
         <Nav pullRight>
           <LinkContainer to="/AllGames">

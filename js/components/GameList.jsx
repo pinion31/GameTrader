@@ -104,15 +104,15 @@ class GameList extends Component {
           <Grid>
             <Row>
               <Col sm={6} xs={12}>
-                <h1>My Games</h1>
+                <h1 className="section-header">My Games</h1>
               </Col>
-              <Col sm={4} smOffset={2} xs={12}>
+              <Col sm={4} smOffset={2} xs={10} xsOffset={1}>
                 <Button onClick={this.toggleModal} bsStyle="primary">+ Add Game</Button>
               </Col>
             </Row>
             <Row>
               {this.props.games.games.map((game, key) => (
-                <Col sm={2} xs={6} key={game.id}>
+                <Col sm={2} xs={2} key={game.id}>
                   <GameItem
                     name={game.name}
                     id={game.id}
@@ -155,10 +155,10 @@ class GameList extends Component {
               <Row>
                 <Col sm={7} xs={9} md={6}>
                   <FormGroup controlId="formControlsSelect">
-                    <ControlLabel>Select Console</ControlLabel>
                     <FormControl
                       onChange={this.updateConsole}
                       componentClass="select">
+                      <option>Select Console</option>
                       {gameConsoles.map(consoleNum => (
                         <option value={consoleNum.id} key={consoleNum.id}>
                           {consoleNum.name}
@@ -175,11 +175,11 @@ class GameList extends Component {
                     <Row>
                       {this.state.searchList.map(game => (
                         <a onClick={()=> {this.highlightGame(game)}} key={game.id}>
-                          <Col sm={4} xs={4} md={4}>
-                            <Thumbnail ref={game.id}>
+
+                            <Thumbnail ref={game.id} width={90} height={128}>
                               <img src={game.cover} alt={game.name} />
                             </Thumbnail>
-                          </Col>
+
                         </a>
                       ))
                       }

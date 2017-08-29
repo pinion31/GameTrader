@@ -1,0 +1,32 @@
+.request-declined {
+  background-color: $declined-red;
+  border: none;
+}
+
+.request-pending {
+  background-color: gray;
+  border: none;
+}
+
+.request-accepted {
+  background-color: $accepted-green;
+  border: none;
+}
+
+.request-image {
+  width: 90px;
+  height: 170px;
+  border-radius: 3%;
+}
+
+.request-image > a > p{
+  text-align:center;
+  padding-top: 10px;
+  text-shadow: 1px 1px 5px black;
+
+  &:hover {
+    text-decoration: none;
+  }
+
+}
+
