@@ -112,14 +112,13 @@ class GameList extends Component {
             </Row>
             <Row>
               {this.props.games.games.map((game, key) => (
-                <Col sm={2} xs={6} key={key}>
+                <Col sm={2} xs={6} key={game.id}>
                   <GameItem
                     name={game.name}
                     id={game.id}
                     summary={game.summary}
                     cover={game.cover}
                     gameConsole={game.gameConsole}
-                    key={key}
                     screenshots={game.screenshots}
                   />
                 </Col>

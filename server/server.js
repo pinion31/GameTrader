@@ -116,7 +116,7 @@ app.get('/findGame/:console/:game', (req,res) => {
           game.screenshots.map((screenshot) => {
             const screenShotURL = client.image({
               cloudinary_id: screenshot.cloudinary_id},
-              'logo_med',
+              'screenshot_med',
               'jpg'
             );
             screenShots.push(screenShotURL);

@@ -1,8 +1,25 @@
 import React, {Component} from 'react';
-import {Thumbnail,Grid, Row, Col, Well} from 'react-bootstrap';
+import {Thumbnail,Grid, Row, Col, Well, Media, Carousel} from 'react-bootstrap';
+import GameCard from './GameCard';
 
 class GameRequestDescription extends Component {
-  render() {
+  constructor(props) {
+    super(props);
+    this.state = {
+      index: 0,
+      direction: null
+    }
+
+    this.handleSelect = this.handleSelect.bind(this);
+  }
+
+  handleSelect(selectedIndex, e) {
+    this.setState({
+      index: selectedIndex,
+      direction: e.direction
+    });
+  }
+  /*render() {
     return (
       <Grid>
         <Row>
@@ -21,8 +38,27 @@ class GameRequestDescription extends Component {
             </Well>
           </Col>
         </Row>
-
       </Grid>
+    );
+  }*/
+
+  render() {
+    return (
+      <div>
+        <Carousel activeIndex={this.state.index} direction={this.state.direction} onSelect={this.handleSelect}>
+          {this.props.screenshots.map((screenshot) => (
+            <Carousel.Item key={this.props.id}>
+              <img width={569} height={320} src={screenshot} alt={this.props.name} key={this.props.id} />
+            </Carousel.Item>
+          ))
+          }
+        </Carousel>
+        <GameCard
+          cover={this.props.cover}
+          name={this.props.name}
+          summary={this.props.summary}
+        />
+      </div>
     );
   }
 }

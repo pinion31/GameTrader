@@ -3,7 +3,7 @@
 import React, {Component} from 'react';
 import {bindActionCreators} from 'redux';
 import {Grid, Row, Col, Modal, Button, Well, FormGroup,
-  FormControl, option, ControlLabel} from 'react-bootstrap';
+  FormControl, option, ControlLabel, Media} from 'react-bootstrap';
 import {connect} from 'react-redux';
 import GameRequestDescription from './GameRequestDescription';
 // import GameRequestItem from './GameRequestItem';
@@ -11,6 +11,7 @@ import GameRequestIcon from './GameRequestIcon';
 import GameItem from './GameItem';
 import {getUserGames} from '../actions/gameActions';
 import {addRequest} from '../actions/requestActions';
+import GameCard from './GameCard';
 
 class GameBrowser extends Component {
   constructor(props) {
@@ -175,22 +176,14 @@ class GameBrowser extends Component {
             <h2>Requested Game</h2>
             {this.getRequestedGame()}
             <h2>Your Offer</h2>{/**games to offer**/}
-            <Well>
-              <Grid>
-                <Row>
-                  {this.state.gameOffer.map((game, key) => (
-                    <Col sm={2} xs={6} key={key}>
-                      <GameItem
-                        cover={game.cover}
-                        name={game.name}
-                        key={key}
-                      />
-                    </Col>
-                  ))
-                  }
-                </Row>
-              </Grid>
-            </Well>
+            {this.state.gameOffer.map((game, key) => (
+              <GameCard
+                cover={game.cover}
+                name={game.name}
+                summary={game.summary}
+              />
+            ))
+            }
             <FormGroup controlId="formControlsSelect">
               <FormControl
                 onChange={this.addGameToOffer}
@@ -259,5 +252,17 @@ export default connect(mapPropstoState, mapDispatchToProps)(GameBrowser);
                       >
                         Remove
                       </Button>
+
+
+                      {this.state.gameOffer.map((game, key) => (
+                    <Col sm={2} xs={6} key={key}>
+                      <GameItem
+                        cover={game.cover}
+                        name={game.name}
+                        key={key}
+                      />
+                    </Col>
+                  ))
+                  }
 
               */

@@ -1,11 +1,12 @@
 import React, {Component} from 'react';
-import {Thumbnail, Modal, Button} from 'react-bootstrap';
+import {Thumbnail, Modal, Button, Media} from 'react-bootstrap';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {addGame, removeGame, completeTrade} from '../actions/gameActions';
 import {removeRequest, declineTrade} from '../actions/requestActions';
 import {OUTGOING, INCOMING, CANCEL_TRADE, ACCEPT_TRADE, DECLINE_TRADE_OFFER, PENDING,
   ACCEPTED, DECLINED, CANCELLED} from '../constants/requestStrings';
+import GameCard from './GameCard';
 
 class RequestItem extends Component {
   constructor(props) {
@@ -116,24 +117,30 @@ class RequestItem extends Component {
             show={this.state.showModal}
             onHide={this.toggleModal}
         >
-            <Modal.Header>
-              <Modal.Title>{this.props.requestedGame.name}</Modal.Title>
-            </Modal.Header>
-
-            <Modal.Body>
-                <h4>{this.getStatusMessage()}</h4>
-                <h4>Your Request:</h4>
-                 <Thumbnail src={this.props.requestedGame.cover} alt={this.props.requestedGame.name} />
-                <p>Owner: {this.props.requestedGame.owner}</p>
-                <p>Status:{this.props.status}</p>
-                <h4>Your Offer:</h4>
-                <Thumbnail src={this.props.offeredGame.cover} alt={this.props.offeredGame.name} />
-            </Modal.Body>
-
-            <Modal.Footer>
-              {this.getActionButtons()}
-              <Button onClick={this.toggleModal}>Close</Button>
-            </Modal.Footer>
+          <Modal.Header>
+            <Modal.Title>{this.props.requestedGame.name}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <h3>{this.getStatusMessage()}</h3>
+            <h3>Your Request:</h3>
+            <GameCard
+              cover={this.props.requestedGame.cover}
+              name={this.props.requestedGame.name}
+              summary={this.props.requestedGame.summary}
+            />
+            <p>Owner: {this.props.requestedGame.owner}</p>
+            <p>Status: {this.props.status}</p>
+            <h3>Your Offer:</h3>
+            <GameCard
+              cover={this.props.offeredGame.cover}
+              name={this.props.offeredGame.name}
+              summary={this.props.offeredGame.summary}
+            />
+          </Modal.Body>
+          <Modal.Footer>
+            {this.getActionButtons()}
+            <Button onClick={this.toggleModal}>Close</Button>
+          </Modal.Footer>
         </Modal>
       </div>
     );

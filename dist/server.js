@@ -118,7 +118,7 @@ app.get('/findGame/:console/:game', function (req, res) {
         if (game.screenshots) {
           game.screenshots.map(function (screenshot) {
             var screenShotURL = client.image({
-              cloudinary_id: screenshot.cloudinary_id }, 'logo_med', 'jpg');
+              cloudinary_id: screenshot.cloudinary_id }, 'screenshot_med', 'jpg');
             screenShots.push(screenShotURL);
           });
         }
