@@ -67,12 +67,12 @@ class RequestItem extends Component {
 
   getStatusMessage() {
     if (this.props.status === ACCEPTED) {
-      return 'Congratulations! Your trade offer was accepted!';
+      return 'Your Trade Offer Was Accepted!';
     } else if (this.props.status === DECLINED) {
-      return 'Unfortunately, your trade offer was declined.';
+      return 'Sorry! Your Trade Offer Was Declined.';
     } else if (this.props.status === CANCELLED) {
-      return 'Unfortunately, this trade offer was cancelled by its owner.';
-    } else {
+      return `This Trade Offer Was Cancelled By ${this.props.requestedGame.owner}.`}
+      else {
       return '';
     }
   }
@@ -96,9 +96,9 @@ class RequestItem extends Component {
       }
       else if (this.props.path === INCOMING) {
         return (
-          <div>
-            <Button bsStyle="danger" onClick={() => {this.declineTrade('Declined')}}>{DECLINE_TRADE_OFFER}</Button>
-            <Button bsStyle="primary" onClick={this.acceptTrade}>{ACCEPT_TRADE}</Button>
+          <div className="trade-modal-buttons">
+            <Button className="modal-buttons" bsStyle="danger" onClick={() => {this.declineTrade('Declined')}}>{DECLINE_TRADE_OFFER}</Button>
+            <Button className="modal-buttons accept-button" onClick={this.acceptTrade}>{ACCEPT_TRADE}</Button>
           </div>
         );
       }
@@ -116,29 +116,32 @@ class RequestItem extends Component {
 
   render() {
     return (
-      <div className={['request-image ' + this.setStatusBackgroundColor(this.props.status)]}>
+      <div className="request-image">
         <a onClick={this.toggleModal}>
           <img src={this.props.requestedGame.cover} alt={this.props.requestedGame.name} />
-          <p>{this.props.status}</p>
+          <p className={this.setStatusBackgroundColor(this.props.status)}>{this.props.status}</p>
         </a>
         <Modal
             show={this.state.showModal}
             onHide={this.toggleModal}
         >
           <Modal.Header>
-            <Modal.Title>{this.props.requestedGame.name}</Modal.Title>
+            <Modal.Title>
+              {this.props.requestedGame.name}
+              <p className={"status-text " + this.setStatusBackgroundColor(this.props.status)}>Status: {this.props.status}</p>
+            </Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <h3>{this.getStatusMessage()}</h3>
-            <h3>Your Request:</h3>
+            <h2 className="modal-message">{this.getStatusMessage()}</h2>
+            <p className="owner-text">Owner: {this.props.requestedGame.owner}</p>
+            <h3 className="modal-sub-header">Your Request</h3>
+
             <GameCard
               cover={this.props.requestedGame.cover}
               name={this.props.requestedGame.name}
               summary={this.props.requestedGame.summary}
             />
-            <p>Owner: {this.props.requestedGame.owner}</p>
-            <p>Status: {this.props.status}</p>
-            <h3>Your Offer:</h3>
+            <h3 className="modal-sub-header clear-fix">Your Offer</h3>
             <GameCard
               cover={this.props.offeredGame.cover}
               name={this.props.offeredGame.name}
@@ -147,7 +150,7 @@ class RequestItem extends Component {
           </Modal.Body>
           <Modal.Footer>
             {this.getActionButtons()}
-            <Button onClick={this.toggleModal}>Close</Button>
+            <Button bsStyle="primary" onClick={this.toggleModal}>Close</Button>
           </Modal.Footer>
         </Modal>
       </div>

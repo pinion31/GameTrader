@@ -103,11 +103,9 @@ class GameList extends Component {
         <Well>
           <Grid>
             <Row>
-              <Col sm={6} xs={12}>
+              <Col sm={12} xs={12}>
+                <Button bsSize="large" onClick={this.toggleModal} className="accept-button add-game-button">+ Add Game</Button>
                 <h1 className="section-header">My Games</h1>
-              </Col>
-              <Col sm={4} smOffset={2} xs={10} xsOffset={1}>
-                <Button onClick={this.toggleModal} bsStyle="primary">+ Add Game</Button>
               </Col>
             </Row>
             <Row>
@@ -191,8 +189,8 @@ class GameList extends Component {
           </Modal.Body>
 
           <Modal.Footer>
-            <Button bsStyle="danger" onClick={this.toggleModal}>Close</Button>
-            <Button bsStyle="primary" onClick={this.handleOnClickAdd}>Add Game</Button>
+            <Button bsStyle="primary" onClick={this.toggleModal}>Close</Button>
+            <Button className="accept-button" onClick={this.handleOnClickAdd}>Add Game</Button>
           </Modal.Footer>
         </Modal>
       </div>

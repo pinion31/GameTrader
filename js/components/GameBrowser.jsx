@@ -173,9 +173,9 @@ class GameBrowser extends Component {
             <Modal.Title>Request Trade</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <h2>Requested Game</h2>
+            <h2 className="modal-sub-header">Requested Game</h2>
             {this.getRequestedGame()}
-            <h2>Your Offer</h2>{/**games to offer**/}
+            <h2 className="modal-sub-header">Your Offer</h2>{/**games to offer**/}
             {this.state.gameOffer.map((game, key) => (
               <GameCard
                 cover={game.cover}
@@ -200,11 +200,11 @@ class GameBrowser extends Component {
             </FormGroup>
           </Modal.Body>
           <Modal.Footer>
-            <Button onClick={this.toggleModal}>
+            <Button bsStyle="primary" onClick={this.toggleModal}>
               Close
             </Button>
             <Button
-              bsStyle="primary"
+              className="accept-button"
               onClick={this.sendRequest}
             >
               Send Trade Request

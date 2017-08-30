@@ -4,7 +4,7 @@
 }
 
 .request-pending {
-  background-color: gray;
+  background-color: $pending-yellow;
   border: none;
 }
 
@@ -21,12 +21,58 @@
 
 .request-image > a > p{
   text-align:center;
-  padding-top: 10px;
   text-shadow: 1px 1px 5px black;
 
   &:hover {
     text-decoration: none;
   }
 
+}
+
+.trade-modal-buttons {
+  text-align: center;
+}
+
+.modal-message {
+  margin: 25px;
+  color: $modal-text-color;
+  padding: 5px;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.accept-button {
+  background-color: $accepted-green;
+  border: none;
+  color: white;
+}
+
+.modal-buttons {
+  margin:0px 10px;
+}
+
+.clear-fix {
+  clear:both;
+}
+
+.owner-text {
+  float:right;
+  color:$modal-text-color;
+  font-size: 1.25em;
+  padding: 2px 10px;
+  border-radius: 5px;
+  background-color: $well-bg-color;
+}
+
+.status-text {
+  border-radius: 5px;
+  padding: 5px 10px;
+  float:right;
+  color:$modal-text-color;
+  text-shadow: 1px 1px 5px black;
+}
+
+.game-request-icon-caption {
+  text-align: center;
 }
 

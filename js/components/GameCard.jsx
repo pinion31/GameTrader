@@ -10,8 +10,8 @@ class GameCard extends Component {
             <img src={this.props.cover} alt={this.props.name} />
           </Media.Left>
           <Media.Body>
-            <Media.Heading>{this.props.name}</Media.Heading>
-            <p>{this.props.summary}</p>
+            <Media.Heading className="game-header">{this.props.name}</Media.Heading>
+            <p className="summary">{this.props.summary}</p>
           </Media.Body>
         </Media>
       </Well>

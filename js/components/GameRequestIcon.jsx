@@ -6,8 +6,7 @@ class GameRequestIcon extends Component {
     return (
       <div>
         <Thumbnail src={this.props.cover} alt={this.props.name}>
-          <h5>{this.props.name}</h5>
-          <h5>{this.props.status}</h5>
+          <h5 className="game-request-icon-caption">{this.props.name}</h5>
         </Thumbnail>
       </div>
     );

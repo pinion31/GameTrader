@@ -57,8 +57,14 @@ a:focus {
 
 .modal-header {
   border-color: $border-color;
+  color: $modal-text-color;
+}
+
+.modal-sub-header {
+  color: $modal-text-color;
 }
 
 .modal-footer {
   border: none;
 }
+
