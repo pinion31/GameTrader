@@ -1,46 +1,74 @@
 import React, {Component} from 'react';
 import 'whatwg-fetch';
-import {Grid, Row, Col, FormGroup, FormControl, Button} from 'react-bootstrap';
+import {Grid, Row, Col, FormGroup, FormControl, Button, HelpBlock} from 'react-bootstrap';
 
 class Login extends Component {
   constructor(props) {
     super(props);
     this.state = {
-        user:{
-        username: '',
-        password: ''
+        user: {
+          username: '',
+          password: ''
       },
+      usernameHelp: '',
+      passwordHelp: '',
     };
 
     this.handleOnClick = this.handleOnClick.bind(this);
     this.handleOnChange = this.handleOnChange.bind(this);
+    this.validateLogin = this.validateLogin.bind(this);
   }
 
   handleOnChange(e) {
+
     let loggedInUser = Object.assign({},this.state.user);
     loggedInUser[e.target.name] = e.target.value;
 
     this.setState({
       user: loggedInUser,
+      usernameHelp: '',
+      passwordHelp: '',
     });
   }
 
-  handleOnClick() {
-    /*fetch(`/loginUser/${this.state.user.username}`)
-      .then((user) => {
-        console.dir(user);
-      });*/
+  validateLogin() {
+    //if username is filled
+    if (this.state.user.username.length === 0) {
+      this.setState({
+        usernameHelp: 'Please enter a username',
+      });
+      return false;
+      //if password field is filled
+    } else if (this.state.user.password.length === 0) {
+      this.setState({
+        passwordHelp: 'Please enter a password',
+      });
+      return false;
+    }
 
-    fetch('/loginUser', {
+    //if validation check passes, send credentials to server
+    return true;
+  }
+
+  handleOnClick() {
+    if (this.validateLogin(this.state.user)) {
+      fetch('/loginUser', {
         method: 'POST',
         credentials: 'include', // need to include this for session to persist in other routes
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(this.state.user),
-      }).then(res => {
-          res.json().then(redir => {
-            this.props.history.push(redir.redirect);
-          });
+      }).then((res) => {
+          res.json().then((redir) => {
+            if (redir.validation === 'valid') {
+              this.props.history.push(redir.redirect);
+            } else {
+              this.setState({
+                [redir.field]: redir.validation,
+              });
+            }
+        });
       });
+    }
   }
 
   render() {
@@ -56,13 +84,14 @@ class Login extends Component {
         </Row>
         <Row>
           <Col sm={6} smOffset={3} xs={6} xsOffset={3}>
-            <FormGroup>
+            <FormGroup controlId="formValidationSuccess1" validationState= {null}>
               <FormControl
                 name="username"
                 type="text"
                 placeholder="Username"
                 onChange={this.handleOnChange}
               />
+              <HelpBlock>{this.state.usernameHelp}</HelpBlock>
             </FormGroup>
           </Col>
            <Col sm={6} smOffset={3} xs={6} xsOffset={3}>
@@ -73,6 +102,7 @@ class Login extends Component {
                 placeholder="Password"
                 onChange={this.handleOnChange}
               />
+              <HelpBlock>{this.state.passwordHelp}</HelpBlock>
             </FormGroup>
           </Col>
         </Row>

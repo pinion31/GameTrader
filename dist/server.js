@@ -47,29 +47,65 @@ app.use(session({
 
 //**** USER ACTIONS ***///
 app.post('/loginUser', function (req, res) {
-  if (typeof req.session.user === 'undefined') {
-    req.session.user = req.body.username;
-    console.log('resaving session');
-    req.session.save(function (err) {
 
-      if (err) {
-        console.log('error with session');
+  //validation
+  var username = req.body.username;
+  var pw = req.body.password;
+  var credCheck = false;
+
+  _User2.default.findOne({ username: req.body.username }).then(function (user) {
+    if (user) {
+      if (user.password === req.body.password) {
+        credCheck = true;
       } else {
-        res.json({ redirect: '/' });
+        res.json({
+          field: 'passwordHelp',
+          validation: "Invalid Password"
+        });
       }
-    });
-  } else if (req.session.user != req.body.username) {
-    req.session.user = req.body.username;
-    req.session.save(function (err) {
-      if (err) {
-        console.log('error with session');
+    } else {
+      res.json({
+        field: 'usernameHelp',
+        validation: "Invalid Username"
+      });
+    }
+
+    if (credCheck) {
+      //session check
+      if (typeof req.session.user === 'undefined') {
+        req.session.user = req.body.username;
+        console.log('resaving session');
+        req.session.save(function (err) {
+
+          if (err) {
+            console.log('error with session');
+          } else {
+            res.json({
+              redirect: '/',
+              validation: 'valid'
+            });
+          }
+        });
+      } else if (req.session.user !== req.body.username) {
+        req.session.user = req.body.username;
+        req.session.save(function (err) {
+          if (err) {
+            console.log('error with session');
+          } else {
+            res.json({
+              redirect: '/',
+              validation: 'valid'
+            });
+          }
+        });
       } else {
-        res.json({ redirect: '/' });
+        res.json({
+          redirect: '/',
+          validation: 'valid'
+        });
       }
-    });
-  } else {
-    res.json({ redirect: '/' });
-  }
+    }
+  });
 });
 
 app.post('/addUser', function (req, res) {
