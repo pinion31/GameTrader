@@ -2,7 +2,7 @@
 
 const webpack = require('webpack');
 
-var path =  require('path');
+const path =  require('path');
 
 module.exports = {
   entry: {
@@ -39,7 +39,11 @@ module.exports = {
       },
       {
         test: /\.scss$/,
-        loaders: ['style-loader', 'css-loader', 'sass-loader'],
+        loaders: ['style-loader', 'css-loader', 'resolve-url-loader', 'sass-loader'],
+      },
+      {
+        test: /\.jpg$/,
+        loader: 'file-loader'
       }
     ],
   },

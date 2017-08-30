@@ -1,0 +1,41 @@
+.signup-page-image {
+  background: url('../media/games01.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  height: 400px;
+  margin-bottom: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.signup-title {
+  background-color: black;
+ // height:500px;
+ // display: flex;
+  margin-top: 0px;
+ // justify-content: center;
+  //align-items: center;
+  color: white;
+  font-size: 8em;
+  //text-shadow: 2px 2px 5px white;
+  font-family: $audiowide;
+  //padding-top: 100px
+  margin-bottom: 100px;
+  padding: 9px 24px 12px 25px;
+  border-radius: 96px;
+  border: 10px solid white;
+
+}
+
+.signup-subtitle {
+  color: white;
+  font-family: $exo;
+  //position: absolute;
+  //top: 270px;
+ // left: 123px;
+  margin-top: -50px;
+  font-size: 2.5em;
+  margin-bottom: 100px;
+}

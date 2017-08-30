@@ -45,10 +45,13 @@ class Login extends Component {
 
   render() {
     return (
-      <Grid>
+      <div>
         <Row>
-          <Col sm={6} smOffset={3} xs={6} xsOffset={3}>
-            <h1>GameTrader</h1>
+          <Col sm={12} xs={12}>
+            <div className="signup-page-image">
+              <h1 className="signup-title">GameTrader</h1>
+              <h2 className="signup-subtitle">Trade Your Games With Others and Game On.</h2>
+            </div>
           </Col>
         </Row>
         <Row>
@@ -74,11 +77,14 @@ class Login extends Component {
           </Col>
         </Row>
         <Row>
-          <Button bsStyle="primary" onClick={this.handleOnClick}>Sign in</Button>
+          <Col sm={6} smOffset={3} xs={6} xsOffset={3}>
+            <Button className="login-button request-accepted " bsStyle="primary" onClick={this.handleOnClick}>Log in</Button>
+            <Button className="signup-button" bsStyle="primary" onClick={this.handleOnClick}>Sign Up</Button>
+          </Col>
         </Row>
 
 
-      </Grid>
+      </div>
     );
   }
 }

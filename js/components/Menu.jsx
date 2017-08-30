@@ -7,19 +7,19 @@ class Menu extends Component {
     return (
       <Navbar>
         <Navbar.Header>
-          <Navbar.Brand>GameTrader</Navbar.Brand>
+          <Navbar.Brand><span className="menu-logo">GameTrader</span></Navbar.Brand>
         </Navbar.Header>
         <Nav pullRight>
           <LinkContainer to="/AllGames">
-            <NavItem>Browse Games</NavItem>
+            <NavItem className="nav-text">Browse Games</NavItem>
           </LinkContainer>
            <LinkContainer to="/">
-            <NavItem>My Games</NavItem>
+            <NavItem className="nav-text">My Games</NavItem>
           </LinkContainer>
           <LinkContainer to="/Login">
-            <NavItem>Sign In</NavItem>
+            <NavItem className="nav-text">Sign In</NavItem>
           </LinkContainer>
-          <NavItem>Sign out</NavItem>
+          <NavItem className="nav-text">Sign out</NavItem>
         </Nav>
       </Navbar>
 

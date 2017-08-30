@@ -44,7 +44,15 @@ class SignUp extends Component {
 
   render() {
     return (
-      <Grid>
+      <div>
+        <Row>
+          <Col sm={12} xs={12}>
+            <div className="signup-page-image">
+              <h1 className="signup-title">GameTrader</h1>
+              <h2 className="signup-subtitle">Trade Your Games With Others and Game On.</h2>
+            </div>
+          </Col>
+        </Row>
         <Row>
           <Col sm={6} smOffset={3} xs={6} xsOffset={3}>
             <FormGroup>
@@ -120,7 +128,7 @@ class SignUp extends Component {
             Submit
           </Button>
         </Row>
-      </Grid>
+      </div>
     );
   }
 }
@@ -129,6 +137,10 @@ class SignUp extends Component {
 function mapStateToProps() {
 
 }
+
+          <Col sm={12} xs={12}>
+           <img src="./media/controllers.jpg" />
+          </Col>
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
