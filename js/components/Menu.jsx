@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Navbar, Nav, NavItem} from 'react-bootstrap'
+import {Navbar, Nav, NavItem} from 'react-bootstrap';
 import {LinkContainer} from 'react-router-bootstrap';
 
 class Menu extends Component {
@@ -13,13 +13,12 @@ class Menu extends Component {
           <LinkContainer to="/AllGames">
             <NavItem className="nav-text">Browse Games</NavItem>
           </LinkContainer>
-           <LinkContainer to="/">
+          <LinkContainer to="/Dashboard">
             <NavItem className="nav-text">My Games</NavItem>
           </LinkContainer>
-          <LinkContainer to="/Login">
-            <NavItem className="nav-text">Sign In</NavItem>
+          <LinkContainer to="/">
+            <NavItem className="nav-text">Sign out</NavItem>
           </LinkContainer>
-          <NavItem className="nav-text">Sign out</NavItem>
         </Nav>
       </Navbar>
 

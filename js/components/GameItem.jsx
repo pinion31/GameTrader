@@ -56,7 +56,7 @@ class GameItem extends Component {
     return (
       <div>
         <a onClick={this.toggleModal}>
-          <img src={this.props.cover} alt={this.props.name} />
+          <img src={this.props.cover} alt={this.props.name} className="game-item" />
         </a>
         <Modal
           show={this.state.showModal}

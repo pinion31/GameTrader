@@ -13,6 +13,7 @@ import {Route} from 'react-router';
 
 const Main = () => (
   <div>
+    <Menu />
     <RequestList />
     <GameList />
   </div>
@@ -25,11 +26,10 @@ const Footer = () => (
 );
 const RoutedApp = () => (
   <div>
-    <Menu />
     <Switch>
-      <Route exact path="/" component={Main} />
+      <Route exact path="/" component={Login} />
       <Route exact path="/AllGames" component={GameBrowser} />
-      <Route exact path="/Login" component={Login} />
+      <Route exact path="/Dashboard" component={Main} />
       <Route exact path="/Signup" component={SignUp} />
     </Switch>
     <Footer />

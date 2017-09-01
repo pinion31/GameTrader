@@ -1,9 +1,13 @@
+import igdb from 'igdb-api-node';
+import User from './models/User';
+
 const express = require('express');
 const path = require('path');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+
 mongoose.connect('mongodb://localhost/local');
 mongoose.Promise = global.Promise;
 
@@ -11,20 +15,15 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo')(session);
 
 const db = mongoose.connection;
-import igdb from 'igdb-api-node';
-import User from './models/User';
+
 
 const app = express();
-
-
 const client = igdb(process.env.IGDB_KEY);
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
-//app.use(express.static(path.join(__dirname, '../static')));
 app.use(express.static('static'));
 
 app.use(session({
@@ -35,15 +34,15 @@ app.use(session({
   store: new MongoStore({mongooseConnection: db, ttl: 2 * 24 * 60 * 60})
 }));
 
-//**** USER ACTIONS ***///
+// **** USER ACTIONS ***///
 app.post('/loginUser', (req, res) => {
-
-  //validation
-  let username = req.body.username;
-  let pw = req.body.password;
+  // validation
   let credCheck = false;
 
-  User.findOne({username: req.body.username})
+  // strips out trailing spaces after username
+  const usernameStripped = req.body.username.split(' ')[0];
+
+  User.findOne({username: usernameStripped})
     .then((user) => {
       if (user) {
         if (user.password === req.body.password) {
@@ -51,82 +50,93 @@ app.post('/loginUser', (req, res) => {
         } else {
           res.json({
             field: 'passwordHelp',
-            validation: "Invalid Password",
-        });
+            validation: 'Invalid Password',
+          });
         }
-      }
-      else {
-        res.json({
-          field: 'usernameHelp',
-          validation: "Invalid Username",
-        });
-      }
-
-    if (credCheck) {
-      //session check
-      if (typeof req.session.user === 'undefined') {
-        req.session.user = req.body.username;
-        console.log('resaving session');
-        req.session.save((err) => {
-
-          if(err){
-            console.log('error with session');
-          }
-          else {
-            res.json({
-              redirect: '/',
-              validation: 'valid',
-            });
-          }
-
-        });
-      }
-      else if (req.session.user !== req.body.username) {
-        req.session.user = req.body.username;
-        req.session.save((err) => {
-          if (err) {
-            console.log('error with session');
-          } else {
-            res.json({
-              redirect: '/',
-              validation: 'valid',
-            });
-          }
-        });
       } else {
         res.json({
-          redirect: '/',
-          validation: 'valid',
+          field: 'usernameHelp',
+          validation: 'Invalid Username',
         });
       }
-    }
 
+      if (credCheck) {
+      // session check
+        if (typeof req.session.user === 'undefined') {
+          req.session.user = usernameStripped;
+          req.session.save((err) => {
+            if (err) {
+              throw err;
+            } else {
+              res.json({
+                redirect: '/Dashboard',
+                validation: 'valid',
+              });
+            }
+          });
+        } else if (req.session.user != usernameStripped) {
+          req.session.user = usernameStripped;
+          req.session.save((err) => {
+            if (err) {
+              console.log('error with session');
+            } else {
+              res.json({
+                redirect: '/Dashboard',
+                validation: 'valid',
+              });
+            }
+          });
+        } else {
+          res.json({
+            redirect: '/Dashboard',
+            validation: 'valid',
+          });
+        }
+      }
     });
-
-
 });
 
 app.post('/addUser', (req, res) => {
-  const user = new User(
-    {
-      username: req.body.username,
-      password: req.body.password,
-      email: req.body.email,
-      city: req.body.city,
-      state: req.body.state,
-      requests: null,
-      games: null
-    }
-  );
+  // strips out trailing spaces after username
+  const usernameStripped = req.body.username.split(' ')[0];
 
-  user.save((err) => {
-    if (err) {throw err};
-  });
+  User.findOne({username: usernameStripped})
+    .then((result) => {
+      if (!result) {
+        req.session.user = usernameStripped;
+        req.session.save((err) => {
+          if (err) { throw err; }
+        });
+
+        const user = new User(
+          {
+            username: usernameStripped,
+            password: req.body.password,
+            email: req.body.email,
+            city: req.body.city,
+            state: req.body.state,
+            requests: null,
+            games: null
+          }
+        );
+
+        user.save((err) => {
+          if (err) { throw err; }
+        });
+
+        res.json({
+          validation: 'valid',
+          redirect: '/Dashboard'
+        });
+      } else {
+        res.json({validation: 'User already exists.'});
+      }
+    });
 });
 
-//** GAME ACTIONS ***//
+// ** GAME ACTIONS ***//
 
-app.get('/findGame/:console/:game', (req,res) => {
+app.get('/findGame/:console/:game', (req, res) => {
   let searchResults = [];
 
   client.games({
@@ -145,19 +155,19 @@ app.get('/findGame/:console/:game', (req,res) => {
       if (game.cover) {
         const coverImage = client.image({
           cloudinary_id: game.cover.cloudinary_id},
-          'cover_small',
-          'jpg'
+        'cover_small',
+        'jpg'
         );
 
-        //convert and add screenshots
-        let screenShots = [];
+        // convert and add screenshots
+        const screenShots = [];
 
         if (game.screenshots) {
           game.screenshots.map((screenshot) => {
             const screenShotURL = client.image({
               cloudinary_id: screenshot.cloudinary_id},
-              'screenshot_med',
-              'jpg'
+            'screenshot_med',
+            'jpg'
             );
             screenShots.push(screenShotURL);
           });
@@ -170,17 +180,15 @@ app.get('/findGame/:console/:game', (req,res) => {
             summary: game.summary,
             cover: coverImage,
             gameConsole: req.params.console,
-            screenshots:  screenShots,
-            // developer: result.developer,
-            // publisher: result.publishers,
+            screenshots: screenShots,
           }]);
       }
     });
 
     res.json(JSON.stringify(searchResults));
   }).catch((error) => {
-      throw error;
-    });
+    throw error;
+  });
 });
 
 app.get('/getAllGames', (req, res) => {
@@ -199,10 +207,10 @@ app.get('/getAllGames', (req, res) => {
     }).catch((err) => {
       throw err;
     });
-
 });
 
 app.get('/getUserGames', (req, res) => {
+  console.log(req.session.user);
   User.findOne({username: req.session.user}).lean()
     .then((user) => {
       if (user.games) {
@@ -219,9 +227,9 @@ app.post('/addGame', (req, res) => {
       const modifiedUser = Object.assign({}, user);
 
       const gametoAdd = Array.from(req.body);
-      gametoAdd[0].owner = req.session.user; //append owner info to added game
+      gametoAdd[0].owner = req.session.user; // append owner info to added game
 
-      const newGameColl = modifiedUser.games === null? gametoAdd:
+      const newGameColl = modifiedUser.games === null ? gametoAdd :
         Array.from(modifiedUser.games).concat(gametoAdd);
 
       User.findOneAndUpdate({username: req.session.user}, {games: newGameColl})
@@ -249,13 +257,13 @@ app.post('/removeGame', (req, res) => {
     });
 });
 
-app.post('/declineTrade', (req,res) => {
-  const traderGameToReceive = Object.assign({}, req.body.offeredGame); //from tradee to trader
-  const tradeeGameToReceive = Object.assign({}, req.body.requestedGame); //from trader to tradee
+app.post('/declineTrade', (req, res) => {
+  const traderGameToReceive = Object.assign({}, req.body.offeredGame); // from tradee to trader
+  const tradeeGameToReceive = Object.assign({}, req.body.requestedGame); // from trader to tradee
 
   User.findOne({username: req.session.user}).lean()
     .then((user) => {
-      let userRequests = user.requests.filter((request) => {
+      const userRequests = user.requests.filter((request) => {
         if (request.requestedGame.id != req.body.requestedGame.id &&
             request.offeredGame.id != req.body.offeredGame.id) {
           return request;
@@ -266,7 +274,7 @@ app.post('/declineTrade', (req,res) => {
         .then(() => {
           User.findOne({username: req.body.requestedGame.owner}).lean()
             .then((owner) => {
-              let ownerRequests = Array.from(owner.requests);
+              const ownerRequests = Array.from(owner.requests);
               ownerRequests.map((request) => {
                 if (request.requestedGame.id === traderGameToReceive.id &&
                   request.offeredGame.id === tradeeGameToReceive.id) {
@@ -274,28 +282,29 @@ app.post('/declineTrade', (req,res) => {
                 }
               });
 
-              User.findOneAndUpdate({username: req.body.requestedGame.owner}, {requests: ownerRequests})
+              User.findOneAndUpdate(
+                {username: req.body.requestedGame.owner},
+                {requests: ownerRequests})
                 .then(() => {
                   res.json(userRequests);
                 });
             });
         });
     });
-
 });
 
 // complete trade for trader after tradee accepts trade
-app.post('/completeTrade', (req,res) => {
-  const traderGameToReceive = Object.assign({},req.body.offeredGame); //from tradee to trader
-  const tradeeGameToReceive = Object.assign({},req.body.requestedGame); //from trader to tradee
-  const gameTradee = req.session.user; req.body.requestedGame.owner;
+app.post('/completeTrade', (req, res) => {
+  const traderGameToReceive = Object.assign({}, req.body.offeredGame); // from tradee to trader
+  const tradeeGameToReceive = Object.assign({}, req.body.requestedGame); // from trader to tradee
+  const gameTradee = req.session.user;
   const gameTrader = req.body.requestedGame.owner;
 
   // perform exchange on trader library
   User.findOne({username: gameTrader}).lean()
     .then((trader) => {
       let traderGames = Array.from(trader.games);
-      let traderRequests = Array.from(trader.requests);
+      const traderRequests = Array.from(trader.requests);
 
       // remove game from trader's library
       traderGames = traderGames.filter((game) => {
@@ -312,7 +321,7 @@ app.post('/completeTrade', (req,res) => {
         }
       });
 
-      //change owner of game to new owner
+      // change owner of game to new owner
       traderGameToReceive.owner = gameTrader;
 
       // add game to trader's library
@@ -320,49 +329,45 @@ app.post('/completeTrade', (req,res) => {
 
       User.findOneAndUpdate({username: gameTrader}, {games: traderGames, requests: traderRequests})
         .then(() => {
+          // perform exchange on tradee library
+          User.findOne({username: gameTradee}).lean()
+            .then((tradee) => {
+              let tradeeGames = Array.from(tradee.games);
+              // remove game from tradee's library
+              tradeeGames = tradeeGames.filter((game) => {
+                if (game.id != traderGameToReceive.id) {
+                  return game;
+                }
+              });
 
-            // perform exchange on tradee library
-            User.findOne({username: gameTradee}).lean()
-              .then((tradee) => {
-                let tradeeGames = Array.from(tradee.games);
+              // change owner of game to new owner
+              tradeeGameToReceive.owner = gameTradee;
 
-                // remove game from tradee's library
-                tradeeGames = tradeeGames.filter((game) => {
-                  if (game.id != traderGameToReceive.id) {
-                    return game;
-                  }
+              // add game to tradee's library
+              tradeeGames = tradeeGames.concat([tradeeGameToReceive]);
+
+              User.findOneAndUpdate({username: gameTradee}, {games: tradeeGames})
+                .then(() => {
+                  res.json(tradeeGames);
                 });
-
-                //change owner of game to new owner
-                tradeeGameToReceive.owner = gameTradee;
-
-                // add game to tradee's library
-                tradeeGames = tradeeGames.concat([tradeeGameToReceive]);
-
-                User.findOneAndUpdate({username: gameTradee}, {games: tradeeGames})
-                  .then(() => {
-                    res.json(tradeeGames);
-                  });
-                });
+            });
         });
     });
-
 });
 
-//**** REQUEST ACTIONS *****/////
+// **** REQUEST ACTIONS *****/////
 
 app.post('/addRequest', (req, res) => {
   User.findOne({username: req.session.user}).lean()
     .then((user) => {
       const retrievedUser = Object.assign({}, user);
-      const userRequests = retrievedUser.requests === null?Array.from(req.body):
+      const userRequests = retrievedUser.requests === null ? Array.from(req.body) :
         Array.from(retrievedUser.requests).concat(req.body);
 
       User.findOneAndUpdate({username: req.session.user}, {requests: userRequests})
         .then(() => {
-
-          const incomingRequest = Object.assign({},req.body[0]);
-          //create request for recipient of trade offer and append to their requests
+          const incomingRequest = Object.assign({}, req.body[0]);
+          // create request for recipient of trade offer and append to their requests
           const newRequest = {
             status: 'Pending',
             requestedGame: incomingRequest.offeredGame,
@@ -372,17 +377,19 @@ app.post('/addRequest', (req, res) => {
 
           // find target owner of requested game
           User.findOne({username: incomingRequest.requestedGame.owner}).lean()
-            .then(user => {
+            .then((user) => {
               const targetUser = Object.assign({}, user);
 
               // add request
-              const targetUserRequests = targetUser.requests === null?Array.from([newRequest]):
+              const targetUserRequests = targetUser.requests === null ? Array.from([newRequest]) :
                 Array.from(targetUser.requests).concat([newRequest]);
               // update target owner's request
-              User.findOneAndUpdate({username: incomingRequest.requestedGame.owner}, {requests: targetUserRequests})
+              User.findOneAndUpdate(
+                {username: incomingRequest.requestedGame.owner},
+                {requests: targetUserRequests})
                 .then(() => {
                   res.json(req.body);
-                })
+                });
             });
         });
     });
@@ -391,7 +398,7 @@ app.post('/addRequest', (req, res) => {
 app.post('/removeRequest', (req, res) => {
   User.findOne({username: req.session.user}).lean()
     .then((user) => {
-      let userRequests = user.requests.filter((request) => {
+      const userRequests = user.requests.filter((request) => {
         if (request.requestedGame.id != req.body.requestedGameId &&
             request.offeredGame.id != req.body.offeredGameId) {
           return request;
@@ -423,17 +430,3 @@ app.get('*', (req, res) => {
 app.listen(3000, () => {
   console.log('App started again');
 });
-
-
- /*
-  client.platforms({
-    fields: '*' , // Return all fields
-   // search: req.params.game,
-    limit: 50, // Limit to 5 results
-    offset: 100 // Index offset for results
-    }).then((response) => {
-        console.dir(response);
-
-
-
-     });*/

@@ -5,8 +5,8 @@ import ReactDOM from 'react-dom';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import 'whatwg-fetch';
-import {Thumbnail, Modal, Grid, Row, Col, Well,
-  Button, FormControl, FormGroup, ControlLabel} from 'react-bootstrap';
+import {Thumbnail, Modal, Grid, Row, Col, Well, Media,
+  Button, FormControl, FormGroup, ControlLabel, HelpBlock} from 'react-bootstrap';
 import GameItem from './GameItem';
 import {addGame, getUserGames, removeGame } from '../actions/gameActions';
 import {gameConsoles} from '../constants/gameConsoles';
@@ -19,8 +19,10 @@ class GameList extends Component {
       searchTerm: '',
       searchList: [],
       selectedGame: {},
-      selectedConsole: 59,
-
+      selectedConsole: 0,
+      searchTermMessage: '',
+      consoleSearchMessage: '',
+      gameSearchMessage:'',
     };
 
     this.toggleModal = this.toggleModal.bind(this);
@@ -29,6 +31,8 @@ class GameList extends Component {
     this.updateSearchTerm = this.updateSearchTerm.bind(this);
     this.highlightGame = this.highlightGame.bind(this);
     this.updateConsole = this.updateConsole.bind(this);
+    this.verifySearchQuery = this.verifySearchQuery.bind(this);
+    this.verifyClientDoesNotOwnGame = this.verifyClientDoesNotOwnGame.bind(this);
   }
 
   componentDidMount() {
@@ -42,58 +46,106 @@ class GameList extends Component {
     });
   }
 
+  verifySearchQuery() {
+    if (this.state.searchTerm.length === 0) {
+      this.setState({
+        searchTermMessage: 'Please enter a game title to search.',
+      });
+      return false;
+    }
+
+    if (this.state.selectedConsole === 0) {
+      this.setState({
+        consoleSearchMessage: 'Please select a gaming console.',
+      });
+      return false;
+    }
+    return true;
+  }
+
   queryGames() {
     this.setState({
       selectedGame: {},
     });
 
-    fetch(`/findGame/${this.state.selectedConsole}/${this.state.searchTerm}`)
-      .then((res) => {
-        res.json().then((result) => {
-          this.setState({
-            searchList: JSON.parse(result),
+    if (this.verifySearchQuery()) {
+      fetch(`/findGame/${this.state.selectedConsole}/${this.state.searchTerm}`)
+        .then((res) => {
+          res.json().then((result) => {
+            if (JSON.parse(result).length > 0) {
+              // add Well only after search results have been returned
+              ReactDOM.findDOMNode(this.refs["searchWell"]).className = 'well';
+
+              this.setState({
+                searchList: JSON.parse(result),
+              });
+            } else {
+              this.setState({
+                gameSearchMessage: 'No games found. Please try another search term.',
+              });
+            }
           });
+        }).catch((err) => {
+           throw err;
         });
-      }).catch((err) => {
-        console.log(err);
-      });
+    }
   }
 
   updateSearchTerm(e) {
     this.setState({
       searchTerm: e.target.value,
+      searchTermMessage: '',
+      gameSearchMessage: '',
     });
   }
 
-  highlightGame(highlightedGame){
-
+  highlightGame(highlightedGame) {
     // unhighlights previously selected game
-    this.state.searchList.map(game => {
+    this.state.searchList.map((game) => {
       ReactDOM.findDOMNode(this.refs[game.id]).style.backgroundColor = 'transparent';
     });
-    ReactDOM.findDOMNode(this.refs[highlightedGame.id]).style.backgroundColor = 'lightblue';
+    ReactDOM.findDOMNode(this.refs[highlightedGame.id]).style.backgroundColor = '#46af2c';
 
     this.setState({
       selectedGame: highlightedGame,
+      gameSearchMessage: '',
     });
   }
 
+  verifyClientDoesNotOwnGame() {
+    // checks to see if client already has game in their collection
+    let doesNotOwnGame = true;
+
+    Array.from(this.props.games.games).map((game) => {
+      if (game.id.toString() === this.state.selectedGame.id.toString()) {
+        this.setState({
+          gameSearchMessage: 'This game already exists in your library.',
+        });
+        doesNotOwnGame = false;
+      }
+    });
+    return doesNotOwnGame;
+  }
+
   handleOnClickAdd() {
-    this.props.addGame([
-      {
-        name: this.state.selectedGame.name,
-        id: this.state.selectedGame.id,
-        summary: this.state.selectedGame.summary,
-        cover: this.state.selectedGame.cover,
-        gameConsole: this.state.selectedGame.gameConsole,
-        screenshots: this.state.selectedGame.screenshots
-      }]);
-    this.toggleModal(); // close modal
+    if (this.verifyClientDoesNotOwnGame()) {
+      this.props.addGame([
+        {
+          name: this.state.selectedGame.name,
+          id: this.state.selectedGame.id,
+          summary: this.state.selectedGame.summary,
+          cover: this.state.selectedGame.cover,
+          gameConsole: this.state.selectedGame.gameConsole,
+          screenshots: this.state.selectedGame.screenshots
+        }]);
+      this.toggleModal(); // close modal
+    }
   }
 
   updateConsole(event) {
     this.setState({
-      selectedConsole: event.target.value,
+      selectedConsole: parseInt(event.target.value),
+      consoleSearchMessage: '',
     });
   }
 
@@ -110,15 +162,17 @@ class GameList extends Component {
             </Row>
             <Row>
               {this.props.games.games.map((game, key) => (
-                <Col sm={2} xs={2} key={game.id}>
-                  <GameItem
-                    name={game.name}
-                    id={game.id}
-                    summary={game.summary}
-                    cover={game.cover}
-                    gameConsole={game.gameConsole}
-                    screenshots={game.screenshots}
-                  />
+                <Col sm={2} xs={4} key={game.id}>
+                  <div className="game-container">
+                    <GameItem
+                      name={game.name}
+                      id={game.id}
+                      summary={game.summary}
+                      cover={game.cover}
+                      gameConsole={game.gameConsole}
+                      screenshots={game.screenshots}
+                    />
+                  </div>
                 </Col>
               ))
               }
@@ -134,9 +188,9 @@ class GameList extends Component {
           </Modal.Header>
 
           <Modal.Body>
-            <Grid>
+            <div>
               <Row>
-                <Col sm={7} xs={9} md={6}>
+                <Col sm={10} xs={8} md={10}>
                   <FormGroup>
                     <FormControl
                       onChange={this.updateSearchTerm}
@@ -145,18 +199,19 @@ class GameList extends Component {
                       placeholder="Search For Games"
                     />
                   </FormGroup>
+                  <HelpBlock>{this.state.searchTermMessage}</HelpBlock>
                 </Col>
                 <Col sm={1} xs={1}>
                   <Button bsStyle="primary" onClick={this.queryGames}>Search</Button>
                 </Col>
               </Row>
               <Row>
-                <Col sm={7} xs={9} md={6}>
+                <Col sm={10} xs={9} md={10}>
                   <FormGroup controlId="formControlsSelect">
                     <FormControl
                       onChange={this.updateConsole}
                       componentClass="select">
-                      <option>Select Console</option>
+                      <option value={0}>Select Console</option>
                       {gameConsoles.map(consoleNum => (
                         <option value={consoleNum.id} key={consoleNum.id}>
                           {consoleNum.name}
@@ -164,28 +219,30 @@ class GameList extends Component {
                       ))
                       }
                     </FormControl>
+                    <HelpBlock>{this.state.consoleSearchMessage}</HelpBlock>
+                    <HelpBlock>{this.state.gameSearchMessage}</HelpBlock>
                   </FormGroup>
                 </Col>
               </Row>
               <Row>
-                <Col sm={9} xs={12} md={7}>
-                  <Well>
+                <Col sm={12} xs={12} md={12}>
+                  <div ref="searchWell">
                     <Row>
                       {this.state.searchList.map(game => (
-                        <a onClick={()=> {this.highlightGame(game)}} key={game.id}>
-
-                            <Thumbnail ref={game.id} width={90} height={128}>
-                              <img src={game.cover} alt={game.name} />
-                            </Thumbnail>
-
-                        </a>
+                        <Col sm={3} xs={6}>
+                          <div className="game-container">
+                            <a onClick={()=> {this.highlightGame(game)}} key={game.id}>
+                              <img className="game-item" src={game.cover} alt={game.name} ref={game.id} max-width={90} max-height={128} />
+                            </a>
+                          </div>
+                        </Col>
                       ))
                       }
                     </Row>
-                  </Well>
+                  </div>
                 </Col>
               </Row>
-            </Grid>
+            </div>
           </Modal.Body>
 
           <Modal.Footer>

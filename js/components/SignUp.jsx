@@ -1,8 +1,6 @@
 import React, {Component} from 'react';
-import {connect} from 'react-redux';
-import bindActionCreators from 'redux';
 import 'whatwg-fetch';
-import {Grid, Row, Col, FormGroup, FormControl, Button} from 'react-bootstrap';
+import {Row, Col, FormGroup, FormControl, Button, HelpBlock} from 'react-bootstrap';
 
 class SignUp extends Component {
   constructor(props) {
@@ -10,15 +8,25 @@ class SignUp extends Component {
     this.state = {
       newUser: {
         username: '',
-        password: '',
+        password1: '',
+        password2: '',
         email: '',
         city: '',
         state: '',
       },
+      usernameHelp: '',
+      password1Help: '',
+      password2Help: '',
+      emailHelp: '',
+      cityHelp: '',
+      stateHelp: '',
+
+
     };
 
     this.handleChange = this.handleChange.bind(this);
     this.sendUserInfoToDB = this.sendUserInfoToDB.bind(this);
+    this.validateSignUp = this.validateSignUp.bind(this);
   }
 
   handleChange(event) {
@@ -27,19 +35,114 @@ class SignUp extends Component {
 
     this.setState({
       newUser: user,
+      usernameHelp: '',
+      password1Help: '',
+      password2Help: '',
+      emailHelp: '',
+      cityHelp: '',
+      stateHelp: '',
     });
   }
 
-  sendUserInfoToDB() {
-    fetch('/addUser', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(this.state.newUser),
-    }).then((res) => {
-      if (res.ok) {
-        console.log('user added');
+  checkLengthOfField(field) {
+    if (field.length > 0) {
+      return true;
+    }
+    return false;
+  }
+
+  // client-side verification
+  validateSignUp() {
+    const user = this.state.newUser;
+
+    // makes sure all fields are filled out with at least one characer
+    Object.keys(user).map((field) => {
+      const help = `${field}Help`;
+      if (user[field].length === 0) {
+        let fieldString;
+
+        if (field.toString() === 'city') {
+          fieldString = 'zip code';
+        } else if (field.toString() !== 'password1' && field.toString() !== 'password2') {
+          fieldString = field;
+        } else {
+          fieldString = 'password';
+        }
+
+        this.setState({
+          [help]: `Please enter a valid ${fieldString}.`,
+        });
+
+        return false;
       }
-    }).catch(err => `Error in sending data to server:${err.message}`);
+    });
+
+    if (user.username.length < 8 || user.username.split(' ').length > 1) {
+      this.setState({
+        usernameHelp: 'Username must be at least 8 characters and contain no spaces.',
+      });
+      return false;
+    }
+
+    if (user.password1.length < 6 || user.password1.split(' ').length > 1) {
+      this.setState({
+        password1Help: 'Password must be at least 6 characters and contain no spaces.',
+      });
+      return false;
+    }
+
+    if (user.password2.length < 6) {
+      this.setState({
+        password2Help: 'Password must be at least 6 characters.',
+      });
+      return false;
+    }
+
+    if (user.password2 !== user.password1) {
+      this.setState({
+        password2Help: 'Passwords must match.',
+      });
+      return false;
+    }
+
+    if (!user.email.match(/^[a-zA-Z0-9.]+[@][a-zA-Z0-9]+[.][a-zA-Z]{2,3}$/)) {
+      this.setState({
+        emailHelp: 'Please enter a valid email.',
+      });
+      return false;
+    }
+
+    if (!user.city.match(/^[0-9]{5}$/)) {
+      this.setState({
+        cityHelp: 'Please enter a valid zip code.',
+      });
+      return false;
+    }
+
+    return true;
+  }
+
+  sendUserInfoToDB() {
+    if (this.validateSignUp()) {
+      fetch('/addUser', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(this.state.newUser),
+      }).then((res) => {
+        if (res.ok) {
+          res.json().then((result) => {
+            if (result.validation !== 'valid') {
+              this.setState({
+                usernameHelp: result.validation,
+              });
+            } else {
+              this.props.history.push(result.redirect);
+            }
+          });
+        }
+      }).catch(err => `Error in sending data to server:${err.message}`);
+    }
   }
 
   render() {
@@ -54,7 +157,7 @@ class SignUp extends Component {
           </Col>
         </Row>
         <Row>
-          <Col sm={6} smOffset={3} xs={6} xsOffset={3}>
+          <Col sm={4} smOffset={4} xs={6} xsOffset={3}>
             <FormGroup>
               <FormControl
                 name="username"
@@ -62,35 +165,38 @@ class SignUp extends Component {
                 placeholder="Username"
                 onChange={this.handleChange}
               />
+              <HelpBlock>{this.state.usernameHelp}</HelpBlock>
             </FormGroup>
           </Col>
         </Row>
         <Row>
-           <Col sm={6} smOffset={3} xs={6} xsOffset={3}>
+          <Col sm={4} smOffset={4} xs={6} xsOffset={3}>
             <FormGroup>
               <FormControl
-                name="password"
+                name="password1"
                 type="password"
                 placeholder="Password"
                 onChange={this.handleChange}
               />
+              <HelpBlock>{this.state.password1Help}</HelpBlock>
             </FormGroup>
           </Col>
         </Row>
         <Row>
-           <Col sm={6} smOffset={3} xs={6} xsOffset={3}>
+          <Col sm={4} smOffset={4} xs={6} xsOffset={3}>
             <FormGroup>
               <FormControl
-                name="password"
+                name="password2"
                 type="password"
                 placeholder="Reenter Password"
                 onChange={this.handleChange}
               />
+              <HelpBlock>{this.state.password2Help}</HelpBlock>
             </FormGroup>
           </Col>
         </Row>
         <Row>
-           <Col sm={6} smOffset={3} xs={6} xsOffset={3}>
+          <Col sm={4} smOffset={4} xs={6} xsOffset={3}>
             <FormGroup>
               <FormControl
                 name="email"
@@ -98,52 +204,33 @@ class SignUp extends Component {
                 placeholder="Email"
                 onChange={this.handleChange}
               />
+              <HelpBlock>{this.state.emailHelp}</HelpBlock>
             </FormGroup>
           </Col>
         </Row>
         <Row>
-          <Col sm={4} smOffset={3} xs={4} xsOffset={3}>
+          <Col sm={2} smOffset={4} xs={4} xsOffset={3}>
             <FormGroup>
               <FormControl
                 name="city"
                 type="text"
-                placeholder="city"
+                placeholder="zip code"
                 onChange={this.handleChange}
               />
             </FormGroup>
-          </Col>
-           <Col sm={2} smOffset={0} xs={2} xsOffset={0}>
-            <FormGroup>
-              <FormControl
-                name="state"
-                type="text"
-                placeholder="state"
-                onChange={this.handleChange}
-              />
-            </FormGroup>
+            <HelpBlock>{this.state.cityHelp}</HelpBlock>
           </Col>
         </Row>
         <Row>
-          <Button bsStyle="primary" onClick={this.sendUserInfoToDB}>
-            Submit
-          </Button>
+          <Col sm={4} smOffset={4} xs={6} xsOffset={3}>
+            <Button className="submit-new-user-button request-accepted" bsStyle="primary" onClick={this.sendUserInfoToDB}>
+              Submit
+            </Button>
+          </Col>
         </Row>
       </div>
     );
   }
 }
-
- /*
-function mapStateToProps() {
-
-}
-
-          <Col sm={12} xs={12}>
-           <img src="./media/controllers.jpg" />
-          </Col>
-
-function mapDispatchToProps(dispatch) {
-  return bindActionCreators({
-    addUser*/
 
 export default SignUp;

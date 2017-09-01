@@ -2,6 +2,7 @@
 
 import React, {Component} from 'react';
 import {bindActionCreators} from 'redux';
+import Menu from './Menu';
 import {Grid, Row, Col, Modal, Button, Well, FormGroup,
   FormControl, option, ControlLabel, Media} from 'react-bootstrap';
 import {connect} from 'react-redux';
@@ -139,6 +140,7 @@ class GameBrowser extends Component {
   render() {
     return (
       <div>
+        <Menu />
         <Well>
           <Grid>
             <Row>
@@ -146,18 +148,20 @@ class GameBrowser extends Component {
                 <h1 className="section-header">Available Games</h1>
               </Col>
             </Row>
-            <Row>   {/** show all games available**/}
+            <Row className="game-browser">   {/** show all games available**/}
               {Object.keys(this.state.allGames).map((game, key) => (
-                <Col sm={2} xs={2} key={key}>
-                  <a onClick={this.toggleModal.bind(this, game)}>
-                    <GameRequestIcon
-                      name={this.state.allGames[game].name}
-                      summary={this.state.allGames[game].summary}
-                      status={'available'}
-                      cover={this.state.allGames[game].cover}
-                      key={key}
-                    />
-                  </a>
+                <Col sm={2} xs={4} key={key}>
+                  <div className="game-container">
+                    <a onClick={this.toggleModal.bind(this, game)}>
+                      <GameRequestIcon
+                        name={this.state.allGames[game].name}
+                        summary={this.state.allGames[game].summary}
+                        status={'available'}
+                        cover={this.state.allGames[game].cover}
+                        key={key}
+                      />
+                    </a>
+                  </div>
                 </Col>
               ))
               }
@@ -230,39 +234,3 @@ function mapDispatchToProps(dispatch) {
 }
 
 export default connect(mapPropstoState, mapDispatchToProps)(GameBrowser);
-
-/*
-{Object.keys(this.state.allGames).map((game, key) => (
-                <Col sm={2} xs={6} key={key}>
-                  <a onClick={this.toggleModal.bind(this, game)}>
-                    <GameRequestIcon
-                      name={this.state.allGames[game].name}
-                      summary={this.state.allGames[game].summary}
-                      status={'available'}
-                      cover={this.state.allGames[game].cover}
-                    />
-                  </a>
-                </Col>
-              ))
-              }
-
-    <Button
-                        bsStyle="danger"
-                        onClick={this.subtractGameFromOffer.bind(this, game)}
-                      >
-                        Remove
-                      </Button>
-
-
-                      {this.state.gameOffer.map((game, key) => (
-                    <Col sm={2} xs={6} key={key}>
-                      <GameItem
-                        cover={game.cover}
-                        name={game.name}
-                        key={key}
-                      />
-                    </Col>
-                  ))
-                  }
-
-              */

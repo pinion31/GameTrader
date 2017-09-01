@@ -11,7 +11,7 @@ import {addGame} from './actions/gameActions';
 import {addRequest} from './actions/requestActions';
 import '../sass/style.scss';
 
-const middleware = applyMiddleware(thunk, logger);
+const middleware = applyMiddleware(thunk);
 const store = createStore(rootReducer, middleware);
 
 ReactDOM.render(

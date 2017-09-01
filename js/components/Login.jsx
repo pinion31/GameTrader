@@ -1,14 +1,14 @@
 import React, {Component} from 'react';
 import 'whatwg-fetch';
-import {Grid, Row, Col, FormGroup, FormControl, Button, HelpBlock} from 'react-bootstrap';
+import {Row, Col, FormGroup, FormControl, Button, HelpBlock} from 'react-bootstrap';
 
 class Login extends Component {
   constructor(props) {
     super(props);
     this.state = {
-        user: {
-          username: '',
-          password: ''
+      user: {
+        username: '',
+        password: ''
       },
       usernameHelp: '',
       passwordHelp: '',
@@ -17,11 +17,11 @@ class Login extends Component {
     this.handleOnClick = this.handleOnClick.bind(this);
     this.handleOnChange = this.handleOnChange.bind(this);
     this.validateLogin = this.validateLogin.bind(this);
+    this.goToSignUp = this.goToSignUp.bind(this);
   }
 
   handleOnChange(e) {
-
-    let loggedInUser = Object.assign({},this.state.user);
+    const loggedInUser = Object.assign({}, this.state.user);
     loggedInUser[e.target.name] = e.target.value;
 
     this.setState({
@@ -31,33 +31,35 @@ class Login extends Component {
     });
   }
 
+// client-side verification
   validateLogin() {
-    //if username is filled
+    // if username is filled
     if (this.state.user.username.length === 0) {
       this.setState({
-        usernameHelp: 'Please enter a username',
+        usernameHelp: 'Please enter a username.',
       });
       return false;
-      //if password field is filled
+      // if password field is filled
     } else if (this.state.user.password.length === 0) {
       this.setState({
-        passwordHelp: 'Please enter a password',
+        passwordHelp: 'Please enter a password.',
       });
       return false;
     }
 
-    //if validation check passes, send credentials to server
+  // if validation check passes, send credentials to server
     return true;
   }
 
   handleOnClick() {
-    if (this.validateLogin(this.state.user)) {
+    if (this.validateLogin()) {
       fetch('/loginUser', {
         method: 'POST',
         credentials: 'include', // need to include this for session to persist in other routes
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(this.state.user),
       }).then((res) => {
+        if (res.ok) {
           res.json().then((redir) => {
             if (redir.validation === 'valid') {
               this.props.history.push(redir.redirect);
@@ -66,9 +68,14 @@ class Login extends Component {
                 [redir.field]: redir.validation,
               });
             }
-        });
+          });
+        }
       });
     }
+  }
+
+  goToSignUp() {
+    this.props.history.push('/Signup');
   }
 
   render() {
@@ -83,8 +90,8 @@ class Login extends Component {
           </Col>
         </Row>
         <Row>
-          <Col sm={6} smOffset={3} xs={6} xsOffset={3}>
-            <FormGroup controlId="formValidationSuccess1" validationState= {null}>
+          <Col sm={4} smOffset={4} xs={6} xsOffset={3}>
+            <FormGroup>
               <FormControl
                 name="username"
                 type="text"
@@ -94,7 +101,7 @@ class Login extends Component {
               <HelpBlock>{this.state.usernameHelp}</HelpBlock>
             </FormGroup>
           </Col>
-           <Col sm={6} smOffset={3} xs={6} xsOffset={3}>
+          <Col sm={4} smOffset={4} xs={6} xsOffset={3}>
             <FormGroup>
               <FormControl
                 name="password"
@@ -107,9 +114,9 @@ class Login extends Component {
           </Col>
         </Row>
         <Row>
-          <Col sm={6} smOffset={3} xs={6} xsOffset={3}>
+          <Col sm={4} smOffset={4} xs={6} xsOffset={3}>
             <Button className="login-button request-accepted " bsStyle="primary" onClick={this.handleOnClick}>Log in</Button>
-            <Button className="signup-button" bsStyle="primary" onClick={this.handleOnClick}>Sign Up</Button>
+            <Button className="signup-button" bsStyle="primary" onClick={this.goToSignUp}>Sign Up</Button>
           </Col>
         </Row>
 
