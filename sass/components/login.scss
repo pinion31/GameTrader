@@ -4,5 +4,8 @@
 }
 
 .login-button {
-
+  &:active,&:hover,&:focus, &:visited {
+    background-color: $accepted-green-pressed;
+    border:none;
+  }
 }

@@ -21,7 +21,7 @@ const Main = () => (
 
 const Footer = () => (
   <div className="footer-style">
-    <p>Copyright 2017 Chris Cantu. All Rights Reserved</p>
+    <p>Copyright &copy; 2017 Chris Cantu. All Rights Reserved</p>
   </div>
 );
 const RoutedApp = () => (

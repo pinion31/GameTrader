@@ -23,10 +23,33 @@ a {
 
 .navbar-default .navbar-nav li a {
   color:white;
+
+  &:active{
+    background-color: $well-bg-color;
+    color:white;
+  }
+
+  &:visited {
+    background-color: $well-bg-color;
+    color:white;
+  }
+
+  &:focus {
+    color:$gray-text;
+    background-color:$off-white;
+  }
+  &:hover {
+    color:$gray-text;
+    background-color:$off-white;
+  }
 }
 
 .navbar-default .navbar-brand {
   color:white;
+
+   &:active,&:hover,&:focus, &:visited {
+    color:white;
+  }
 }
 
 .footer {
@@ -37,6 +60,10 @@ a {
 .thumbnail {
   background-color: $well-bg-color;
   border: none;
+}
+
+.btn:hover {
+  color:white;
 }
 
 a:hover {
@@ -85,6 +112,19 @@ a:focus {
 .menu-logo {
   font-family: $audiowide;
   color:white;
-  font-size: 1.5em;
+  font-size: 1.2em;
+
+   &:active,&:hover,&:focus, &:visited {
+    color:white;
+  }
+}
+
+.nav-search {
+  padding-top:10px;
+
+   &:active,&:hover,&:focus, &:visited {
+    color:white;
+    background-color: $well-bg-color;
+  }
 }
 

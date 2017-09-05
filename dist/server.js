@@ -16,6 +16,7 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
+var bcrypt = require('bcryptjs');
 
 mongoose.connect('mongodb://localhost/local');
 mongoose.Promise = global.Promise;
@@ -44,61 +45,57 @@ app.use(session({
 
 // **** USER ACTIONS ***///
 app.post('/loginUser', function (req, res) {
-  // validation
-  var credCheck = false;
-
   // strips out trailing spaces after username
   var usernameStripped = req.body.username.split(' ')[0];
 
   _User2.default.findOne({ username: usernameStripped }).then(function (user) {
     if (user) {
-      if (user.password === req.body.password) {
-        credCheck = true;
-      } else {
-        res.json({
-          field: 'passwordHelp',
-          validation: 'Invalid Password'
-        });
-      }
+      // decrypt password
+      bcrypt.compare(req.body.password, user.password, function (err, match) {
+        if (match) {
+          // session check
+          if (typeof req.session.user === 'undefined') {
+            req.session.user = usernameStripped;
+            req.session.save(function (err) {
+              if (err) {
+                throw err;
+              } else {
+                res.json({
+                  redirect: '/Dashboard',
+                  validation: 'valid'
+                });
+              }
+            });
+          } else if (req.session.user != usernameStripped) {
+            req.session.user = usernameStripped;
+            req.session.save(function (err) {
+              if (err) {
+                throw err;
+              } else {
+                res.json({
+                  redirect: '/Dashboard',
+                  validation: 'valid'
+                });
+              }
+            });
+          } else {
+            res.json({
+              redirect: '/Dashboard',
+              validation: 'valid'
+            });
+          }
+        } else {
+          res.json({
+            field: 'passwordHelp',
+            validation: 'Invalid Password'
+          });
+        }
+      });
     } else {
       res.json({
         field: 'usernameHelp',
         validation: 'Invalid Username'
       });
-    }
-
-    if (credCheck) {
-      // session check
-      if (typeof req.session.user === 'undefined') {
-        req.session.user = usernameStripped;
-        req.session.save(function (err) {
-          if (err) {
-            throw err;
-          } else {
-            res.json({
-              redirect: '/Dashboard',
-              validation: 'valid'
-            });
-          }
-        });
-      } else if (req.session.user != usernameStripped) {
-        req.session.user = usernameStripped;
-        req.session.save(function (err) {
-          if (err) {
-            console.log('error with session');
-          } else {
-            res.json({
-              redirect: '/Dashboard',
-              validation: 'valid'
-            });
-          }
-        });
-      } else {
-        res.json({
-          redirect: '/Dashboard',
-          validation: 'valid'
-        });
-      }
     }
   });
 });
@@ -116,25 +113,31 @@ app.post('/addUser', function (req, res) {
         }
       });
 
-      var user = new _User2.default({
-        username: usernameStripped,
-        password: req.body.password,
-        email: req.body.email,
-        city: req.body.city,
-        state: req.body.state,
-        requests: null,
-        games: null
-      });
+      bcrypt.genSalt(10, function (err, salt) {
+        bcrypt.hash(req.body.password1, salt, function (err, hash) {
+          // Store hash in your password DB.
+          console.log('hash is ' + hash);
+          var user = new _User2.default({
+            username: usernameStripped,
+            password: hash,
+            email: req.body.email,
+            city: req.body.city,
+            state: req.body.state,
+            requests: null,
+            games: null
+          });
 
-      user.save(function (err) {
-        if (err) {
-          throw err;
-        }
-      });
+          user.save(function (err) {
+            if (err) {
+              throw err;
+            }
+          });
 
-      res.json({
-        validation: 'valid',
-        redirect: '/Dashboard'
+          res.json({
+            validation: 'valid',
+            redirect: '/Dashboard'
+          });
+        });
       });
     } else {
       res.json({ validation: 'User already exists.' });

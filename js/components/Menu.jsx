@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import {Navbar, Nav, NavItem} from 'react-bootstrap';
+import {Navbar, Nav, NavItem, Col, FormControl, FormGroup, Glyphicon, Button} from 'react-bootstrap';
+import BrowserSearchBar from './BrowserSearchBar';
 import {LinkContainer} from 'react-router-bootstrap';
 
 class Menu extends Component {
@@ -10,6 +11,7 @@ class Menu extends Component {
           <Navbar.Brand><span className="menu-logo">GameTrader</span></Navbar.Brand>
         </Navbar.Header>
         <Nav pullRight>
+          <BrowserSearchBar />
           <LinkContainer to="/AllGames">
             <NavItem className="nav-text">Browse Games</NavItem>
           </LinkContainer>

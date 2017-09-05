@@ -17,6 +17,7 @@
   width: 90px;
   height: 170px;
   border-radius: 3%;
+  cursor: pointer;
 }
 
 .request-image > a > p{
@@ -45,6 +46,12 @@
   background-color: $accepted-green;
   border: none;
   color: white;
+
+  &:hover,&:active,&:focus, {
+    background-color: $accepted-green-pressed;
+    border:none;
+    color:white;
+  }
 }
 
 .modal-buttons {

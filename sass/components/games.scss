@@ -10,15 +10,23 @@
 
 .add-game-button {
   float:right;
+
+  &:active,&:hover,&:focus, &:visited {
+    background-color: $accepted-green-pressed;
+    border:none;
+    color:white;
+  }
 }
 
 .game-item {
   padding: 10px;
+  cursor: pointer;
 }
 
 .game-container {
   max-width: 100px;
-  height: 160px;
+  height: 190px;
+  cursor: pointer;
 }
 
 .game-browser {
