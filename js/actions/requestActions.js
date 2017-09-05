@@ -4,7 +4,7 @@ import axios from 'axios';
 
 export const addRequest = request => (
   (dispatch) => {
-    axios.post('/addRequest', request)
+    axios.post('/requests/addRequest', request)
       .then((res) => {
         dispatch({type: 'ADD_REQUEST', payload: res.data});
       }).catch((err) => {
@@ -15,19 +15,18 @@ export const addRequest = request => (
 
 export const removeRequest = request => (
   (dispatch) => {
-    axios.post('/removeRequest', request)
+    axios.post('/requests/removeRequest', request)
       .then((res) => {
         dispatch({type: 'REMOVE_REQUEST', payload: res.data});
       }).catch((err) => {
         throw err;
       });
   }
-
 );
 
 export const declineTrade = request => (
   (dispatch) => {
-    axios.post('/declineTrade', request)
+    axios.post('/trades/declineTrade', request)
       .then((res) => {
         dispatch({type: 'DECLINE_TRADE', payload: res.data});
       }).catch((err) => {
@@ -38,7 +37,7 @@ export const declineTrade = request => (
 
 export const getUserRequests = () => (
   (dispatch) => {
-    axios.get('/getUserRequests')
+    axios.get('/requests/getUserRequests')
       .then((res) => {
         dispatch({type: 'GET_USER_REQUESTS', payload: res.data});
       }).catch((err) => {

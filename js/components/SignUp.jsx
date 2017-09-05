@@ -124,7 +124,7 @@ class SignUp extends Component {
 
   sendUserInfoToDB() {
     if (this.validateSignUp()) {
-      fetch('/addUser', {
+      fetch('/users/addUser', {
         method: 'POST',
         credentials: 'include',
         headers: {'Content-Type': 'application/json'},

@@ -53,7 +53,7 @@ class Login extends Component {
 
   handleOnClick() {
     if (this.validateLogin()) {
-      fetch('/loginUser', {
+      fetch('/users/loginUser', {
         method: 'POST',
         credentials: 'include', // need to include this for session to persist in other routes
         headers: {'Content-Type': 'application/json'},
