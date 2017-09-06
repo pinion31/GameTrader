@@ -58,6 +58,7 @@ router.post('/removeRequest', (req, res) => {
 });
 
 router.get('/getUserRequests', (req, res) => {
+  if (req.session.user) {
   User.findOne({username: req.session.user}).lean()
     .then((user) => {
       if (user.requests) {
@@ -66,6 +67,10 @@ router.get('/getUserRequests', (req, res) => {
         res.json([]);
       }
     });
+  } else {
+    res.json({session:'none'});
+  }
+
 });
 
 module.exports = router;

@@ -60,13 +60,28 @@ router.get('/findGame/:console/:game', function (req, res) {
   });
 });
 
-router.get('/getAllGames', function (req, res) {
+router.get('/getAllGames/:filter', function (req, res) {
   var allGames = [];
+  var regSearch = void 0;
+
+  if (req.params.filter === 'nofilter') {
+    regSearch = /[a-zA-Z0-9]/;
+  } else {
+    regSearch = new RegExp(req.params.filter.toLowerCase());
+  }
+
   User.find({}).lean().then(function (users) {
     users.forEach(function (user) {
       if (user.games) {
         if (user.games[0].owner != req.session.user) {
-          allGames = allGames.concat(user.games);
+          var userGame = user.games.filter(function (game) {
+            if (game.name.toLowerCase().match(regSearch)) {
+              return game;
+            }
+          });
+
+          allGames = allGames.concat(userGame);
+          // allGames = allGames.concat(user.games);
         }
       }
     });

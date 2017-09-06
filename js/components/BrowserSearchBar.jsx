@@ -19,14 +19,14 @@ class BrowserSearchBar extends Component {
   }
 
   filterAvailableGames() {
-
+    this.props.fetchGames(this.state.searchTerm);
   }
 
   render() {
     return (
-      <li className="nav-search">
+      <div className="nav-search">
         <Button bsStyle="primary" onClick={this.filterAvailableGames}><Glyphicon glyph="search" /></Button>
-        <Col sm={10} xs={5} md={10}>
+        <Col sm={10} xs={10} md={10}>
           <FormGroup>
             <FormControl
               onChange={this.updateSearchTerm}
@@ -36,7 +36,7 @@ class BrowserSearchBar extends Component {
             />
           </FormGroup>
         </Col>
-      </li>
+      </div>
     );
   }
 

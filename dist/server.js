@@ -41,7 +41,16 @@ app.use(session({
   store: new MongoStore({ mongooseConnection: db, ttl: 2 * 24 * 60 * 60 })
 }));
 
+function ensureAuthenicated(req, res, next) {
+  if (res.session.user) {
+    return next();
+  }
+
+  res.redirect('/');
+}
+
 app.use('/users', users);
+//app.use('/', ensureAuthenicated);
 app.use('/games', games);
 app.use('/trades', trades);
 app.use('/requests', requests);

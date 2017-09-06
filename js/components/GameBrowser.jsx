@@ -9,10 +9,10 @@ import {connect} from 'react-redux';
 import GameRequestDescription from './GameRequestDescription';
 // import GameRequestItem from './GameRequestItem';
 import GameRequestIcon from './GameRequestIcon';
-import GameItem from './GameItem';
 import {getUserGames} from '../actions/gameActions';
 import {addRequest} from '../actions/requestActions';
 import GameCard from './GameCard';
+import BrowserSearchBar from './BrowserSearchBar';
 
 class GameBrowser extends Component {
   constructor(props) {
@@ -22,16 +22,18 @@ class GameBrowser extends Component {
       requestedGame: {},
       gameOffer: [],
       offeredGame: {},
-      allGames: {}
+      allGames: {},
+      filterTerm:'mario'
     };
 
     this.toggleModal = this.toggleModal.bind(this);
     this.addGameToOffer = this.addGameToOffer.bind(this);
     this.sendRequest = this.sendRequest.bind(this);
+    this.fetchGames = this.fetchGames.bind(this);
     this.getOfferedGameFromUserLib = this.getOfferedGameFromUserLib.bind(this);
   }
 
-  toggleModal(game= {}) {
+  toggleModal(game = {}) {
     this.setState({
       showModal: !this.state.showModal,
       requestedGame: game,
@@ -39,41 +41,47 @@ class GameBrowser extends Component {
   }
 
   componentDidMount() {
-    let retrievedGames = {};
     this.props.getUserGames();
-
-    //get all Games
-    fetch('/games/getAllGames', {
-      method: 'GET',
-      headers: {'Content-Type': 'application/json'},
-      credentials: 'include', // need for session info to persist
-    }).then(res => {
-        if (res.ok) {
-          res.json().
-            then(games => {
-              games.forEach(game => {
-                let retrievedGame = {
-                  [game.id]: {
-                    name: game.name,
-                    id: game.id,
-                    summary: game.summary,
-                    cover: game.cover,
-                    owner: game.owner,
-                    gameConsole: game.gameConsole,
-                    screenshots: game.screenshots,
-                  }
-                };
-                retrievedGames = Object.assign({}, retrievedGames, retrievedGame);
-              });
-
-              this.setState({
-                allGames: retrievedGames,
-              });
-            });
-        }
-      });
+    this.fetchGames('nofilter');
   }
 
+  fetchGames(filter) {
+    let retrievedGames = {};
+    let searchFilter = filter.length===0?'nofilter':filter;
+
+      // get all Games
+    fetch(`/games/getAllGames/${searchFilter}`, {
+      method: 'GET',
+      headers: {'Content-Type': 'text/html'},
+      credentials: 'include', // need for session info to persist
+    }).then((res) => {
+      if (res.ok) {
+        res.json()
+          .then((games) => {
+            games.forEach((game) => {
+              const retrievedGame = {
+                [game.id]: {
+                  name: game.name,
+                  id: game.id,
+                  summary: game.summary,
+                  cover: game.cover,
+                  owner: game.owner,
+                  gameConsole: game.gameConsole,
+                  screenshots: game.screenshots,
+                }
+              };
+              retrievedGames = Object.assign({}, retrievedGames, retrievedGame);
+            });
+
+            this.setState({
+              allGames: retrievedGames,
+            });
+          });
+      }
+    }).catch((err) => {
+      throw err
+    });
+  }
 
   addGameToOffer(event) {
     const gamesToAdd = Array.from(this.state.gameOffer);
@@ -93,10 +101,6 @@ class GameBrowser extends Component {
   // keep function for future feature (offering multiple games at once in trade)
   getOfferedGameFromUserLib() {
     let offGame = {};
-
-    //console.dir(this.props.userGames.games);
-   //console.log(game.id);
-   // console.log(this.state.offeredGame.id);
 
     this.props.userGames.games.map((game) => {
       if (game.id === this.state.offeredGame.id) {
@@ -140,12 +144,15 @@ class GameBrowser extends Component {
   render() {
     return (
       <div>
-        <Menu />
+        <Menu filterTerm={this.props.filterTerm}/>
         <Well>
           <Grid>
             <Row>
-              <Col sm={6} xs={12}>
+              <Col sm={6} xs={12} md={8}>
                 <h1 className="section-header">Available Games</h1>
+              </Col>
+              <Col sm={6} xs={12} md={4}>
+                <BrowserSearchBar fetchGames={this.fetchGames} />
               </Col>
             </Row>
             <Row className="game-browser">   {/** show all games available**/}

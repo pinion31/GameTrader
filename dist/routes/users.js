@@ -106,5 +106,10 @@ router.post('/addUser', function (req, res) {
   });
 });
 
+router.post('/logoutUser', function (req, res) {
+  req.session.destroy();
+  console.log('destroyed');
+});
+
 module.exports = router;
 //# sourceMappingURL=users.js.map

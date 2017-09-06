@@ -104,4 +104,9 @@ router.post('/addUser', (req, res) => {
     });
 });
 
+router.post('/logoutUser', (req,res) => {
+  req.session.destroy();
+  console.log('destroyed');
+});
+
 module.exports = router;

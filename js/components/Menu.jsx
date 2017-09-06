@@ -1,7 +1,17 @@
 import React, {Component} from 'react';
-import {Navbar, Nav, NavItem, Col, FormControl, FormGroup, Glyphicon, Button} from 'react-bootstrap';
-import BrowserSearchBar from './BrowserSearchBar';
+import 'whatwg-fetch';
+import {Navbar, Nav, NavItem} from 'react-bootstrap';
 import {LinkContainer} from 'react-router-bootstrap';
+
+const logout = () => {
+  fetch('/users/logoutUser', {
+    method: 'POST',
+    credentials: 'include',
+  }).then(() => {
+
+  });
+
+};
 
 class Menu extends Component {
   render() {
@@ -11,7 +21,6 @@ class Menu extends Component {
           <Navbar.Brand><span className="menu-logo">GameTrader</span></Navbar.Brand>
         </Navbar.Header>
         <Nav pullRight>
-          <BrowserSearchBar />
           <LinkContainer to="/AllGames">
             <NavItem className="nav-text">Browse Games</NavItem>
           </LinkContainer>
@@ -19,7 +28,7 @@ class Menu extends Component {
             <NavItem className="nav-text">My Games</NavItem>
           </LinkContainer>
           <LinkContainer to="/">
-            <NavItem className="nav-text">Sign out</NavItem>
+            <NavItem className="nav-text" onClick={logout}>Sign out</NavItem>
           </LinkContainer>
         </Nav>
       </Navbar>

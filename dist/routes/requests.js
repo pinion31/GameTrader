@@ -49,13 +49,17 @@ router.post('/removeRequest', function (req, res) {
 });
 
 router.get('/getUserRequests', function (req, res) {
-  User.findOne({ username: req.session.user }).lean().then(function (user) {
-    if (user.requests) {
-      res.json(user.requests);
-    } else {
-      res.json([]);
-    }
-  });
+  if (req.session.user) {
+    User.findOne({ username: req.session.user }).lean().then(function (user) {
+      if (user.requests) {
+        res.json(user.requests);
+      } else {
+        res.json([]);
+      }
+    });
+  } else {
+    res.json({ session: 'none' });
+  }
 });
 
 module.exports = router;

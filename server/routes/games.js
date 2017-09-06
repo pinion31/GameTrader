@@ -59,19 +59,34 @@ router.get('/findGame/:console/:game', (req, res) => {
   });
 });
 
-router.get('/getAllGames', (req, res) => {
+router.get('/getAllGames/:filter', (req, res) => {
   let allGames = [];
+  let regSearch;
+
+  if (req.params.filter === 'nofilter') {
+    regSearch = /[a-zA-Z0-9]/;
+  } else {
+    regSearch = new RegExp(req.params.filter.toLowerCase());
+  }
+
   User.find({}).lean()
     .then((users) => {
       users.forEach((user) => {
         if (user.games) {
           if (user.games[0].owner != req.session.user) {
-            allGames = allGames.concat(user.games);
+            const userGame = user.games.filter((game) => {
+              if (game.name.toLowerCase().match(regSearch)) {
+                return game;
+              }
+            });
+
+            allGames = allGames.concat(userGame);
+            // allGames = allGames.concat(user.games);
           }
         }
       });
 
-      res.json(allGames);
+    res.json(allGames);
     }).catch((err) => {
       throw err;
     });

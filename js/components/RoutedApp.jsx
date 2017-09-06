@@ -10,10 +10,9 @@ import SignUp from './SignUp';
 import {Switch} from 'react-router-dom';
 import {Route} from 'react-router';
 
-
 const Main = () => (
   <div>
-    <Menu />
+    <Menu/>
     <RequestList />
     <GameList />
   </div>

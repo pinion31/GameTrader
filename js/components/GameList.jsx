@@ -69,7 +69,7 @@ class GameList extends Component {
     });
 
     if (this.verifySearchQuery()) {
-      fetch(`/findGame/${this.state.selectedConsole}/${this.state.searchTerm}`)
+      fetch(`/games/findGame/${this.state.selectedConsole}/${this.state.searchTerm}`)
         .then((res) => {
           res.json().then((result) => {
             if (JSON.parse(result).length > 0) {
