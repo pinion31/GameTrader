@@ -9,7 +9,8 @@ const trades = require('./routes/trades');
 const games = require('./routes/games');
 const requests = require('./routes/requests');
 
-mongoose.connect('mongodb://localhost/local');
+// mongoose.connect('mongodb://localhost/local');
+mongoose.connect(process.env.MONGOLAB_URI);
 mongoose.Promise = global.Promise;
 
 const session = require('express-session');
@@ -38,8 +39,14 @@ app.use('/games', games);
 app.use('/trades', trades);
 app.use('/requests', requests);
 
-app.post('/logoutUser', (req) => {
-  req.session.destroy();
+app.post('/logoutUser', (req, res) => {
+  req.session.destroy(() => {
+    // setTimeout(5, () => db.close());
+    return res.send('session ended');
+  });
+
+
+  //db.close();
   /*
   mongoose.connection.disconnect(function () {
     console.log('Mongoose connection disconnected');
@@ -50,12 +57,12 @@ app.get('*', (req, res) => {
   // makes sure user is logged into before directing
   // to dashboard
   if (res.session === undefined) {
-    res.redirect('/');
+    return res.redirect('/');
   }
 
   res.sendFile(path.resolve(__dirname, '../static', 'index.html'));
 });
 
-app.listen(3000, () => {
+app.listen(process.env.PORT || 3000, () => {
   console.log('App started again');
 });

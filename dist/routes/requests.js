@@ -2,7 +2,7 @@
 
 var express = require('express');
 var router = express.Router();
-var User = require('../models/User');
+var User = require('../models/user');
 
 router.post('/addRequest', function (req, res) {
   User.findOne({ username: req.session.user }).lean().then(function (user) {

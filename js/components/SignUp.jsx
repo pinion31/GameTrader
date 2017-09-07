@@ -77,9 +77,9 @@ class SignUp extends Component {
       }
     });
 
-    if (user.username.length < 8 || user.username.split(' ').length > 1) {
+    if (user.username.length < 2 || user.username.split(' ').length > 1) {
       this.setState({
-        usernameHelp: 'Username must be at least 8 characters and contain no spaces.',
+        usernameHelp: 'Username must be at least 2 characters and contain no spaces.',
       });
       return false;
     }

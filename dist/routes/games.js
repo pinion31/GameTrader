@@ -9,7 +9,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var express = require('express');
 var router = express.Router();
 
-var User = require('../models/User');
+var User = require('../models/user');
 
 var client = (0, _igdbApiNode2.default)(process.env.IGDB_KEY);
 

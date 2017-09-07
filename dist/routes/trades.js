@@ -2,7 +2,7 @@
 
 var express = require('express');
 var router = express.Router();
-var User = require('../models/User');
+var User = require('../models/user');
 
 router.post('/declineTrade', function (req, res) {
   var traderGameToReceive = Object.assign({}, req.body.offeredGame); // from tradee to trader

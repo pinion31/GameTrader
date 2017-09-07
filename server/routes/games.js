@@ -3,7 +3,7 @@ import igdb from 'igdb-api-node';
 const express = require('express');
 const router = express.Router();
 
-const User = require('../models/User');
+const User = require('../models/user');
 
 const client = igdb(process.env.IGDB_KEY);
 

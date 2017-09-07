@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const User = require('../models/User');
+const User = require('../models/user');
 
 router.post('/declineTrade', (req, res) => {
   const traderGameToReceive = Object.assign({}, req.body.offeredGame); // from tradee to trader
