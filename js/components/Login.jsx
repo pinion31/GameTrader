@@ -63,6 +63,7 @@ class Login extends Component {
           res.json().then((redir) => {
             if (redir.validation === 'valid') {
               this.props.history.push(redir.redirect);
+              this.props.setSessionUser(this.state.user.username);
             } else {
               this.setState({
                 [redir.field]: redir.validation,

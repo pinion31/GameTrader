@@ -37,7 +37,7 @@ app.use(session({
 }));
 
 function ensureAuthenicated(req, res, next) {
-  if (res.session.user) {
+  if (res.session != undefined) {
     return next();
   }
 
@@ -52,6 +52,10 @@ app.use('/trades', trades);
 app.use('/requests', requests);
 
 app.get('*', (req, res) => {
+  if (res.session === undefined) {
+    res.redirect('/');
+  }
+
   res.sendFile(path.resolve(__dirname, '../static', 'index.html'));
 });
 

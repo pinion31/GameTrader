@@ -1,0 +1,50 @@
+// Extra small devices (portrait phones, less than 576px)
+@media (max-width: 575px) {
+  .signup-title {
+    font-size: 3em;
+  }
+
+  .signup-subtitle {
+    text-align: center;
+    font-size: 2em;
+  }
+
+  .signup-page-image {
+    height: 325px;
+  }
+
+  .accept-button {
+    width: 100px;
+    font-size: 1em;
+  }
+
+  .welcome-message {
+    text-align: center;
+    float: none;
+  }
+}
+
+// Small devices (landscape phones, less than 768px)
+@media (max-width: 767px) and (min-width: 576px) {
+  .signup-title {
+    font-size: 4em;
+  }
+
+  .signup-subtitle {
+    text-align: center;
+  }
+
+  .signup-page-image {
+    height: 350px;
+  }
+}
+
+// Medium devices (tablets, less than 992px)
+@media (max-width: 991px) {
+
+}
+
+// Large devices (desktops, less than 1200px)
+@media (max-width: 1199px) {
+
+}

@@ -47,7 +47,7 @@ class GameBrowser extends Component {
 
   fetchGames(filter) {
     let retrievedGames = {};
-    let searchFilter = filter.length===0?'nofilter':filter;
+    let searchFilter = filter.length === 0?'nofilter':filter;
 
       // get all Games
     fetch(`/games/getAllGames/${searchFilter}`, {
@@ -136,6 +136,7 @@ class GameBrowser extends Component {
         cover={this.state.allGames[this.state.requestedGame].cover}
         key={this.state.allGames[this.state.requestedGame].id}
         screenshots={this.state.allGames[this.state.requestedGame].screenshots}
+        owner={this.state.allGames[this.state.requestedGame].owner}
       />
     }
     return null;

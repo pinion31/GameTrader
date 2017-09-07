@@ -71,6 +71,12 @@
   background-color: $well-bg-color;
 }
 
+.owner-request-text {
+  float:right;
+  color:$modal-text-color;
+  font-size: 1em;
+}
+
 .status-text {
   border-radius: 5px;
   padding: 5px 10px;

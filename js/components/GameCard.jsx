@@ -2,6 +2,15 @@ import React, {Component} from 'react';
 import {Media, Well} from 'react-bootstrap';
 
 class GameCard extends Component {
+
+  displayOwner() {
+    if (this.props.owner) {
+      return (
+        <p className="owner-request-text">Owner: {this.props.owner}</p>
+      );
+    }
+  }
+
   render() {
     return (
       <Well>
@@ -10,6 +19,7 @@ class GameCard extends Component {
             <img src={this.props.cover} alt={this.props.name} />
           </Media.Left>
           <Media.Body>
+            {this.displayOwner()}
             <Media.Heading className="game-header">{this.props.name}</Media.Heading>
             <p className="summary">{this.props.summary}</p>
           </Media.Body>

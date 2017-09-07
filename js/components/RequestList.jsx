@@ -8,6 +8,13 @@ import RequestItem from './RequestItem';
 import {getUserRequests, addRequest, removeRequest} from '../actions/requestActions';
 
 class RequestList extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      sessionUser: this.props.sessionUser,
+    };
+  }
+
   componentDidMount() {
     this.props.getUserRequests();
   }
@@ -17,8 +24,11 @@ class RequestList extends Component {
       <Well>
         <Grid>
           <Row>
-            <Col sm={6} xs={12}>
+            <Col sm={6} xs={12} md={8}>
               <h1 className="section-header">My Requests</h1>
+            </Col>
+            <Col sm={6} xs={12} md={4}>
+              <h3 className="welcome-message">{`Welcome, ${this.props.sessionUser}`}</h3>
             </Col>
           </Row>
           <Row>

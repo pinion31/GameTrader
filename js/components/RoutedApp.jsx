@@ -10,12 +10,22 @@ import SignUp from './SignUp';
 import {Switch} from 'react-router-dom';
 import {Route} from 'react-router';
 
+let sessionUser = 'Noodles';
+
 const Main = () => (
   <div>
     <Menu/>
-    <RequestList />
+    <RequestList sessionUser={sessionUser} />
     <GameList />
   </div>
+);
+
+const setSessionUser = (user) => {
+  sessionUser = user;
+};
+
+const getSessionUser = () => (
+  sessionUser
 );
 
 const Footer = () => (
@@ -26,7 +36,8 @@ const Footer = () => (
 const RoutedApp = () => (
   <div>
     <Switch>
-      <Route exact path="/" component={Login} />
+      {/*<Route exact path="/" component={Login} />*/}
+      <Route exact path="/" render={props => <Login setSessionUser={setSessionUser} getSessionUser={getSessionUser} {...props} />} />
       <Route exact path="/AllGames" component={GameBrowser} />
       <Route exact path="/Dashboard" component={Main} />
       <Route exact path="/Signup" component={SignUp} />

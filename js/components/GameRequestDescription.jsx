@@ -11,6 +11,7 @@ class GameRequestDescription extends Component {
     }
 
     this.handleSelect = this.handleSelect.bind(this);
+    this.getScreenShots = this.getScreenShots.bind(this);
   }
 
   handleSelect(selectedIndex, e) {
@@ -19,32 +20,10 @@ class GameRequestDescription extends Component {
       direction: e.direction
     });
   }
-  /*render() {
-    return (
-      <Grid>
-        <Row>
-          <Col sm={4} xs={4} md={2}>
-            <Thumbnail src={this.props.cover} alt={this.props.name}>
-              {this.props.screenshots.map((screenshot) => (
-                <img src={screenshot} alt={this.props.name} />
-              ))
-              }
-              <h4>{this.props.name}</h4>
-            </Thumbnail>
-          </Col>
-          <Col sm={4} xs={8} md={4}>
-            <Well>
-              <p>{this.props.summary}</p>
-            </Well>
-          </Col>
-        </Row>
-      </Grid>
-    );
-  }*/
 
-  render() {
-    return (
-      <div>
+  getScreenShots() {
+    if (this.props.screenshots.length > 0) { // checks if screenshots available
+      return (
         <Carousel activeIndex={this.state.index} direction={this.state.direction} onSelect={this.handleSelect}>
           {this.props.screenshots.map((screenshot) => (
             <Carousel.Item key={this.props.id}>
@@ -53,10 +32,19 @@ class GameRequestDescription extends Component {
           ))
           }
         </Carousel>
+      );
+    }
+  }
+
+  render() {
+    return (
+      <div>
+        {this.getScreenShots()}
         <GameCard
           cover={this.props.cover}
           name={this.props.name}
           summary={this.props.summary}
+          owner={this.props.owner}
         />
       </div>
     );
