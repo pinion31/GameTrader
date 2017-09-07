@@ -59,18 +59,17 @@ router.post('/removeRequest', (req, res) => {
 
 router.get('/getUserRequests', (req, res) => {
   if (req.session.user) {
-  User.findOne({username: req.session.user}).lean()
-    .then((user) => {
-      if (user.requests) {
-        res.json(user.requests);
-      } else {
-        res.json([]);
-      }
-    });
+    User.findOne({username: req.session.user}).lean()
+      .then((user) => {
+        if (user.requests) {
+          res.json(user.requests);
+        } else {
+          res.json([]);
+        }
+      });
   } else {
-    res.json({session:'none'});
+    res.json({session: 'none'});
   }
-
 });
 
 module.exports = router;

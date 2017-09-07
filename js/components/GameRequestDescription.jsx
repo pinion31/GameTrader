@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Thumbnail,Grid, Row, Col, Well, Media, Carousel} from 'react-bootstrap';
+import {Carousel} from 'react-bootstrap';
 import GameCard from './GameCard';
 
 class GameRequestDescription extends Component {
@@ -8,10 +8,35 @@ class GameRequestDescription extends Component {
     this.state = {
       index: 0,
       direction: null
-    }
+    };
 
     this.handleSelect = this.handleSelect.bind(this);
     this.getScreenShots = this.getScreenShots.bind(this);
+  }
+
+  getScreenShots() {
+    if (this.props.screenshots.length > 0) { // checks if screenshots available
+      return (
+        <Carousel
+          activeIndex={this.state.index}
+          direction={this.state.direction}
+          onSelect={this.handleSelect}
+        >
+          {this.props.screenshots.map(screenshot => (
+            <Carousel.Item key={this.props.id}>
+              <img
+                width={569}
+                height={320}
+                src={screenshot}
+                alt={this.props.name}
+                key={this.props.id}
+              />
+            </Carousel.Item>
+          ))
+          }
+        </Carousel>
+      );
+    }
   }
 
   handleSelect(selectedIndex, e) {
@@ -19,21 +44,6 @@ class GameRequestDescription extends Component {
       index: selectedIndex,
       direction: e.direction
     });
-  }
-
-  getScreenShots() {
-    if (this.props.screenshots.length > 0) { // checks if screenshots available
-      return (
-        <Carousel activeIndex={this.state.index} direction={this.state.direction} onSelect={this.handleSelect}>
-          {this.props.screenshots.map((screenshot) => (
-            <Carousel.Item key={this.props.id}>
-              <img width={569} height={320} src={screenshot} alt={this.props.name} key={this.props.id} />
-            </Carousel.Item>
-          ))
-          }
-        </Carousel>
-      );
-    }
   }
 
   render() {

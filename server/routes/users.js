@@ -75,7 +75,6 @@ router.post('/addUser', (req, res) => {
         bcrypt.genSalt(10, (err, salt) => {
           bcrypt.hash(req.body.password1, salt, (err, hash) => {
             // Store hash in your password DB.
-            console.log('hash is ' + hash);
             const user = new User(
               {
                 username: usernameStripped,
@@ -104,9 +103,9 @@ router.post('/addUser', (req, res) => {
     });
 });
 
-router.post('/logoutUser', (req,res) => {
+router.post('/logoutUser', (req) => {
+  console.log('logged out user all');
   req.session.destroy();
-  console.log('destroyed');
 });
 
 module.exports = router;

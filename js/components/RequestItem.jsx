@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Thumbnail, Modal, Button, Media} from 'react-bootstrap';
+import {Modal, Button} from 'react-bootstrap';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {addGame, removeGame, completeTrade} from '../actions/gameActions';
@@ -25,6 +25,52 @@ class RequestItem extends Component {
     this.setStatusBackgroundColor = this.setStatusBackgroundColor.bind(this);
   }
 
+  getStatusMessage() {
+    if (this.props.status === ACCEPTED) {
+      return 'Your Trade Offer Was Accepted!';
+    } else if (this.props.status === DECLINED) {
+      return 'Sorry! Your Trade Offer Was Declined.';
+    } else if (this.props.status === CANCELLED) {
+      return `This Trade Offer Was Cancelled By ${this.props.requestedGame.owner}.`;
+    }
+    return '';
+  }
+
+  getActionButtons() {
+    if (this.props.status === PENDING) {
+      if (this.props.path === OUTGOING) {
+        return (
+          <Button bsStyle="danger" onClick={() => { this.declineTrade('Cancelled'); }}>{CANCEL_TRADE}</Button>
+        );
+      } else if (this.props.path === INCOMING) {
+        return (
+          <div className="trade-modal-buttons">
+            <Button className="modal-buttons" bsStyle="danger" onClick={() => { this.declineTrade('Declined'); }}>{DECLINE_TRADE_OFFER}</Button>
+            <Button className="modal-buttons accept-button" onClick={this.acceptTrade}>{ACCEPT_TRADE}</Button>
+          </div>
+        );
+      }
+    } else if (this.props.status === ACCEPTED) {
+      return (
+        <Button bsStyle="danger" onClick={this.removeTrade}>Remove</Button>
+      );
+    } else if (this.props.status === DECLINED || this.props.status === CANCELLED) {
+      return (
+        <Button bsStyle="danger" onClick={this.removeTrade}>Remove</Button>
+      );
+    }
+  }
+
+  setStatusBackgroundColor(status) {
+    if (status === PENDING) {
+      return 'request-pending';
+    } else if (status === ACCEPTED) {
+      return 'request-accepted';
+    } else if (status === DECLINED || status === CANCELLED) {
+      return 'request-declined';
+    }
+  }
+
   toggleModal() {
     this.setState({
       showModal: !this.state.showModal,
@@ -35,9 +81,9 @@ class RequestItem extends Component {
     this.props.removeRequest({
       requestedGameId: this.props.requestedGame.id,
       offeredGameId: this.props.offeredGame.id,
-     });
+    });
 
-    //close modal after action
+    // close modal after action
     this.toggleModal();
   }
 
@@ -59,59 +105,10 @@ class RequestItem extends Component {
     this.props.removeRequest({
       requestedGameId: this.props.requestedGame.id,
       offeredGameId: this.props.offeredGame.id,
-     });
+    });
 
     // close modal after action
     this.toggleModal();
-  }
-
-  getStatusMessage() {
-    if (this.props.status === ACCEPTED) {
-      return 'Your Trade Offer Was Accepted!';
-    } else if (this.props.status === DECLINED) {
-      return 'Sorry! Your Trade Offer Was Declined.';
-    } else if (this.props.status === CANCELLED) {
-      return `This Trade Offer Was Cancelled By ${this.props.requestedGame.owner}.`}
-      else {
-      return '';
-    }
-  }
-
-  setStatusBackgroundColor(status) {
-    if (status === PENDING) {
-      return 'request-pending';
-     } else if (status === ACCEPTED) {
-      return 'request-accepted';
-    } else if (status === DECLINED || status === CANCELLED) {
-      return 'request-declined';
-    }
-  }
-
-  getActionButtons() {
-    if (this.props.status === PENDING) {
-      if (this.props.path === OUTGOING) {
-        return (
-          <Button bsStyle="danger" onClick={() => {this.declineTrade('Cancelled')}}>{CANCEL_TRADE}</Button>
-        );
-      }
-      else if (this.props.path === INCOMING) {
-        return (
-          <div className="trade-modal-buttons">
-            <Button className="modal-buttons" bsStyle="danger" onClick={() => {this.declineTrade('Declined')}}>{DECLINE_TRADE_OFFER}</Button>
-            <Button className="modal-buttons accept-button" onClick={this.acceptTrade}>{ACCEPT_TRADE}</Button>
-          </div>
-        );
-      }
-    } else if (this.props.status === ACCEPTED) {
-        return (
-          <Button bsStyle="danger" onClick={this.removeTrade}>Remove</Button>
-        );
-
-    } else if (this.props.status === DECLINED || this.props.status === CANCELLED) {
-        return (
-          <Button bsStyle="danger" onClick={this.removeTrade}>Remove</Button>
-        );
-    }
   }
 
   render() {
@@ -122,13 +119,13 @@ class RequestItem extends Component {
           <p className={this.setStatusBackgroundColor(this.props.status)}>{this.props.status}</p>
         </a>
         <Modal
-            show={this.state.showModal}
-            onHide={this.toggleModal}
+          show={this.state.showModal}
+          onHide={this.toggleModal}
         >
           <Modal.Header>
             <Modal.Title>
               {this.props.requestedGame.name}
-              <p className={"status-text " + this.setStatusBackgroundColor(this.props.status)}>Status: {this.props.status}</p>
+              <p className={'status-text ' + this.setStatusBackgroundColor(this.props.status)}>Status: {this.props.status}</p>
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>

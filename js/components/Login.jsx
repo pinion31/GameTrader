@@ -31,7 +31,7 @@ class Login extends Component {
     });
   }
 
-// client-side verification
+  // client-side verification
   validateLogin() {
     // if username is filled
     if (this.state.user.username.length === 0) {
@@ -47,7 +47,7 @@ class Login extends Component {
       return false;
     }
 
-  // if validation check passes, send credentials to server
+    // if validation check passes, send credentials to server
     return true;
   }
 
@@ -62,8 +62,8 @@ class Login extends Component {
         if (res.ok) {
           res.json().then((redir) => {
             if (redir.validation === 'valid') {
-              this.props.history.push(redir.redirect);
               this.props.setSessionUser(this.state.user.username);
+              this.props.history.push(redir.redirect);
             } else {
               this.setState({
                 [redir.field]: redir.validation,

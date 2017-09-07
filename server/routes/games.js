@@ -1,7 +1,10 @@
+import igdb from 'igdb-api-node';
+
 const express = require('express');
 const router = express.Router();
+
 const User = require('../models/User');
-import igdb from 'igdb-api-node';
+
 const client = igdb(process.env.IGDB_KEY);
 
 router.get('/findGame/:console/:game', (req, res) => {
@@ -86,7 +89,7 @@ router.get('/getAllGames/:filter', (req, res) => {
         }
       });
 
-    res.json(allGames);
+  res.json(allGames);
     }).catch((err) => {
       throw err;
     });

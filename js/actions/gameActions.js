@@ -1,5 +1,3 @@
-'use strict'
-
 import axios from 'axios';
 
 export const addGame = game => (
@@ -35,7 +33,7 @@ export const getUserGames = () => (
   }
 );
 
-export const completeTrade = (request) => (
+export const completeTrade = request => (
   (dispatch) => {
     axios.post('/trades/completeTrade', request)
       .then((res) => {

@@ -1,14 +1,8 @@
 'use strict';
 
-var _igdbApiNode = require('igdb-api-node');
-
-var _igdbApiNode2 = _interopRequireDefault(_igdbApiNode);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 var express = require('express');
 var path = require('path');
-var logger = require('morgan');
+// const logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
@@ -27,7 +21,7 @@ var db = mongoose.connection;
 
 var app = express();
 
-app.use(logger('dev'));
+// app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -41,21 +35,22 @@ app.use(session({
   store: new MongoStore({ mongooseConnection: db, ttl: 2 * 24 * 60 * 60 })
 }));
 
-function ensureAuthenicated(req, res, next) {
-  if (res.session != undefined) {
-    return next();
-  }
-
-  res.redirect('/');
-}
-
 app.use('/users', users);
-//app.use('/', ensureAuthenicated);
 app.use('/games', games);
 app.use('/trades', trades);
 app.use('/requests', requests);
 
+app.post('/logoutUser', function (req) {
+  req.session.destroy();
+  /*
+  mongoose.connection.disconnect(function () {
+    console.log('Mongoose connection disconnected');
+  });*/
+});
+
 app.get('*', function (req, res) {
+  // makes sure user is logged into before directing
+  // to dashboard
   if (res.session === undefined) {
     res.redirect('/');
   }

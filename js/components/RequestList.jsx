@@ -1,11 +1,11 @@
-'use strict'
-
 import React, {Component} from 'react';
 import {Grid, Row, Col, Well} from 'react-bootstrap';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import RequestItem from './RequestItem';
 import {getUserRequests, addRequest, removeRequest} from '../actions/requestActions';
+
+let sessioner = '';
 
 class RequestList extends Component {
   constructor(props) {
@@ -17,6 +17,7 @@ class RequestList extends Component {
 
   componentDidMount() {
     this.props.getUserRequests();
+    sessioner = this.props.sessionUser;
   }
 
   render() {
@@ -28,7 +29,7 @@ class RequestList extends Component {
               <h1 className="section-header">My Requests</h1>
             </Col>
             <Col sm={6} xs={12} md={4}>
-              <h3 className="welcome-message">{`Welcome, ${this.props.sessionUser}`}</h3>
+              <h3 className="welcome-message">{`Welcome, ${sessioner}`}</h3>
             </Col>
           </Row>
           <Row>

@@ -1,14 +1,12 @@
-'use strict'
-
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import 'whatwg-fetch';
-import {Thumbnail, Modal, Grid, Row, Col, Well, Media,
-  Button, FormControl, FormGroup, ControlLabel, HelpBlock} from 'react-bootstrap';
+import {Modal, Grid, Row, Col, Well,
+  Button, FormControl, FormGroup, HelpBlock} from 'react-bootstrap';
 import GameItem from './GameItem';
-import {addGame, getUserGames, removeGame } from '../actions/gameActions';
+import {addGame, getUserGames, removeGame} from '../actions/gameActions';
 import {gameConsoles} from '../constants/gameConsoles';
 
 class GameList extends Component {
@@ -22,7 +20,7 @@ class GameList extends Component {
       selectedConsole: 0,
       searchTermMessage: '',
       consoleSearchMessage: '',
-      gameSearchMessage:'',
+      gameSearchMessage: '',
     };
 
     this.toggleModal = this.toggleModal.bind(this);
@@ -74,7 +72,7 @@ class GameList extends Component {
           res.json().then((result) => {
             if (JSON.parse(result).length > 0) {
               // add Well only after search results have been returned
-              ReactDOM.findDOMNode(this.refs["searchWell"]).className = 'well';
+              ReactDOM.findDOMNode(this.refs['searchWell']).className = 'well';
 
               this.setState({
                 searchList: JSON.parse(result),
@@ -86,7 +84,7 @@ class GameList extends Component {
             }
           });
         }).catch((err) => {
-           throw err;
+          throw err;
         });
     }
   }
@@ -144,7 +142,7 @@ class GameList extends Component {
 
   updateConsole(event) {
     this.setState({
-      selectedConsole: parseInt(event.target.value),
+      selectedConsole: parseInt(event.target.value, 10),
       consoleSearchMessage: '',
     });
   }
@@ -161,7 +159,7 @@ class GameList extends Component {
               </Col>
             </Row>
             <Row>
-              {this.props.games.games.map((game, key) => (
+              {this.props.games.games.map(game => (
                 <Col sm={2} xs={4} key={game.id}>
                   <div className="game-container">
                     <GameItem
@@ -210,7 +208,8 @@ class GameList extends Component {
                   <FormGroup controlId="formControlsSelect">
                     <FormControl
                       onChange={this.updateConsole}
-                      componentClass="select">
+                      componentClass="select"
+                    >
                       <option value={0}>Select Console</option>
                       {gameConsoles.map(consoleNum => (
                         <option value={consoleNum.id} key={consoleNum.id}>
@@ -231,7 +230,7 @@ class GameList extends Component {
                       {this.state.searchList.map(game => (
                         <Col sm={3} xs={6}>
                           <div className="game-container">
-                            <a onClick={()=> {this.highlightGame(game)}} key={game.id}>
+                            <a onClick={() => { this.highlightGame(game); }} key={game.id}>
                               <img className="game-item" src={game.cover} alt={game.name} ref={game.id} max-width={90} max-height={128} />
                             </a>
                           </div>

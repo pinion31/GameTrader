@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
-import {Thumbnail, Modal, Button, Carousel} from 'react-bootstrap';
-import {gameConsoles} from '../constants/gameConsoles';
+import {Modal, Button, Carousel} from 'react-bootstrap';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
+import {gameConsoles} from '../constants/gameConsoles';
 import {removeGame} from '../actions/gameActions';
 import GameCard from './GameCard';
 
@@ -33,12 +33,12 @@ class GameItem extends Component {
     });
   }
 
-  convertConsoleNumToConsoleName(id) {
+  convertConsoleNumToConsoleName() {
     let publisher = '';
 
-    gameConsoles.map(gameConsole => {
+    gameConsoles.map((gameConsole) => {
       if (gameConsole.id.toString() === this.props.gameConsole) {
-       publisher = gameConsole.name;
+        publisher = gameConsole.name;
       }
     });
     return publisher;
@@ -62,8 +62,12 @@ class GameItem extends Component {
           show={this.state.showModal}
           onHide={this.toggleModal}
         >
-          <Carousel activeIndex={this.state.index} direction={this.state.direction} onSelect={this.handleSelect}>
-            {this.props.screenshots.map((screenshot) => (
+          <Carousel
+            activeIndex={this.state.index}
+            direction={this.state.direction}
+            onSelect={this.handleSelect}
+          >
+            {this.props.screenshots.map(screenshot => (
               <Carousel.Item>
                 <img width={669} height={320} src={screenshot} alt={this.props.name} />
               </Carousel.Item>

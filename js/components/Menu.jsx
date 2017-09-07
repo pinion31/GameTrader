@@ -4,13 +4,10 @@ import {Navbar, Nav, NavItem} from 'react-bootstrap';
 import {LinkContainer} from 'react-router-bootstrap';
 
 const logout = () => {
-  fetch('/users/logoutUser', {
+  fetch('logoutUser', {
     method: 'POST',
     credentials: 'include',
-  }).then(() => {
-
   });
-
 };
 
 class Menu extends Component {
@@ -32,7 +29,6 @@ class Menu extends Component {
           </LinkContainer>
         </Nav>
       </Navbar>
-
     );
   }
 }

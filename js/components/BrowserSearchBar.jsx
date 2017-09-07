@@ -39,7 +39,6 @@ class BrowserSearchBar extends Component {
       </div>
     );
   }
-
 }
 
 export default BrowserSearchBar;

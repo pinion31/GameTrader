@@ -88,6 +88,10 @@ export const gameConsoles = [
     id: 29
   },
   {
+    name: 'Sega Master System',
+    id: 64
+  },
+  {
     name: 'Wii',
     id: 5
   },
