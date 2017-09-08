@@ -14,7 +14,7 @@ let sessionUser = 'Noodles';
 const Main = () => (
   <div>
     <Menu />
-    <RequestList sessionUser={sessionUser} />
+    <RequestList sessionUser={sessionUser} getSessionUser={getSessionUser}  />
     <GameList />
   </div>
 );
@@ -35,7 +35,7 @@ const Footer = () => (
 const RoutedApp = () => (
   <div>
     <Switch>
-      <Route exact path="/" render={props => <Login setSessionUser={setSessionUser} getSessionUser={getSessionUser} {...props} />} />
+      <Route exact path="/" render={props => <Login setSessionUser={setSessionUser} {...props} />} />
       <Route exact path="/AllGames" component={GameBrowser} />
       <Route exact path="/Dashboard" component={Main} />
       <Route exact path="/Signup" component={SignUp} />

@@ -5,8 +5,6 @@ import {bindActionCreators} from 'redux';
 import RequestItem from './RequestItem';
 import {getUserRequests, addRequest, removeRequest} from '../actions/requestActions';
 
-let sessioner = '';
-
 class RequestList extends Component {
   constructor(props) {
     super(props);
@@ -17,7 +15,9 @@ class RequestList extends Component {
 
   componentDidMount() {
     this.props.getUserRequests();
-    sessioner = this.props.sessionUser;
+    this.setState({
+      sessionUser: this.props.getSessionUser()
+    })
   }
 
   render() {
@@ -29,7 +29,7 @@ class RequestList extends Component {
               <h1 className="section-header">My Requests</h1>
             </Col>
             <Col sm={6} xs={12} md={4}>
-              <h3 className="welcome-message">{`Welcome, ${sessioner}`}</h3>
+              <h3 className="welcome-message">{`Welcome, ${this.state.sessionUser}`}</h3>
             </Col>
           </Row>
           <Row>

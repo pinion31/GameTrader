@@ -3682,7 +3682,7 @@ var Main = function Main() {
     'div',
     null,
     _react2.default.createElement(_Menu2.default, null),
-    _react2.default.createElement(_RequestList2.default, { sessionUser: sessionUser }),
+    _react2.default.createElement(_RequestList2.default, { sessionUser: sessionUser, getSessionUser: getSessionUser }),
     _react2.default.createElement(_GameList2.default, null)
   );
 };
@@ -3714,7 +3714,7 @@ var RoutedApp = function RoutedApp() {
       _reactRouterDom.Switch,
       null,
       _react2.default.createElement(_reactRouter.Route, { exact: true, path: '/', render: function render(props) {
-          return _react2.default.createElement(_Login2.default, _extends({ setSessionUser: setSessionUser, getSessionUser: getSessionUser }, props));
+          return _react2.default.createElement(_Login2.default, _extends({ setSessionUser: setSessionUser }, props));
         } }),
       _react2.default.createElement(_reactRouter.Route, { exact: true, path: '/AllGames', component: _GameBrowser2.default }),
       _react2.default.createElement(_reactRouter.Route, { exact: true, path: '/Dashboard', component: Main }),
@@ -5255,8 +5255,6 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var sessioner = '';
-
 var RequestList = function (_Component) {
   _inherits(RequestList, _Component);
 
@@ -5275,7 +5273,9 @@ var RequestList = function (_Component) {
     key: 'componentDidMount',
     value: function componentDidMount() {
       this.props.getUserRequests();
-      sessioner = this.props.sessionUser;
+      this.setState({
+        sessionUser: this.props.getSessionUser()
+      });
     }
   }, {
     key: 'render',
@@ -5304,7 +5304,7 @@ var RequestList = function (_Component) {
               _react2.default.createElement(
                 'h3',
                 { className: 'welcome-message' },
-                'Welcome, ' + sessioner
+                'Welcome, ' + this.state.sessionUser
               )
             )
           ),
