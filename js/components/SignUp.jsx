@@ -137,6 +137,7 @@ class SignUp extends Component {
                 usernameHelp: result.validation,
               });
             } else {
+              this.props.setSessionUser(this.state.newUser.username);
               this.props.history.push(result.redirect);
             }
           });

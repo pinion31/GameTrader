@@ -3677,6 +3677,16 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var sessionUser = 'Noodles';
 
+// callback method to set username for welcome message
+var setSessionUser = function setSessionUser(user) {
+  sessionUser = user;
+};
+
+// retrieves username for welcome message
+var getSessionUser = function getSessionUser() {
+  return sessionUser;
+};
+
 var Main = function Main() {
   return _react2.default.createElement(
     'div',
@@ -3685,14 +3695,6 @@ var Main = function Main() {
     _react2.default.createElement(_RequestList2.default, { sessionUser: sessionUser, getSessionUser: getSessionUser }),
     _react2.default.createElement(_GameList2.default, null)
   );
-};
-
-var setSessionUser = function setSessionUser(user) {
-  sessionUser = user;
-};
-
-var getSessionUser = function getSessionUser() {
-  return sessionUser;
 };
 
 var Footer = function Footer() {
@@ -3718,7 +3720,9 @@ var RoutedApp = function RoutedApp() {
         } }),
       _react2.default.createElement(_reactRouter.Route, { exact: true, path: '/AllGames', component: _GameBrowser2.default }),
       _react2.default.createElement(_reactRouter.Route, { exact: true, path: '/Dashboard', component: Main }),
-      _react2.default.createElement(_reactRouter.Route, { exact: true, path: '/Signup', component: _SignUp2.default })
+      _react2.default.createElement(_reactRouter.Route, { exact: true, path: '/Signup', render: function render(props) {
+          return _react2.default.createElement(_SignUp2.default, _extends({ setSessionUser: setSessionUser }, props));
+        } })
     ),
     _react2.default.createElement(Footer, null)
   );
@@ -6681,6 +6685,7 @@ var SignUp = function (_Component) {
                   usernameHelp: result.validation
                 });
               } else {
+                _this3.props.setSessionUser(_this3.state.newUser.username);
                 _this3.props.history.push(result.redirect);
               }
             });

@@ -11,21 +11,24 @@ import SignUp from './SignUp';
 
 let sessionUser = 'Noodles';
 
-const Main = () => (
-  <div>
-    <Menu />
-    <RequestList sessionUser={sessionUser} getSessionUser={getSessionUser}  />
-    <GameList />
-  </div>
-);
-
+// callback method to set username for welcome message
 const setSessionUser = (user) => {
   sessionUser = user;
 };
 
+// retrieves username for welcome message
 const getSessionUser = () => (
   sessionUser
 );
+
+const Main = () => (
+  <div>
+    <Menu />
+    <RequestList sessionUser={sessionUser} getSessionUser={ getSessionUser } />
+    <GameList />
+  </div>
+);
+
 
 const Footer = () => (
   <div className="footer-style">
@@ -38,7 +41,7 @@ const RoutedApp = () => (
       <Route exact path="/" render={props => <Login setSessionUser={setSessionUser} {...props} />} />
       <Route exact path="/AllGames" component={GameBrowser} />
       <Route exact path="/Dashboard" component={Main} />
-      <Route exact path="/Signup" component={SignUp} />
+      <Route exact path="/Signup" render={props => <SignUp setSessionUser={setSessionUser} {...props} />} />
     </Switch>
     <Footer />
   </div>
