@@ -67,8 +67,8 @@ class GameItem extends Component {
             direction={this.state.direction}
             onSelect={this.handleSelect}
           >
-            {this.props.screenshots.map(screenshot => (
-              <Carousel.Item>
+            {this.props.screenshots.map((screenshot, key) => (
+              <Carousel.Item key={key}>
                 <img width={669} height={320} src={screenshot} alt={this.props.name} />
               </Carousel.Item>
             ))
@@ -89,16 +89,10 @@ class GameItem extends Component {
   }
 }
 
-function mapStateToProps(state) {
-  return {
-
-  };
-}
-
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     removeGame,
   }, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(GameItem);
+export default connect(null, mapDispatchToProps)(GameItem);

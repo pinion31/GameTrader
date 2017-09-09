@@ -2,7 +2,7 @@
 import React, {Component} from 'react';
 import {bindActionCreators} from 'redux';
 import {Grid, Row, Col, Modal, Button, Well, FormGroup,
-  FormControl, option} from 'react-bootstrap';
+  FormControl, option, HelpBlock} from 'react-bootstrap';
 import {connect} from 'react-redux';
 import Menu from './Menu';
 import GameRequestDescription from './GameRequestDescription';
@@ -22,6 +22,7 @@ class GameBrowser extends Component {
       gameOffer: [],
       offeredGame: {},
       allGames: {},
+      requestErrorMessage: '',
     };
 
     this.toggleModal = this.toggleModal.bind(this);
@@ -63,21 +64,27 @@ class GameBrowser extends Component {
   }
 
   sendRequest() {
-    this.props.addRequest([{
-      status: 'Pending',
-      requestedGame: this.state.allGames[this.state.requestedGame],
-      offeredGame: this.state.gameOffer[0],
-      path: 'outgoing',
-    }]);
+    if (this.state.gameOffer[0]) {
+      this.props.addRequest([{
+        status: 'Pending',
+        requestedGame: this.state.allGames[this.state.requestedGame],
+        offeredGame: this.state.gameOffer[0],
+        path: 'outgoing',
+      }]);
 
-    const gameCollection = Object.assign({}, this.state.allGames);
-    gameCollection[this.state.requestedGame].status = 'requested';
+      const gameCollection = Object.assign({}, this.state.allGames);
+      gameCollection[this.state.requestedGame].status = 'requested';
 
-    // update allGame Collection and close modal
-    this.setState({
-      showModal: !this.state.showModal,
-      allGames: gameCollection,
-    });
+      // update allGame Collection and close modal
+      this.setState({
+        showModal: !this.state.showModal,
+        allGames: gameCollection,
+      });
+    } else {
+      this.setState({
+        requestErrorMessage: 'Please select a game to offer'
+      });
+    }
   }
 
   addGameToOffer(event) {
@@ -92,6 +99,7 @@ class GameBrowser extends Component {
 
     this.setState({
       gameOffer: gamesToAdd,
+      requestErrorMessage: '',
     });
   }
 
@@ -203,12 +211,13 @@ class GameBrowser extends Component {
               >
                 <option>Select Game</option>
                 {this.props.userGames.games.map(game => (
-                  <option value={game.id}>
+                  <option value={game.id} key={game.id}>
                     {game.name}
                   </option>
                 ))
                 }
               </FormControl>
+              <HelpBlock>{this.state.requestErrorMessage}</HelpBlock>
             </FormGroup>
           </Modal.Body>
           <Modal.Footer>

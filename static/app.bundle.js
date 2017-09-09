@@ -4355,10 +4355,10 @@ var GameItem = function (_Component) {
               direction: this.state.direction,
               onSelect: this.handleSelect
             },
-            this.props.screenshots.map(function (screenshot) {
+            this.props.screenshots.map(function (screenshot, key) {
               return _react2.default.createElement(
                 _reactBootstrap.Carousel.Item,
-                null,
+                { key: key },
                 _react2.default.createElement('img', { width: 669, height: 320, src: screenshot, alt: _this3.props.name })
               );
             })
@@ -4390,17 +4390,13 @@ var GameItem = function (_Component) {
   return GameItem;
 }(_react.Component);
 
-function mapStateToProps(state) {
-  return {};
-}
-
 function mapDispatchToProps(dispatch) {
   return (0, _redux.bindActionCreators)({
     removeGame: _gameActions.removeGame
   }, dispatch);
 }
 
-exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(GameItem);
+exports.default = (0, _reactRedux.connect)(null, mapDispatchToProps)(GameItem);
 
 /***/ }),
 
@@ -5758,7 +5754,8 @@ var GameBrowser = function (_Component) {
       requestedGame: {},
       gameOffer: [],
       offeredGame: {},
-      allGames: {}
+      allGames: {},
+      requestErrorMessage: ''
     };
 
     _this.toggleModal = _this.toggleModal.bind(_this);
@@ -5810,21 +5807,27 @@ var GameBrowser = function (_Component) {
   }, {
     key: 'sendRequest',
     value: function sendRequest() {
-      this.props.addRequest([{
-        status: 'Pending',
-        requestedGame: this.state.allGames[this.state.requestedGame],
-        offeredGame: this.state.gameOffer[0],
-        path: 'outgoing'
-      }]);
+      if (this.state.gameOffer[0]) {
+        this.props.addRequest([{
+          status: 'Pending',
+          requestedGame: this.state.allGames[this.state.requestedGame],
+          offeredGame: this.state.gameOffer[0],
+          path: 'outgoing'
+        }]);
 
-      var gameCollection = Object.assign({}, this.state.allGames);
-      gameCollection[this.state.requestedGame].status = 'requested';
+        var gameCollection = Object.assign({}, this.state.allGames);
+        gameCollection[this.state.requestedGame].status = 'requested';
 
-      // update allGame Collection and close modal
-      this.setState({
-        showModal: !this.state.showModal,
-        allGames: gameCollection
-      });
+        // update allGame Collection and close modal
+        this.setState({
+          showModal: !this.state.showModal,
+          allGames: gameCollection
+        });
+      } else {
+        this.setState({
+          requestErrorMessage: 'Please select a game to offer'
+        });
+      }
     }
   }, {
     key: 'addGameToOffer',
@@ -5839,7 +5842,8 @@ var GameBrowser = function (_Component) {
       });
 
       this.setState({
-        gameOffer: gamesToAdd
+        gameOffer: gamesToAdd,
+        requestErrorMessage: ''
       });
     }
   }, {
@@ -6005,10 +6009,15 @@ var GameBrowser = function (_Component) {
                 this.props.userGames.games.map(function (game) {
                   return _react2.default.createElement(
                     'option',
-                    { value: game.id },
+                    { value: game.id, key: game.id },
                     game.name
                   );
                 })
+              ),
+              _react2.default.createElement(
+                _reactBootstrap.HelpBlock,
+                null,
+                this.state.requestErrorMessage
               )
             )
           ),
@@ -6114,7 +6123,8 @@ var GameRequestDescription = function (_Component) {
           {
             activeIndex: this.state.index,
             direction: this.state.direction,
-            onSelect: this.handleSelect
+            onSelect: this.handleSelect,
+            key: this.props.id
           },
           this.props.screenshots.map(function (screenshot) {
             return _react2.default.createElement(
@@ -6124,8 +6134,7 @@ var GameRequestDescription = function (_Component) {
                 width: 569,
                 height: 320,
                 src: screenshot,
-                alt: _this2.props.name,
-                key: _this2.props.id
+                alt: _this2.props.name
               })
             );
           })
@@ -6151,7 +6160,8 @@ var GameRequestDescription = function (_Component) {
           cover: this.props.cover,
           name: this.props.name,
           summary: this.props.summary,
-          owner: this.props.owner
+          owner: this.props.owner,
+          key: this.props.id
         })
       );
     }

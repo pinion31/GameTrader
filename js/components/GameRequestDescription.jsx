@@ -21,6 +21,7 @@ class GameRequestDescription extends Component {
           activeIndex={this.state.index}
           direction={this.state.direction}
           onSelect={this.handleSelect}
+          key={this.props.id}
         >
           {this.props.screenshots.map(screenshot => (
             <Carousel.Item key={this.props.id}>
@@ -29,7 +30,6 @@ class GameRequestDescription extends Component {
                 height={320}
                 src={screenshot}
                 alt={this.props.name}
-                key={this.props.id}
               />
             </Carousel.Item>
           ))
@@ -55,6 +55,7 @@ class GameRequestDescription extends Component {
           name={this.props.name}
           summary={this.props.summary}
           owner={this.props.owner}
+          key= {this.props.id}
         />
       </div>
     );
