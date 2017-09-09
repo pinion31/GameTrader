@@ -43,3 +43,7 @@ export const getUserRequests = () => (
       });
   }
 );
+
+export const clearUserRequests = () =>
+  ({type: 'CLEAR_USER_REQUESTS', payload: []});
+

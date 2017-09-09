@@ -43,3 +43,7 @@ export const completeTrade = request => (
       });
   }
 );
+
+export const clearUserGames = () =>
+  ({type: 'CLEAR_USER_GAMES', payload: []});
+

@@ -3,7 +3,7 @@ import {Grid, Row, Col, Well} from 'react-bootstrap';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import RequestItem from './RequestItem';
-import {getUserRequests, addRequest, removeRequest} from '../actions/requestActions';
+import {getUserRequests, clearUserRequests, addRequest, removeRequest} from '../actions/requestActions';
 
 class RequestList extends Component {
   constructor(props) {
@@ -13,11 +13,18 @@ class RequestList extends Component {
     };
   }
 
+  componentWillMount() {
+    // clears out any requests (and DOM elements)
+    // from previous session (from other users)
+    // that do not belong to current user
+    this.props.clearUserRequests();
+  }
+
   componentDidMount() {
     this.props.getUserRequests();
     this.setState({
       sessionUser: this.props.getSessionUser()
-    })
+    });
   }
 
   render() {
@@ -63,6 +70,7 @@ function mapDispatchToProps(dispatch) {
     getUserRequests,
     addRequest,
     removeRequest,
+    clearUserRequests,
   }, dispatch);
 }
 

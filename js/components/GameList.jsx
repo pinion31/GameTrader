@@ -6,7 +6,7 @@ import 'whatwg-fetch';
 import {Modal, Grid, Row, Col, Well,
   Button, FormControl, FormGroup, HelpBlock} from 'react-bootstrap';
 import GameItem from './GameItem';
-import {addGame, getUserGames, removeGame} from '../actions/gameActions';
+import {addGame, getUserGames, removeGame, clearUserGames} from '../actions/gameActions';
 import {gameConsoles} from '../constants/gameConsoles';
 
 class GameList extends Component {
@@ -31,6 +31,13 @@ class GameList extends Component {
     this.updateConsole = this.updateConsole.bind(this);
     this.verifySearchQuery = this.verifySearchQuery.bind(this);
     this.verifyClientDoesNotOwnGame = this.verifyClientDoesNotOwnGame.bind(this);
+  }
+
+  componentWillMount() {
+    // clears out any game (and DOM elements)
+    // from previous sessions (from other users)
+    // that do not belong to current user
+    this.props.clearUserGames();
   }
 
   componentDidMount() {
@@ -265,6 +272,7 @@ function mapDispatchToProps(dispatch) {
     addGame,
     getUserGames,
     removeGame,
+    clearUserGames,
   }, dispatch);
 }
 

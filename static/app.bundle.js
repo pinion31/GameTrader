@@ -9,7 +9,7 @@ webpackJsonp([0],{
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.completeTrade = exports.getUserGames = exports.removeGame = exports.addGame = undefined;
+exports.clearUserGames = exports.completeTrade = exports.getUserGames = exports.removeGame = exports.addGame = undefined;
 
 var _axios = __webpack_require__(328);
 
@@ -55,6 +55,10 @@ var completeTrade = exports.completeTrade = function completeTrade(request) {
       throw err;
     });
   };
+};
+
+var clearUserGames = exports.clearUserGames = function clearUserGames() {
+  return { type: 'CLEAR_USER_GAMES', payload: [] };
 };
 
 /***/ }),
@@ -368,7 +372,7 @@ module.exports = defaults;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getUserRequests = exports.declineTrade = exports.removeRequest = exports.addRequest = undefined;
+exports.clearUserRequests = exports.getUserRequests = exports.declineTrade = exports.removeRequest = exports.addRequest = undefined;
 
 var _axios = __webpack_require__(328);
 
@@ -414,6 +418,10 @@ var getUserRequests = exports.getUserRequests = function getUserRequests() {
       throw err;
     });
   };
+};
+
+var clearUserRequests = exports.clearUserRequests = function clearUserRequests() {
+  return { type: 'CLEAR_USER_REQUESTS', payload: [] };
 };
 
 /***/ }),
@@ -1777,8 +1785,10 @@ var COMPLETE_TRADE = exports.COMPLETE_TRADE = 'COMPLETE_TRADE';
 var DECLINE_TRADE = exports.DECLINE_TRADE = 'DECLINE_TRADE';
 var GET_USER_GAMES = exports.GET_USER_GAMES = 'GET_USER_GAMES';
 var GET_USER_REQUESTS = exports.GET_USER_REQUESTS = 'GET_USER_REQUESTS';
+var CLEAR_USER_REQUESTS = exports.CLEAR_USER_REQUESTS = 'CLEAR_USER_REQUESTS';
 var ADD_REQUEST = exports.ADD_REQUEST = 'ADD_REQUEST';
 var REMOVE_REQUEST = exports.REMOVE_REQUEST = 'REMOVE_REQUEST';
+var CLEAR_USER_GAMES = exports.CLEAR_USER_GAMES = 'CLEAR_USER_GAMES';
 
 /***/ }),
 
@@ -3807,6 +3817,14 @@ var GameList = function (_Component) {
   }
 
   _createClass(GameList, [{
+    key: 'componentWillMount',
+    value: function componentWillMount() {
+      // clears out any game (and DOM elements)
+      // from previous sessions (from other users)
+      // that do not belong to current user
+      this.props.clearUserGames();
+    }
+  }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
       this.props.getUserGames();
@@ -4150,7 +4168,8 @@ function mapDispatchToProps(dispatch) {
   return (0, _redux.bindActionCreators)({
     addGame: _gameActions.addGame,
     getUserGames: _gameActions.getUserGames,
-    removeGame: _gameActions.removeGame
+    removeGame: _gameActions.removeGame,
+    clearUserGames: _gameActions.clearUserGames
   }, dispatch);
 }
 
@@ -5274,6 +5293,14 @@ var RequestList = function (_Component) {
   }
 
   _createClass(RequestList, [{
+    key: 'componentWillMount',
+    value: function componentWillMount() {
+      // clears out any requests (and DOM elements)
+      // from previous session (from other users)
+      // that do not belong to current user
+      this.props.clearUserRequests();
+    }
+  }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
       this.props.getUserRequests();
@@ -5347,7 +5374,8 @@ function mapDispatchToProps(dispatch) {
   return (0, _redux.bindActionCreators)({
     getUserRequests: _requestActions.getUserRequests,
     addRequest: _requestActions.addRequest,
-    removeRequest: _requestActions.removeRequest
+    removeRequest: _requestActions.removeRequest,
+    clearUserRequests: _requestActions.clearUserRequests
   }, dispatch);
 }
 
@@ -6913,6 +6941,9 @@ var gameReducer = exports.gameReducer = function gameReducer() {
     case _actionTypes.COMPLETE_TRADE:
       // payload is collection of games retrieved from db
       return { games: [].concat(_toConsumableArray(action.payload)) };
+    case _actionTypes.CLEAR_USER_GAMES:
+      // payload is empty set
+      return { games: [] };
     default:
       return state;
   }
@@ -6949,6 +6980,8 @@ var requestReducer = exports.requestReducer = function requestReducer() {
       return { requests: [].concat(_toConsumableArray(action.payload)) };
     case _actionTypes.DECLINE_TRADE:
       return { requests: [].concat(_toConsumableArray(action.payload)) };
+    case _actionTypes.CLEAR_USER_REQUESTS:
+      return { requests: [] };
     default:
       return state;
   }

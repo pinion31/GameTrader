@@ -1,4 +1,4 @@
-import {ADD_REQUEST, REMOVE_REQUEST, GET_USER_REQUESTS, DECLINE_TRADE} from '../constants/actionTypes';
+import {ADD_REQUEST, REMOVE_REQUEST, GET_USER_REQUESTS, DECLINE_TRADE, CLEAR_USER_REQUESTS} from '../constants/actionTypes';
 
 // ******* ADD REQUEST ****//
 export const requestReducer = (state = {requests: []}, action) => {
@@ -11,6 +11,8 @@ export const requestReducer = (state = {requests: []}, action) => {
       return {requests: [...action.payload]};
     case DECLINE_TRADE:
       return {requests: [...action.payload]};
+    case CLEAR_USER_REQUESTS:
+      return {requests: []};
     default:
       return state;
   }
