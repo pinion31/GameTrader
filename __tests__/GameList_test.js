@@ -5,55 +5,92 @@ import GameList from '../js/components/GameList';
 import GameItem from '../js/components/GameItem';
 import sinon from 'sinon';
 import TestUtils, {renderIntoDocument, findRenderedDOMComponentWithClass,
-  scryRenderedComponentsWithType, findRenderedDOMComponentWithTag} from 'react-addons-test-utils';
+  scryRenderedComponentsWithType, findRenderedDOMComponentWithTag, findRenderedComponentWithType} from 'react-addons-test-utils';
 //import * as TestUtils from 'react-addons-test-utils';
 import chaiHaveReactComponent from 'chai-have-react-component';
 import {addGame, getUserGames, removeGame, clearUserGames} from '../js/actions/gameActions';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
-import reducers from '../js/reducers/rootReducer';
+import rootReducer from '../js/reducers/rootReducer';
 import thunk from 'redux-thunk';
 import fetchMock from 'fetch-mock';
 import MockAdapter from 'axios-mock-adapter';
 import axios from 'axios';
+import chai from 'chai';
+import chaiAsPromised from 'chai-as-promised';
+import {mount} from 'enzyme';
+require("mocha-as-promised")();
 
-const mock = new MockAdapter(axios);
+
+chai.use(chaiAsPromised);
+
+const mock = new MockAdapter(axios, {delayResponse: 0});
+let currentStore;
 
 describe('GameList', () => {
   let component;
-  let preComponent;
-  let stubComponentDidMount;
-  let getUserGamesStub;
-  //let renderer;
+
+  let initialState = {games : {games: [
+   {
+    owner: 'nicole',
+    gameConsole: '49',
+    id: 9631,
+    screenshots: [
+                    "https://images.igdb.com/igdb/image/upload/t_screenshot_med/whhptvhci1bdoqolofjo.jpg",
+                    "https://images.igdb.com/igdb/image/upload/t_screenshot_med/acrxfc2grr69wfbql8ax.jpg",
+                    "https://images.igdb.com/igdb/image/upload/t_screenshot_med/ufocunt4ze1rjomybg2h.jpg",
+                    "https://images.igdb.com/igdb/image/upload/t_screenshot_med/twgwp1xobnae4kbky2hw.jpg",
+                    "https://images.igdb.com/igdb/image/upload/t_screenshot_med/xqhildldpukjvj9gcfmt.jpg"
+                ],
+    cover: 'https://images.igdb.com/igdb/image/upload/t_cover_small/g82nr1m9xqr8wnp0xdrn.jpg',
+    name: 'Fallout 3',
+    summary: 'Bethesda Game Studios'
+  }
+  ]}, requests: {requests:[]}
+  };
 
   let mockGame = {
     owner: 'chris',
     gameConsole: '49',
     id: 9630,
+    screenshots:
+     [
+      'https://images.igdb.com/igdb/image/upload/t_screenshot_med/whhptvhci1bdoqolofjo.jpg',
+      'https://images.igdb.com/igdb/image/upload/t_screenshot_med/acrxfc2grr69wfbql8ax.jpg',
+      'https://images.igdb.com/igdb/image/upload/t_screenshot_med/ufocunt4ze1rjomybg2h.jpg',
+      'https://images.igdb.com/igdb/image/upload/t_screenshot_med/twgwp1xobnae4kbky2hw.jpg',
+      'https://images.igdb.com/igdb/image/upload/t_screenshot_med/xqhildldpukjvj9gcfmt.jpg'
+      ],
     cover: 'https://images.igdb.com/igdb/image/upload/t_cover_small/g82nr1m9xqr8wnp0xdrn.jpg',
     name: 'Fallout 4',
     summary: 'Bethesda Game Studios'
   };
 
-  beforeEach(() => {
+  mock.onGet('/games/getUserGames').reply(200, [mockGame]);
 
-    mock.onGet('/games/getUserGames').reply(200, [mockGame]);
-
+  beforeEach(function()  {
     const middleware = applyMiddleware(thunk);
+
+    const store = createStore(rootReducer, middleware);
+    currentStore = store;
+
+    const mountedGameList = <GameList/>;
+
     component = renderIntoDocument(
-      <Provider store={createStore(reducers, middleware)}>
-        <GameList />
+      <Provider store={store}>
+        {mountedGameList}
       </Provider>);
+
   });
 
   afterEach(() => {
-    mock.restore();
+   // mock.restore();
   });
+
 
   it('contains a Button component', () => {
     const button = findRenderedDOMComponentWithTag(component, 'button');
     expect(button).to.be.ok;
-    //expect(component.find('.accept-button').length).to.equal(1);
   });
 
    it('contains classnames,accept-button and add-game-button', () => {
@@ -68,14 +105,9 @@ describe('GameList', () => {
     expect(sectionHeader).to.be.ok;
   });
 
-  it('contains one component of type GameItem', () => {
-    setTimeout(() => console.log(component.store.getState()), 5000);
-    console.log(component.props);
-    const gameItem = findRenderedDOMComponentWithClass(component, 'game-item');
-
-    expect(gameItem).to.be.ok;
-  });
-
-
-
+  it('loads user games with one game called Fallout 4', () => {
+      setTimeout(() => {
+        expect(currentStore.getState().games.games).to.deep.equal([mockGame]);
+      }, 1000);
+    });
 });
