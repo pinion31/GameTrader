@@ -110,4 +110,22 @@ describe('GameList', () => {
         expect(currentStore.getState().games.games).to.deep.equal([mockGame]);
       }, 1000);
     });
+
+  it('has one gameItem', () => {
+     setTimeout(() => {
+        expect(findRenderedDOMComponentWithClass(component, 'game-item')).to.be.ok;
+    }, 1000);
+  });
+
+   it('adds game to user library', () => {
+    setTimeout(() => {
+      addGame([addGame]);
+      console.log('newstore', currentStore.getState().games.games);
+      //const acceptButton = findRenderedDOMComponentWithClass(component, 'accept-button');
+      const acceptButton = findRenderedDOMComponentWithClass(component, 'game-item');
+      console.log(acceptButton);
+      //Simulate.click(acceptButton);
+      //console.log(mountedGameList);
+    }, 1000);
+    });
 });
