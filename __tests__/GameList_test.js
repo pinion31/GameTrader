@@ -4,7 +4,7 @@ import React from 'react';
 import GameList from '../js/components/GameList';
 import GameItem from '../js/components/GameItem';
 import sinon from 'sinon';
-import TestUtils, {renderIntoDocument, findRenderedDOMComponentWithClass,
+import TestUtils, {renderIntoDocument, findRenderedDOMComponentWithClass, scryRenderedDOMComponentsWithClass,
   scryRenderedComponentsWithType, findRenderedDOMComponentWithTag, findRenderedComponentWithType} from 'react-addons-test-utils';
 //import * as TestUtils from 'react-addons-test-utils';
 import chaiHaveReactComponent from 'chai-have-react-component';
@@ -111,14 +111,16 @@ describe('GameList', () => {
 
   it('loads user games with one game called Fallout 4', () => {
       setTimeout(() => {
-        //expect(currentStore.getState().games.games).to.deep.equal([mockGame]);
+        expect(currentStore.getState().games.games).to.deep.equal([mockGame]);
       }, 1000);
     });
 
-  it('has one gameItem', () => {
-     console.log(1);
+  it('has at least one gameItem', () => {
+
      setTimeout(() => {
-        //expect(findRenderedDOMComponentWithClass(component, 'game-item')).to.be.ok;
+        console.log('length', scryRenderedDOMComponentsWithClass(component, 'game-item'));
+        expect(scryRenderedDOMComponentsWithClass(component, 'game-itsem')).to.be.ok;
+
     }, 1000);
   });
 

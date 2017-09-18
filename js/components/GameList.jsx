@@ -253,7 +253,7 @@ class GameList extends Component {
 
           <Modal.Footer>
             <Button bsStyle="primary" onClick={this.toggleModal}>Close</Button>
-            <Button className="accept-button" onClick={this.handleOnClickAdd}>Add Game</Button>
+            <Button className="accept-button addGame-button" onClick={this.handleOnClickAdd}>Add Game</Button>
           </Modal.Footer>
         </Modal>
       </div>

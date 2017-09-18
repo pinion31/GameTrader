@@ -1,19 +1,23 @@
 const webpack = require('webpack');
 const path =  require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   entry: {
     app: './js/app.js',
     vendor: ['react', 'react-dom', 'whatwg-fetch', 'react-bootstrap', 'babel-polyfill', 'react-router',
-      'react-router-bootstrap', 'react-router-dom'],
+             'react-router-bootstrap', 'react-router-dom', 'axios', 'react-redux', 'react-redux-form',
+             'redux', 'redux-thunk'],
   },
   output: {
-    //path: 'C:\\Users\\Chris\\Documents\\WebDev\\Voterific\\static',
     path: path.resolve(__dirname, 'static'),
-    filename: 'app.bundle.js',
+    filename: '[name].[chunkhash].js'
   },
   plugins: [
-    new webpack.optimize.CommonsChunkPlugin({name: 'vendor', filename: 'vendor.bundle.js', })
+    new webpack.optimize.CommonsChunkPlugin({names: ['vendor', 'manifest']}),
+    new HtmlWebpackPlugin({
+      template: './static/index.html'
+    })
   ],
   devServer: {
     port: 8080,
