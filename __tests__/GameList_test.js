@@ -73,17 +73,8 @@ describe('GameList', () => {
     const store = createStore(rootReducer, middleware);
     currentStore = store;
 
-    //mountedGameList = <GameList store={store} />;
-    //mountedGameList = <GameList />;
-
     component = renderIntoDocument(
       <GameList store={store} />);
-
-    /*
-     component = renderIntoDocument(
-      <Provider store={store}>
-       {mountedGameList}
-      </Provider>);*/
 
   });
 
@@ -118,19 +109,16 @@ describe('GameList', () => {
   it('has at least one gameItem', () => {
 
      setTimeout(() => {
-        console.log('length', scryRenderedDOMComponentsWithClass(component, 'game-item'));
-        expect(scryRenderedDOMComponentsWithClass(component, 'game-itsem')).to.be.ok;
+        expect(scryRenderedDOMComponentsWithClass(component, 'game-item')).to.be.ok;
 
     }, 1000);
   });
 
    it('adds game to user library', () => {
     setTimeout(() => {
-      console.log(2);
       component.selector.props.addGame([addedGame]);
-
       setTimeout(() => {
-        console.log('newstore', currentStore.getState().games.games);
+         expect(currentStore.getState().games.games).to.deep.equal([mockGame, addedGame]);
       },1000);
     }, 1000);
     });
