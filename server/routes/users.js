@@ -82,8 +82,8 @@ router.post('/addUser', (req, res) => {
                 email: req.body.email,
                 city: req.body.city,
                 state: req.body.state,
-                requests: null,
-                games: null
+                requests: [],
+                games: []
               }
             );
 

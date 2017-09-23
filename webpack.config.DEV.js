@@ -11,7 +11,7 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, 'static'),
-    filename: '[name].[chunkhash].js'
+    filename: '[name].[hash].js'
   },
   plugins: [
     new webpack.optimize.CommonsChunkPlugin({names: ['vendor', 'manifest']}),

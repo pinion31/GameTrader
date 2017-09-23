@@ -75,7 +75,7 @@ router.get('/getAllGames/:filter', (req, res) => {
   User.find({}).lean()
     .then((users) => {
       users.forEach((user) => {
-        if (user.games) {
+        if (user.games.length > 0) {
           if (user.games[0].owner != req.session.user) {
             const userGame = user.games.filter((game) => {
               if (game.name.toLowerCase().match(regSearch)) {
@@ -84,7 +84,6 @@ router.get('/getAllGames/:filter', (req, res) => {
             });
 
             allGames = allGames.concat(userGame);
-            // allGames = allGames.concat(user.games);
           }
         }
       });
@@ -107,20 +106,12 @@ router.get('/getUserGames', (req, res) => {
 });
 
 router.post('/addGame', (req, res) => {
-  User.findOne({username: req.session.user}).lean()
-    .then((user) => {
-      const modifiedUser = Object.assign({}, user);
+  const gametoAdd = Array.from(req.body);
+  gametoAdd[0].owner = req.session.user; // append owner info to added game
 
-      const gametoAdd = Array.from(req.body);
-      gametoAdd[0].owner = req.session.user; // append owner info to added game
-
-      const newGameColl = modifiedUser.games === null ? gametoAdd :
-        Array.from(modifiedUser.games).concat(gametoAdd);
-
-      User.findOneAndUpdate({username: req.session.user}, {games: newGameColl})
-        .then(() => {
-          res.json(req.body);
-        });
+  User.findOneAndUpdate({username: req.session.user}, {$push: {games: gametoAdd[0]}})
+    .then(() => {
+      res.json(req.body);
     });
 });
 

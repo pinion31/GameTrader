@@ -83,8 +83,8 @@ router.post('/addUser', function (req, res) {
             email: req.body.email,
             city: req.body.city,
             state: req.body.state,
-            requests: null,
-            games: null
+            requests: [],
+            games: []
           });
 
           user.save(function (err) {

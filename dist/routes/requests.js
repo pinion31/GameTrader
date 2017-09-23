@@ -5,31 +5,20 @@ var router = express.Router();
 var User = require('../models/user');
 
 router.post('/addRequest', function (req, res) {
-  User.findOne({ username: req.session.user }).lean().then(function (user) {
-    var retrievedUser = Object.assign({}, user);
-    var userRequests = retrievedUser.requests === null ? Array.from(req.body) : Array.from(retrievedUser.requests).concat(req.body);
+  var userRequests = Array.from(req.body);
 
-    User.findOneAndUpdate({ username: req.session.user }, { requests: userRequests }).then(function () {
-      var incomingRequest = Object.assign({}, req.body[0]);
-      // create request for recipient of trade offer and append to their requests
-      var newRequest = {
-        status: 'Pending',
-        requestedGame: incomingRequest.offeredGame,
-        offeredGame: incomingRequest.requestedGame,
-        path: 'incoming'
-      };
+  User.findOneAndUpdate({ username: req.session.user }, { $push: { requests: userRequests[0] } }).then(function () {
+    var incomingRequest = Object.assign({}, req.body[0]);
+    // create request for recipient of trade offer and append to their requests
+    var newRequest = {
+      status: 'Pending',
+      requestedGame: incomingRequest.offeredGame,
+      offeredGame: incomingRequest.requestedGame,
+      path: 'incoming'
+    };
 
-      // find target owner of requested game
-      User.findOne({ username: incomingRequest.requestedGame.owner }).lean().then(function (user) {
-        var targetUser = Object.assign({}, user);
-
-        // add request
-        var targetUserRequests = targetUser.requests === null ? Array.from([newRequest]) : Array.from(targetUser.requests).concat([newRequest]);
-        // update target owner's request
-        User.findOneAndUpdate({ username: incomingRequest.requestedGame.owner }, { requests: targetUserRequests }).then(function () {
-          res.json(req.body);
-        });
-      });
+    User.findOneAndUpdate({ username: incomingRequest.requestedGame.owner }, { $push: { requests: newRequest } }).then(function () {
+      res.json(req.body);
     });
   });
 });

@@ -3,39 +3,24 @@ const router = express.Router();
 const User = require('../models/user');
 
 router.post('/addRequest', (req, res) => {
-  User.findOne({username: req.session.user}).lean()
-    .then((user) => {
-      const retrievedUser = Object.assign({}, user);
-      const userRequests = retrievedUser.requests === null ? Array.from(req.body) :
-        Array.from(retrievedUser.requests).concat(req.body);
+  const userRequests = Array.from(req.body);
 
-      User.findOneAndUpdate({username: req.session.user}, {requests: userRequests})
+  User.findOneAndUpdate({username: req.session.user}, {$push: {requests: userRequests[0]}})
+    .then(() => {
+      const incomingRequest = Object.assign({}, req.body[0]);
+      // create request for recipient of trade offer and append to their requests
+      const newRequest = {
+        status: 'Pending',
+        requestedGame: incomingRequest.offeredGame,
+        offeredGame: incomingRequest.requestedGame,
+        path: 'incoming',
+      };
+
+      User.findOneAndUpdate(
+        {username: incomingRequest.requestedGame.owner},
+        {$push: {requests: newRequest}})
         .then(() => {
-          const incomingRequest = Object.assign({}, req.body[0]);
-          // create request for recipient of trade offer and append to their requests
-          const newRequest = {
-            status: 'Pending',
-            requestedGame: incomingRequest.offeredGame,
-            offeredGame: incomingRequest.requestedGame,
-            path: 'incoming',
-          };
-
-          // find target owner of requested game
-          User.findOne({username: incomingRequest.requestedGame.owner}).lean()
-            .then((user) => {
-              const targetUser = Object.assign({}, user);
-
-              // add request
-              const targetUserRequests = targetUser.requests === null ? Array.from([newRequest]) :
-                Array.from(targetUser.requests).concat([newRequest]);
-              // update target owner's request
-              User.findOneAndUpdate(
-                {username: incomingRequest.requestedGame.owner},
-                {requests: targetUserRequests})
-                .then(() => {
-                  res.json(req.body);
-                });
-            });
+          res.json(req.body);
         });
     });
 });
