@@ -5,7 +5,7 @@ import {bindActionCreators} from 'redux';
 import RequestItem from './RequestItem';
 import {getUserRequests, clearUserRequests, addRequest, removeRequest} from '../actions/requestActions';
 
-class RequestList extends Component {
+export class RequestList extends Component {
   constructor(props) {
     super(props);
     this.state = {

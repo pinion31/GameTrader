@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {Carousel} from 'react-bootstrap';
 import GameCard from './GameCard';
 
-class GameRequestDescription extends Component {
+export class GameRequestDescription extends Component {
   constructor(props) {
     super(props);
     this.state = {

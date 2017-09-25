@@ -6,7 +6,7 @@ import {gameConsoles} from '../constants/gameConsoles';
 import {removeGame} from '../actions/gameActions';
 import GameCard from './GameCard';
 
-class GameItem extends Component {
+export class GameItem extends Component {
   constructor(props) {
     super(props);
     this.state = {

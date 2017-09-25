@@ -9,7 +9,7 @@ import GameItem from './GameItem';
 import {addGame, getUserGames, removeGame, clearUserGames} from '../actions/gameActions';
 import {gameConsoles} from '../constants/gameConsoles';
 
-class GameList extends Component {
+export class GameList extends Component {
   constructor(props) {
     super(props);
     this.state = {

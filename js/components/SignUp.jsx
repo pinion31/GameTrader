@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import 'whatwg-fetch';
 import {Row, Col, FormGroup, FormControl, Button, HelpBlock} from 'react-bootstrap';
 
-class SignUp extends Component {
+export class SignUp extends Component {
   constructor(props) {
     super(props);
     this.state = {

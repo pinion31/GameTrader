@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Col, FormControl, FormGroup, Glyphicon, Button} from 'react-bootstrap';
 
-class BrowserSearchBar extends Component {
+export class BrowserSearchBar extends Component {
   constructor(props) {
     super(props);
     this.state = {

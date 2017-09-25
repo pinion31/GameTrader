@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Thumbnail} from 'react-bootstrap';
 
-class GameRequestIcon extends Component {
+export class GameRequestIcon extends Component {
   render() {
     return (
       <div>

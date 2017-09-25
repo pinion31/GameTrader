@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Media, Well} from 'react-bootstrap';
 
-class GameCard extends Component {
+export class GameCard extends Component {
   displayOwner() {
     if (this.props.owner) {
       return (

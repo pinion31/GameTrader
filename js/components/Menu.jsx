@@ -10,7 +10,7 @@ const logout = () => {
   });
 };
 
-class Menu extends Component {
+export class Menu extends Component {
   render() {
     return (
       <Navbar>

@@ -8,7 +8,7 @@ import {OUTGOING, INCOMING, CANCEL_TRADE, ACCEPT_TRADE, DECLINE_TRADE_OFFER, PEN
   ACCEPTED, DECLINED, CANCELLED} from '../constants/requestStrings';
 import GameCard from './GameCard';
 
-class RequestItem extends Component {
+export class RequestItem extends Component {
   constructor(props) {
     super(props);
     this.state = {

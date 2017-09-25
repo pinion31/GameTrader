@@ -13,7 +13,7 @@ import {addRequest} from '../actions/requestActions';
 import GameCard from './GameCard';
 import BrowserSearchBar from './BrowserSearchBar';
 
-class GameBrowser extends Component {
+export class GameBrowser extends Component {
   constructor(props) {
     super(props);
     this.state = {
