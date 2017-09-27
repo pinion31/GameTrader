@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <title>Code coverage report for js/constants/requestStrings.js</title>
+    <title>Code coverage report for js/reducers/rootReducer.js</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="..\..\prettify.css" />
     <link rel="stylesheet" href="..\..\base.css" />
@@ -16,13 +16,13 @@
 <div class='wrapper'>
   <div class='pad1'>
     <h1>
-      <a href="..\..\index.html">All files</a> / <a href="index.html">js/constants</a> requestStrings.js
+      <a href="..\..\index.html">All files</a> / <a href="index.html">js/reducers</a> rootReducer.js
     </h1>
     <div class='clearfix'>
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
         <span class="quiet">Statements</span>
-        <span class='fraction'>9/9</span>
+        <span class='fraction'>0/0</span>
       </div>
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
@@ -37,7 +37,7 @@
       <div class='fl pad1y space-right2'>
         <span class="strong">100% </span>
         <span class="quiet">Lines</span>
-        <span class='fraction'>9/9</span>
+        <span class='fraction'>0/0</span>
       </div>
     </div>
   </div>
@@ -48,28 +48,16 @@
 3
 4
 5
-6
-7
-8
-9
-10</td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">export const OUTGOING = 'outgoing';
-export const INCOMING = 'incoming';
-export const PENDING = 'Pending';
-export const ACCEPTED = 'Accepted';
-export const DECLINED = 'Declined';
-export const CANCELLED = 'Cancelled';
-export const CANCEL_TRADE = 'Cancel Offer';
-export const ACCEPT_TRADE = 'Accept Trade';
-export const DECLINE_TRADE_OFFER = 'Decline Trade';
+6</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import {combineReducers} from 'redux';
+import {gameReducer} from './gameReducer';
+import {requestReducer} from './requestReducer';
+&nbsp;
+export default combineReducers({games: gameReducer, requests: requestReducer});
 &nbsp;</pre></td></tr>
 </table></pre>
 <div class='push'></div><!-- for sticky footer -->
