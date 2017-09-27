@@ -51,7 +51,8 @@ describe('GameBrowser', () => {
     });
 
     it('renders 3 GameRequestIcon', () => {
-      //console.log(game Browser.find(GameRequestIcon).length);c
+      //console.log(gameBrowser.find(GameRequestIcon).length);
+      //console.log(gameBrowser.find(GameRequestIcon));
       //expect(gameBrowser.find(GameRequestIcon).length).toEqual(3);
       //expect(gameBrowser.find(GameRequestIcon).at(2).exists()).toBe(true);
       //expect(gameBrowser.find(GameRequestIcon).at(3).exists()).toBe(false);
