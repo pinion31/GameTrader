@@ -1,12 +1,32 @@
 import React from 'react';
+import MockAdapter from 'axios-mock-adapter';
+import axios from 'axios';
 import {shallow} from 'enzyme';
 import {Grid, Row, Col, Modal, Button, Well, FormGroup,
   FormControl, option, HelpBlock} from 'react-bootstrap';
+import { fakeServer } from 'sinon';
 import GameRequestIcon from '../js/components/GameRequestIcon';
 import {GameBrowser} from '../js/components/GameBrowser';
-import {initialState, allGames, addedGame} from '../__mockData__/mockData';
+import {GameRequestDescription} from '../js/components/GameRequestDescription';
+import {initialState, allGames, Skyrim, Fallout4, addedGame, testRequest, storedRequest} from '../__mockData__/mockData';
 import {BrowserSearchBar} from '../js/components/BrowserSearchBar';
 
+const server = fakeServer.create();
+
+server.respondWith(
+  'GET',
+  '/games/getAllGames/skyrim',
+  [
+    200,
+    { 'Content-Type': 'application/json' },
+    JSON.stringify(initialState)
+  ]
+);
+
+
+const mock = new MockAdapter(axios, {delayResponse: 0});
+
+mock.onPost('/requests/addRequest').reply(200, testRequest);
 
 const emptyState = {
   showModal: false,
@@ -118,5 +138,73 @@ describe('GameBrowser', () => {
         });
       });
     });
+
+
   });
+
+  describe('sendRequest', () => {
+    beforeEach((done) => {
+      gameBrowser.setState({
+        allGames: allGames,
+        gameOffer:[Fallout4],
+        requestedGame: Skyrim.id,
+      });
+      gameBrowser.find('.accept-button').simulate('click');
+      setTimeout(done);
+    });
+
+    it('sends request', () => {
+      expect(gameBrowser.state().allGames[Skyrim.id].status).toEqual('requested');
+    });
+  });
+
+  describe('addGameToOffer', () => {
+    beforeEach((done) => {
+      gameBrowser.setState({
+        allGames: allGames,
+        gameOffer: [Skyrim],
+        requestedGame: Skyrim.id,
+      });
+
+      gameBrowser.find(FormControl).at(0).simulate('change',
+        {target: {name: 'gameOffer', value: '19457'}});
+      setTimeout(done);
+    });
+
+    it('sends request', () => {
+     expect(gameBrowser.state().gameOffer[0].id).toEqual(19457);
+    });
+  });
+
+  describe('getRequestedGame', () => {
+    beforeEach((done) => {
+      gameBrowser.setState({
+        allGames: allGames,
+        gameOffer: [Skyrim],
+        requestedGame: Skyrim.id,
+      });
+      setTimeout(done);
+    });
+
+    it('sends request', () => {
+      expect(gameBrowser.find(GameRequestDescription).length).toEqual(1);
+      expect(gameBrowser.find(GameRequestDescription).at(0).props().name).toEqual('The Elder Scrolls V: Skyrim Special Edition');
+    });
+  });
+
+  describe('fetchGames', () => {
+    beforeEach((done) => {
+      gameBrowser.find(BrowserSearchBar).props().fetchGames('skyrim');
+      server.respond();
+      setTimeout(done);
+    });
+
+    it('fetchs Games', () => {
+      expect(gameBrowser.state().allGames['9630'].id).toEqual(9630);
+      expect(gameBrowser.state().allGames['1067'].id).toEqual(1067);
+    });
+  });
+
 });
+
+
