@@ -1,26 +1,11 @@
 import React from 'react';
-import {shallow, mount} from 'enzyme';
+import {shallow} from 'enzyme';
 import {Modal, Row, Button, FormControl, HelpBlock} from 'react-bootstrap';
 import {GameList} from '../js/components/GameList';
-import {GameItem} from '../js/components/GameItem';
 import {initialState, addedGame} from '../__mockData__/mockData';
-import {addGame, getUserGames, removeGame, clearUserGames} from '../js/actions/gameActions';
-import axios from 'axios';
-import {Provider} from 'react-redux';
-import MockAdapter from 'axios-mock-adapter';
-import { createStore, applyMiddleware } from 'redux';
-import rootReducer from '../js/reducers/rootReducer';
-import thunk from 'redux-thunk';
 import { fakeServer } from 'sinon';
 
-const mock = new MockAdapter(axios, {delayResponse: 0});
-const middleware = applyMiddleware(thunk);
-const store = createStore(rootReducer, middleware);
-
-mock.onGet('/games/getUserGames').reply(200, initialState);
-mock.onPost('/games/addGame').reply(200, JSON.stringify(addedGame));
-
-let server = fakeServer.create();
+const server = fakeServer.create();
 let gameList;
 
 server.respondWith(
@@ -34,9 +19,9 @@ server.respondWith(
 );
 
 const emptyProps = {
-  addGame: () => {gameList.setProps({games: {games : [...initialState, addedGame]}});},
+  addGame: () => { gameList.setProps({games: {games: [...initialState, addedGame]}}); },
   getUserGames: () => {},
-  removeGame: () => {},
+  removeGame: () => { gameList.setProps({games: {games: [...initialState]}}); },
   clearUserGames: () => {},
   games: {games: initialState},
 };
@@ -52,66 +37,16 @@ const emptyState = {
   gameSearchMessage: '',
 };
 
-const loadedState = {
-  showModal: false,
-  searchTerm: '',
-  searchList: [],
-  selectedGame: addedGame,
-  selectedConsole: 0,
-  searchTermMessage: '',
-  consoleSearchMessage: '',
-  gameSearchMessage: '',
-};
-/*
-describe('Mounted GameList', () => {
-  let gameList;
-
-  beforeEach((done) => {
-    gameList = mount(
-     <Provider store={store}>
-        <GameList {...emptyProps} store={store} />
-     </Provider>
-      );
-
-
-    gameList.find(FormControl).at(0).simulate
-    ('change', {target: {name: 'searchTerm', value: 'sonic'}});
-
-     gameList.find(FormControl).at(1).simulate
-    ('change', {target: {name: 'selectedConsole', value: addedGame.gameConsole}});
-
-    gameList.find(Button).at(1).simulate('click');
-
-    server.respond();
-    setTimeout(done);
-  });
-
-   describe('add Game', () => {
-    beforeEach((done) => {
-      gameList.setState({selectedGame: addedGame});
-      //gameList.find(Button).at(3).simulate('click');
-      console.log('button', gameList.find(Button).at(3));
-      server.respond();
-      setTimeout(done);
-    });
-
-    it('add new game', () => {
-      console.log(gameList.props().children.props.games);
-    });
-  });
-
-});*/
-
 describe('GameList Functionality', () => {
 
   beforeEach((done) => {
     gameList = shallow(<GameList {...emptyProps} />);
 
     gameList.find(FormControl).at(0).simulate
-    ('change', {target: {name: 'searchTerm', value: 'sonic'}});
+      ('change', {target: {name: 'searchTerm', value: 'sonic'}});
 
      gameList.find(FormControl).at(1).simulate
-    ('change', {target: {name: 'selectedConsole', value: addedGame.gameConsole}});
+      ('change', {target: {name: 'selectedConsole', value: addedGame.gameConsole}});
 
     gameList.find(Button).at(1).simulate('click');
 
@@ -135,15 +70,13 @@ describe('GameList Functionality', () => {
       setTimeout(done);
     });
 
-    it('add new game', () => {
+    it('adds new game', () => {
       expect(gameList.find('.game-container').at(2).props().children.props.name).toEqual('Sonic Eraser');
     });
   });
 });
 
 describe('GameList Rendering', () => {
-
-  //let gameList;
 
   beforeEach((done) => {
     gameList = shallow(<GameList {...emptyProps} />);

@@ -106,6 +106,22 @@ export const Fallout4 = {
     "name" : "Fallout 4"
 };
 
+export const Mario2 =  {
+    "name" : "Super Mario Bros. 2",
+    "id" : 1067,
+    "summary" : "Mario’s back! Bigger and badder than before! This time it’s a fierce action-packed battle to free the land of Subcon from the curse of the evil Wart. It’s up to you, along with Mario, Luigi, Toad and the Princess, to fight your way through bizarre multi-level worlds and find him! This time you’ve got a brand new kind of power - plucking power - and now anything you find can be a weapon. But beware! You’ve never seen creatures like these! Shyguys and Tweeters! Ninji and Beezos! And you’ve never had an adventure like this! Only cunning and speed can save you now…",
+    "cover" : "https://images.igdb.com/igdb/image/upload/t_cover_small/lijdlxlmuqcvfo0kjxwf.jpg",
+    "gameConsole" : "18",
+    "screenshots" : [
+        "https://images.igdb.com/igdb/image/upload/t_screenshot_med/sfmt9d8ypy6faiw8p2dh.jpg",
+        "https://images.igdb.com/igdb/image/upload/t_screenshot_med/xol2bpcqijtzsnrowdfi.jpg",
+        "https://images.igdb.com/igdb/image/upload/t_screenshot_med/t7hiojluiquzemr5te5o.jpg",
+        "https://images.igdb.com/igdb/image/upload/t_screenshot_med/bnz1z2mxetqqp3t2ljyy.jpg",
+        "https://images.igdb.com/igdb/image/upload/t_screenshot_med/pigk3dresfrg6hbryhnr.jpg"
+    ],
+    "owner" : "christopher"
+};
+
 export const Skyrim  = {
     "owner" : "christopher",
     "screenshots" : [
