@@ -77,12 +77,16 @@ export class GameList extends Component {
       fetch(`/games/findGame/${this.state.selectedConsole}/${this.state.searchTerm}`)
         .then((res) => {
           res.json().then((result) => {
-            if (JSON.parse(result).length > 0) {
-              // add Well only after search results have been returned
-              ReactDOM.findDOMNode(this.refs['searchWell']).className = 'well';
+            if (result.length > 0) {
+              try {
+                // add Well only after search results have been returned
+                ReactDOM.findDOMNode(this.refs['searchWell']).className = 'well';
+              } catch(e) {
+                //console.log(e);
+              }
 
               this.setState({
-                searchList: JSON.parse(result),
+                searchList: result,
               });
             } else {
               this.setState({
@@ -120,7 +124,6 @@ export class GameList extends Component {
   verifyClientDoesNotOwnGame() {
     // checks to see if client already has game in their collection
     let doesNotOwnGame = true;
-
     Array.from(this.props.games.games).map((game) => {
       if (game.id.toString() === this.state.selectedGame.id.toString()) {
         this.setState({
@@ -236,7 +239,7 @@ export class GameList extends Component {
                     <Row>
                       {this.state.searchList.map(game => (
                         <Col sm={3} xs={6}>
-                          <div className="game-container">
+                          <div className="game-container" key={game.id}>
                             <a onClick={() => { this.highlightGame(game); }} key={game.id}>
                               <img className="game-item" src={game.cover} alt={game.name} ref={game.id} max-width={90} max-height={128} />
                             </a>
