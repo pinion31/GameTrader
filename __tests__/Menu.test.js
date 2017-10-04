@@ -3,6 +3,20 @@ import {shallow} from 'enzyme';
 import {Navbar, Nav, NavItem} from 'react-bootstrap';
 import {LinkContainer} from 'react-router-bootstrap';
 import {Menu} from '../js/components/Menu';
+import { fakeServer } from 'sinon';
+
+const server = fakeServer.create();
+
+server.respondWith(
+  'POST',
+  '/logoutUser',
+  [
+    200,
+    { 'Content-Type': 'application/json' },
+    JSON.stringify(true)
+  ]
+);
+
 
 describe('Menu', () =>{
   const menu = shallow(<Menu />);
@@ -46,6 +60,19 @@ describe('Menu', () =>{
     it('has a NavItem with class: nav-text and content:Sign out', () => {
       expect(menu.find(NavItem).at(2).hasClass('nav-text')).toBe(true);
       expect(menu.find(NavItem).at(2).props().children).toEqual('Sign out');
+    });
+
+    describe('logout', () => {
+      beforeEach((done) => {
+        menu.find(NavItem).at(2).simulate('click');
+        server.respond();
+        setTimeout(done);
+      });
+
+      it('logs out', () => {
+
+      });
+
     });
   });
 });

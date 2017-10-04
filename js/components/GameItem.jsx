@@ -33,17 +33,6 @@ export class GameItem extends Component {
     });
   }
 
-  convertConsoleNumToConsoleName() {
-    let publisher = '';
-
-    gameConsoles.map((gameConsole) => {
-      if (gameConsole.id.toString() === this.props.gameConsole) {
-        publisher = gameConsole.name;
-      }
-    });
-    return publisher;
-  }
-
   handleOnClick() {
     this.props.removeGame({
       id: this.props.id,

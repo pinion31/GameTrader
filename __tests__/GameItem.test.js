@@ -10,14 +10,16 @@ const emptyState = {
   direction: null
 };
 
+let resultId = 0;
+
 const emptyProps = {
-  removeGame: () => {},
+  removeGame: () => {resultId = 49;},
   screenshots:  [
-            "https://images.igdb.com/igdb/image/upload/t_screenshot_med/f3fc6zqdew83zu4dgwdf.jpg",
-            "https://images.igdb.com/igdb/image/upload/t_screenshot_med/cfb4kvjf2ygttbreazar.jpg",
-            "https://images.igdb.com/igdb/image/upload/t_screenshot_med/oornljaohheldfdli4tx.jpg",
-            "https://images.igdb.com/igdb/image/upload/t_screenshot_med/e9wm1jbpfbaflmvvldio.jpg",
-            "https://images.igdb.com/igdb/image/upload/t_screenshot_med/jonqwskjocnykh9s6gug.jpg"
+    'https://images.igdb.com/igdb/image/upload/t_screenshot_med/f3fc6zqdew83zu4dgwdf.jpg',
+    'https://images.igdb.com/igdb/image/upload/t_screenshot_med/cfb4kvjf2ygttbreazar.jpg',
+    'https://images.igdb.com/igdb/image/upload/t_screenshot_med/oornljaohheldfdli4tx.jpg',
+    'https://images.igdb.com/igdb/image/upload/t_screenshot_med/e9wm1jbpfbaflmvvldio.jpg',
+    'https://images.igdb.com/igdb/image/upload/t_screenshot_med/jonqwskjocnykh9s6gug.jpg'
         ],
   gameConsole: 49,
   cover: 'https://images.igdb.com/igdb/image/upload/t_cover_small/fbwtoie90jibxgkrf6mx.jpg',
@@ -58,6 +60,12 @@ describe('GameItem', () => {
     });
 
     describe('Footer', () => {
+      it('has a button that removes game', () => {
+        gameItem.find(Button).at(0).simulate('click');
+        expect(resultId).toEqual(49);
+        expect(gameItem.state().showModal).toEqual(true);
+      });
+
       it('has a Button labeled `Remove Game`', () => {
         expect(gameItem.find(Button).at(0).exists()).toBe(true);
         expect(gameItem.find(Button).at(0).props().children).toEqual('Remove Game');

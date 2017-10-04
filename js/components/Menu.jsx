@@ -4,7 +4,7 @@ import {Navbar, Nav, NavItem} from 'react-bootstrap';
 import {LinkContainer} from 'react-router-bootstrap';
 
 const logout = () => {
-  fetch('logoutUser', {
+  fetch('/logoutUser', {
     method: 'POST',
     credentials: 'include',
   });

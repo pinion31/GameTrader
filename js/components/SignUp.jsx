@@ -44,13 +44,6 @@ export class SignUp extends Component {
     });
   }
 
-  checkLengthOfField(field) {
-    if (field.length > 0) {
-      return true;
-    }
-    return false;
-  }
-
   // client-side verification
   validateSignUp() {
     const user = this.state.newUser;

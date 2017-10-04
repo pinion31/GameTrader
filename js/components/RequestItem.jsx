@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {Modal, Button} from 'react-bootstrap';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import {addGame, removeGame, completeTrade} from '../actions/gameActions';
+import {completeTrade} from '../actions/gameActions';
 import {removeRequest, declineTrade} from '../actions/requestActions';
 import {OUTGOING, INCOMING, CANCEL_TRADE, ACCEPT_TRADE, DECLINE_TRADE_OFFER, PENDING,
   ACCEPTED, DECLINED, CANCELLED} from '../constants/requestStrings';
@@ -155,19 +155,11 @@ export class RequestItem extends Component {
   }
 }
 
-function mapStateToProps(state) {
-  return {
-
-  };
-}
-
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
-    addGame,
     removeRequest,
-    removeGame,
     completeTrade,
     declineTrade,
   }, dispatch);
 }
-export default connect(mapStateToProps, mapDispatchToProps)(RequestItem);
+export default connect(null, mapDispatchToProps)(RequestItem);

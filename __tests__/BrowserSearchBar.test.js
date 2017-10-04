@@ -7,8 +7,14 @@ const emptyState = {
   searchTerm: '',
 };
 
+let resultSearchTerm = '';
+
+const emptyProps = {
+  fetchGames: (term) => { resultSearchTerm = term; }
+};
+
 describe('BrowserSearchBar',()=> {
-  const searchBar = shallow(<BrowserSearchBar />);
+  const searchBar = shallow(<BrowserSearchBar {...emptyProps} />);
 
   it('has an initial state with empty string for searchTerm', () => {
     expect(searchBar.state().searchTerm).toEqual(emptyState.searchTerm);
@@ -31,11 +37,30 @@ describe('BrowserSearchBar',()=> {
     expect(searchBar.find(FormControl).at(0).props().placeholder).toEqual('Search Games');
   });
 
-   it('has a FormControl with name:`name` and type:`text`', () => {
+  it('has a FormControl with name:`name` and type:`text`', () => {
     expect(searchBar.find(FormControl).at(0).props().name).toEqual('name');
     expect(searchBar.find(FormControl).at(0).props().type).toEqual('text');
   });
 
+  describe('searchTerm', () => {
+    beforeEach(() => {
+      searchBar.find(FormControl).simulate('change', {target:{value:'test'}});
+    });
 
+    it('updates searchTerm', () => {
+      expect(searchBar.state().searchTerm).toEqual('test');
+    });
+  });
+
+  describe('filterAvailableGames', () => {
+    beforeEach(() => {
+      searchBar.setState({ searchTerm: 'test'});
+      searchBar.find(Button).at(0).simulate('click');
+    });
+
+    it('updates searchTerm', () => {
+      expect(resultSearchTerm).toEqual('test');
+    });
+  });
 
 });

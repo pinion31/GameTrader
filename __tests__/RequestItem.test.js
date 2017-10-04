@@ -11,12 +11,13 @@ const emptyState = {
   statusMessage: '',
 };
 
+let fnResults = '';
+let fnResultsTrade = '';
+
 const emptyProps = {
-  addGame: () => {},
-  removeRequest: () => {},
-  removeGame: () => {},
-  completeTrade: () => {},
-  declineTrade: () => {},
+  removeRequest: (gameInfo) => {fnResults = gameInfo;},
+  completeTrade: (gameInfo) => {fnResultsTrade = gameInfo;},
+  declineTrade: (type) => { fnResults = type; },
   requestedGame: {
         "name" : "Super Mario Bros. 2",
         "id" : 1067,
@@ -294,6 +295,59 @@ describe('RequestItem', () => {
       it('has a Button labeled `close`', () => {
         expect(requestItem.find(Button).at(1).props().children).toEqual('Close');
       });
+    });
+  });
+
+  describe('removeTrade', () => {
+    beforeEach(() => {
+      requestItem = shallow(<RequestItem {...emptyProps} path={INCOMING}
+        status={DECLINED} />);
+      requestItem.find(Button).at(0).simulate('click');
+    });
+
+    it('removes Request', () => {
+      expect(fnResults).toEqual({
+        requestedGameId: emptyProps.requestedGame.id,
+        offeredGameId: emptyProps.offeredGame.id,
+      });
+      expect(requestItem.state().showModal).toEqual(true);
+    });
+  });
+
+  describe('declineTrade', () => {
+    beforeEach(() => {
+      requestItem = shallow(<RequestItem {...emptyProps} path={OUTGOING}
+        status={PENDING} />);
+      requestItem.find(Button).at(0).simulate('click');
+    });
+
+    it('declines Trade', () => {
+      expect(fnResults).toEqual({
+        type: 'Cancelled',
+        offeredGame: emptyProps.offeredGame,
+        requestedGame: emptyProps.requestedGame,
+      });
+    });
+  });
+
+  describe('acceptTrade', () => {
+    beforeEach(() => {
+      requestItem = shallow(<RequestItem {...emptyProps} path={INCOMING}
+       status={PENDING} />);
+      requestItem.find(Button).at(1).simulate('click');
+    });
+
+    it('accepts Trade', () => {
+      expect(fnResultsTrade).toEqual({
+        offeredGame: emptyProps.offeredGame,
+        requestedGame: emptyProps.requestedGame,
+      });
+
+      expect(fnResults).toEqual({
+        requestedGameId: emptyProps.requestedGame.id,
+        offeredGameId: emptyProps.offeredGame.id,
+      });
+      expect(requestItem.state().showModal).toEqual(true);
     });
   });
 });
