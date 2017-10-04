@@ -33,7 +33,7 @@ export class Login extends Component {
 
   // client-side verification
   validateLogin() {
-    // if username is filled
+      // if username is filled
     if (this.state.user.username.length === 0) {
       this.setState({
         usernameHelp: 'Please enter a username.',
@@ -46,7 +46,6 @@ export class Login extends Component {
       });
       return false;
     }
-
     // if validation check passes, send credentials to server
     return true;
   }
@@ -120,8 +119,6 @@ export class Login extends Component {
             <Button className="signup-button" bsStyle="primary" onClick={this.goToSignUp}>Sign Up</Button>
           </Col>
         </Row>
-
-
       </div>
     );
   }

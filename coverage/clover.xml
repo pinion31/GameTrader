@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1507072511551" clover="3.2.0">
-  <project timestamp="1507072511551" name="All files">
-    <metrics statements="354" coveredstatements="224" conditionals="113" coveredconditionals="53" methods="140" coveredmethods="83" elements="607" coveredelements="360" complexity="0" loc="354" ncloc="354" packages="5" files="21" classes="21">
+<coverage generated="1507087116245" clover="3.2.0">
+  <project timestamp="1507087116245" name="All files">
+    <metrics statements="354" coveredstatements="239" conditionals="113" coveredconditionals="62" methods="140" coveredmethods="88" elements="607" coveredelements="389" complexity="0" loc="354" ncloc="354" packages="5" files="21" classes="21">
       <package name="__mockData__">
         <metrics statements="8" coveredstatements="8" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <file name="mockData.js" path="C:\Users\Chris\documents\webdev\gametrader\__mockData__\mockData.js">
@@ -70,7 +70,7 @@
         </file>
       </package>
       <package name="js.components">
-        <metrics statements="266" coveredstatements="144" conditionals="99" coveredconditionals="39" methods="104" coveredmethods="55"/>
+        <metrics statements="266" coveredstatements="159" conditionals="99" coveredconditionals="48" methods="104" coveredmethods="60"/>
         <file name="BrowserSearchBar.jsx" path="C:\Users\Chris\documents\webdev\gametrader\js\components\BrowserSearchBar.jsx">
           <metrics statements="7" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="2"/>
           <line num="6" count="1" type="stmt"/>
@@ -82,7 +82,7 @@
           <line num="26" count="1" type="stmt"/>
         </file>
         <file name="GameBrowser.jsx" path="C:\Users\Chris\documents\webdev\gametrader\js\components\GameBrowser.jsx">
-          <metrics statements="45" coveredstatements="32" conditionals="13" coveredconditionals="6" methods="20" coveredmethods="13"/>
+          <metrics statements="45" coveredstatements="33" conditionals="13" coveredconditionals="7" methods="20" coveredmethods="14"/>
           <line num="18" count="1" type="stmt"/>
           <line num="19" count="1" type="stmt"/>
           <line num="28" count="1" type="stmt"/>
@@ -92,9 +92,9 @@
           <line num="32" count="1" type="stmt"/>
           <line num="36" count="0" type="stmt"/>
           <line num="37" count="0" type="stmt"/>
-          <line num="41" count="7" type="cond" truecount="2" falsecount="0"/>
+          <line num="41" count="8" type="cond" truecount="2" falsecount="0"/>
           <line num="42" count="5" type="stmt"/>
-          <line num="51" count="2" type="stmt"/>
+          <line num="51" count="3" type="stmt"/>
           <line num="56" count="0" type="stmt"/>
           <line num="58" count="0" type="stmt"/>
           <line num="59" count="0" type="cond" truecount="0" falsecount="2"/>
@@ -121,11 +121,11 @@
           <line num="131" count="2" type="stmt"/>
           <line num="134" count="1" type="stmt"/>
           <line num="140" count="0" type="stmt"/>
-          <line num="145" count="0" type="stmt"/>
-          <line num="152" count="7" type="stmt"/>
-          <line num="167" count="17" type="stmt"/>
+          <line num="145" count="1" type="stmt"/>
+          <line num="152" count="8" type="stmt"/>
+          <line num="167" count="20" type="stmt"/>
           <line num="198" count="6" type="stmt"/>
-          <line num="214" count="14" type="stmt"/>
+          <line num="214" count="16" type="stmt"/>
           <line num="241" count="0" type="stmt"/>
           <line num="247" count="0" type="stmt"/>
         </file>
@@ -227,7 +227,7 @@
           <line num="6" count="1" type="stmt"/>
         </file>
         <file name="Login.jsx" path="C:\Users\Chris\documents\webdev\gametrader\js\components\Login.jsx">
-          <metrics statements="26" coveredstatements="7" conditionals="10" coveredconditionals="0" methods="8" coveredmethods="2"/>
+          <metrics statements="26" coveredstatements="21" conditionals="10" coveredconditionals="8" methods="8" coveredmethods="6"/>
           <line num="7" count="1" type="stmt"/>
           <line num="8" count="1" type="stmt"/>
           <line num="17" count="1" type="stmt"/>
@@ -237,23 +237,23 @@
           <line num="24" count="0" type="stmt"/>
           <line num="25" count="0" type="stmt"/>
           <line num="27" count="0" type="stmt"/>
-          <line num="37" count="0" type="cond" truecount="0" falsecount="2"/>
-          <line num="38" count="0" type="stmt"/>
-          <line num="41" count="0" type="stmt"/>
-          <line num="43" count="0" type="cond" truecount="0" falsecount="2"/>
-          <line num="44" count="0" type="stmt"/>
-          <line num="47" count="0" type="stmt"/>
-          <line num="51" count="0" type="stmt"/>
-          <line num="55" count="0" type="cond" truecount="0" falsecount="2"/>
-          <line num="56" count="0" type="stmt"/>
-          <line num="62" count="0" type="cond" truecount="0" falsecount="2"/>
-          <line num="63" count="0" type="stmt"/>
-          <line num="64" count="0" type="cond" truecount="0" falsecount="2"/>
-          <line num="65" count="0" type="stmt"/>
-          <line num="66" count="0" type="stmt"/>
-          <line num="68" count="0" type="stmt"/>
-          <line num="79" count="0" type="stmt"/>
-          <line num="83" count="1" type="stmt"/>
+          <line num="37" count="3" type="cond" truecount="2" falsecount="0"/>
+          <line num="38" count="1" type="stmt"/>
+          <line num="41" count="1" type="stmt"/>
+          <line num="43" count="2" type="cond" truecount="2" falsecount="0"/>
+          <line num="44" count="1" type="stmt"/>
+          <line num="47" count="1" type="stmt"/>
+          <line num="50" count="1" type="stmt"/>
+          <line num="54" count="3" type="cond" truecount="2" falsecount="0"/>
+          <line num="55" count="1" type="stmt"/>
+          <line num="61" count="1" type="cond" truecount="1" falsecount="1"/>
+          <line num="62" count="1" type="stmt"/>
+          <line num="63" count="1" type="cond" truecount="1" falsecount="1"/>
+          <line num="64" count="1" type="stmt"/>
+          <line num="65" count="1" type="stmt"/>
+          <line num="67" count="0" type="stmt"/>
+          <line num="78" count="0" type="stmt"/>
+          <line num="82" count="6" type="stmt"/>
         </file>
         <file name="Menu.jsx" path="C:\Users\Chris\documents\webdev\gametrader\js\components\Menu.jsx">
           <metrics statements="3" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="1"/>

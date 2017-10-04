@@ -106,6 +106,12 @@ describe('GameBrowser', () => {
       expect(gameBrowser.find('h2').at(1).hasClass('modal-sub-header')).toBe(true);
     });
 
+    it('opens modal', () => {
+      gameBrowser.find(Button).at(0).simulate('click');
+      expect(gameBrowser.state().showModal).toEqual(true);
+      expect(gameBrowser.state().requestedGame).toEqual({});
+    });
+
     describe('Select Game Dropdown', () => {
       it('has a default value of `Select Game`', () => {
         expect(gameBrowser.find('option').at(0).props().children).toEqual('Select Game');
@@ -204,6 +210,7 @@ describe('GameBrowser', () => {
       expect(gameBrowser.state().allGames['1067'].id).toEqual(1067);
     });
   });
+
 
 });
 

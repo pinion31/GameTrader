@@ -2,6 +2,26 @@ import React from 'react';
 import {shallow} from 'enzyme';
 import {Row, Col, FormGroup, FormControl, Button, HelpBlock} from 'react-bootstrap';
 import {Login} from '../js/components/Login';
+import { fakeServer } from 'sinon';
+
+const server = fakeServer.create();
+
+server.respondWith(
+  'POST',
+  '/users/loginUser',
+  [
+    200,
+    { 'Content-Type': 'application/json' },
+    JSON.stringify({validation: 'valid'})
+  ]
+);
+
+let userAccepted = 'failure';
+
+const emptyProps = {
+  setSessionUser: () => {userAccepted ='success';}
+};
+
 
 const emptyState = {
   user: {
@@ -13,7 +33,7 @@ const emptyState = {
 };
 
 describe('Login', () => {
-  const login = shallow(<Login />);
+  const login = shallow(<Login {...emptyProps} />);
 
   it('initializes component with empty state', () => {
     expect(login.state()).toEqual(emptyState);
@@ -83,6 +103,53 @@ describe('Login', () => {
       expect(login.find(Button).at(0).hasClass('request-accepted')).toBe(true);
     });
 
+    describe('Login with fields', () => {
+
+      beforeEach((done) => {
+        login.setState({ user: {username:'test', password:'test'}});
+        login.find(Button).at(0).simulate('click');
+        server.respond();
+        setTimeout(done);
+      });
+
+      it('sends login information', () => {
+        expect(userAccepted).toEqual('success');
+      });
+
+      afterEach(() => {
+        userAccepted = 'failure';
+      });
+    });
+
+    describe('Login without user field', () => {
+
+      beforeEach((done) => {
+        login.setState({ user: {username:'', password:''}});
+        login.find(Button).at(0).simulate('click');
+        server.respond();
+        setTimeout(done);
+      });
+
+      it('sends login information', () => {
+        expect(userAccepted).toEqual('failure');
+        expect(login.state().usernameHelp).toEqual('Please enter a username.');
+      });
+    });
+
+    describe('Login without password field', () => {
+
+      beforeEach((done) => {
+        login.setState({ user: {username:'test', password:''}});
+        login.find(Button).at(0).simulate('click');
+        server.respond();
+        setTimeout(done);
+      });
+
+      it('sends login information', () => {
+        expect(userAccepted).toEqual('failure');
+        expect(login.state().passwordHelp).toEqual('Please enter a password.');
+      });
+    });
   });
 
   describe('signup-subtitle Button', () => {
