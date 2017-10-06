@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest --env=jsdom ",
     "test:watch": "jest --env=jsdom --watchAll",
-    "test-server": "mocha __server_tests__ ",
+    "test-server": "nodemon --exec mocha __server_tests__",
     "start": "node dist/server.js",
     "nodemon": "nodemon -w dist dist/server.js",
     "compile": "SET NODE_ENV=production && webpack -p",
@@ -95,6 +95,8 @@
     "sinon": "^4.0.0",
     "source-map-support": "^0.4.15",
     "style-loader": "^0.18.2",
+    "supertest": "^3.0.0",
+    "supertest-session": "^3.1.0",
     "webpack": "^3.0.0",
     "webpack-dev-server": "^2.5.0",
     "webpack-sass": "^2.2.1"
