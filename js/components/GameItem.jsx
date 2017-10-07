@@ -35,7 +35,7 @@ export class GameItem extends Component {
 
   handleOnClick() {
     this.props.removeGame({
-      id: this.props.id,
+      mongoId: this.props.mongoId,
     });
 
     this.toggleModal();

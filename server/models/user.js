@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const userSchema = mongoose.Schema(
+const userSchema = new Schema(
   {
     username: String,
     password: String,
@@ -8,10 +9,13 @@ const userSchema = mongoose.Schema(
     city: String,
     state: String,
     requests: Object,
-    games: Object,
+    games: [{
+      type: Schema.Types.ObjectId,
+      ref: 'games'
+    }]
   }
 );
 
-const User = mongoose.model('GameTraders', userSchema);
+const User = mongoose.model('users', userSchema);
 
 module.exports = User;

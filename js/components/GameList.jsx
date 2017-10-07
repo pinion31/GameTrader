@@ -179,6 +179,7 @@ export class GameList extends Component {
                       cover={game.cover}
                       gameConsole={game.gameConsole}
                       screenshots={game.screenshots}
+                      mongoId ={game._id}
                     />
                   </div>
                 </Col>

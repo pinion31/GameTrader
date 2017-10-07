@@ -4,6 +4,7 @@ const express = require('express');
 const router = express.Router();
 
 const User = require('../models/user');
+const Game = require('../models/game');
 
 const client = igdb(process.env.IGDB_KEY);
 
@@ -96,6 +97,7 @@ router.get('/getAllGames/:filter', (req, res) => {
 
 router.get('/getUserGames', (req, res) => {
   User.findOne({username: req.session.user}).lean()
+    .populate('games')
     .then((user) => {
       if (user.games) {
         res.json(user.games);
@@ -106,29 +108,34 @@ router.get('/getUserGames', (req, res) => {
 });
 
 router.post('/addGame', (req, res) => {
-  const gametoAdd = Array.from(req.body);
-  gametoAdd[0].owner = req.session.user; // append owner info to added game
+  User.findOne({username: req.session.user})
+    .then((user) => {
+      const newGame = new Game({
+        screenshots: req.body[0].screenshots,
+        gameConsole: req.body[0].console,
+        cover: req.body[0].cover,
+        summary: req.body[0].summary,
+        id: req.body[0].id,
+        name: req.body[0].name,
+        owner: user,
+      });
 
-  User.findOneAndUpdate({username: req.session.user}, {$push: {games: gametoAdd[0]}})
-    .then(() => {
-      res.json(req.body);
-    });
+      user.games.push(newGame);
+
+      Promise.all([user.save(), newGame.save()])
+        .then(() => {
+          res.json(req.body);
+        });
+    }).catch(err => {throw err;});
 });
 
 router.post('/removeGame', (req, res) => {
-  User.findOne({username: req.session.user}).lean()
-    .then((user) => {
-      const modifiedUser = Object.assign({}, user);
-
-      const newGameColl = Array.from(modifiedUser.games).filter((game) => {
-        if (req.body.id != game.id) {
-          return game;
-        }
-      });
-
-      User.findOneAndUpdate({username: req.session.user}, {games: newGameColl})
-        .then(() => {
-          res.json(newGameColl);
+  Game.findByIdAndRemove(req.body.mongoId).lean()
+    .then(() => {
+      User.findOne({username: req.session.user}).lean()
+        .populate('games')
+        .then((user) => {
+          res.json(user.games);
         });
     });
 });
