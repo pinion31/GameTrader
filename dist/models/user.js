@@ -9,7 +9,10 @@ var userSchema = new Schema({
   email: String,
   city: String,
   state: String,
-  requests: Object,
+  requests: [{
+    type: Schema.Types.ObjectId,
+    ref: 'requests'
+  }],
   games: [{
     type: Schema.Types.ObjectId,
     ref: 'games'
