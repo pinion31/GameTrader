@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
+const Game = require('../models/game');
 
 router.post('/declineTrade', (req, res) => {
   const traderGameToReceive = Object.assign({}, req.body.offeredGame); // from tradee to trader
@@ -39,64 +40,100 @@ router.post('/declineTrade', (req, res) => {
 });
 
 // complete trade for trader after tradee accepts trade
-router.post('/completeTrade', (req, res) => {
+router.post('/completeTrade', function (req, res) {
   const traderGameToReceive = Object.assign({}, req.body.offeredGame); // from tradee to trader
   const tradeeGameToReceive = Object.assign({}, req.body.requestedGame); // from trader to tradee
-  const gameTradee = req.session.user;
-  const gameTrader = req.body.requestedGame.owner;
+  const gameTradee = traderGameToReceive.owner;
+  const gameTrader = tradeeGameToReceive.owner;
+
+  const setTradeeRequestToAccepted = (requests) => {
+    const newRequests = Array.from(requests);
+
+    newRequests.map(request => {
+      if (request.requestedGame.id === traderGameToReceive.id &&
+          request.offeredGame.id === tradeeGameToReceive.id) {
+        request.status = 'Accepted';
+      }
+    });
+
+    return newRequests;
+  };
+
+  const deleteTraderRequest = (requests) => {
+    const newRequests = requests.filter(request => {
+      if (request.requestedGame.id != tradeeGameToReceive.id &&
+          request.offeredGame.id != traderGameToReceive.id) {
+        return request;
+      }
+    });
+
+    return newRequests;
+  };
 
   // perform exchange on trader library
-  User.findOne({username: gameTrader}).lean()
-    .then((trader) => {
-      let traderGames = Array.from(trader.games);
-      const traderRequests = Array.from(trader.requests);
-
-      // remove game from trader's library
-      traderGames = traderGames.filter((game) => {
-        if (game.id != tradeeGameToReceive.id) {
-          return game;
+  User.find({'_id': {$in :[gameTradee, gameTrader]}})
+    .populate({
+      path: 'games',
+      populate: {
+        path: 'owner',
+        model: 'users'
+      }
+    }).then((trader) => {
+      let gameKey0;
+      let gameKey1;
+      Array.from(trader[0].games).map((game, key) => {
+        if (game._id.toString() === tradeeGameToReceive._id.toString()) {
+          // trader[0].games[key] is still a user model so can't use spread operator
+          // to transfer properties
+          trader[0].games[key].name = traderGameToReceive.name;
+          trader[0].games[key].gameConsole = traderGameToReceive.gameConsole;
+          trader[0].games[key].summary = traderGameToReceive.summary;
+          trader[0].games[key].id = traderGameToReceive.id;
+          trader[0].games[key].cover = traderGameToReceive.cover;
+          trader[0].games[key].screenshots = traderGameToReceive.screenshots;
+          gameKey0 = key;
         }
       });
 
-      // change status for request to accept
-      traderRequests.map((request) => {
-        if (request.requestedGame.id === traderGameToReceive.id &&
-            request.offeredGame.id === tradeeGameToReceive.id) {
-          request.status = 'Accepted';
+      Array.from(trader[1].games).map((game, key) => {
+        if (game._id.toString() === traderGameToReceive._id.toString()) {
+          trader[1].games[key].name = tradeeGameToReceive.name;
+          trader[1].games[key].gameConsole = tradeeGameToReceive.gameConsole;
+          trader[1].games[key].summary = tradeeGameToReceive.summary;
+          trader[1].games[key].id = tradeeGameToReceive.id;
+          trader[1].games[key].cover = tradeeGameToReceive.cover;
+          trader[1].games[key].screenshots = tradeeGameToReceive.screenshots;
+          gameKey1 = key;
         }
       });
 
-      // change owner of game to new owner
-      traderGameToReceive.owner = gameTrader;
+      if (trader[0]._id.toString() === traderGameToReceive.owner) {
 
-      // add game to trader's library
-      traderGames = traderGames.concat([traderGameToReceive]);
+        trader[1].requests = setTradeeRequestToAccepted(trader[1].requests);
+        trader[0].requests = deleteTraderRequest(trader[0].requests);
 
-      User.findOneAndUpdate({username: gameTrader}, {games: traderGames, requests: traderRequests})
-        .then(() => {
-          // perform exchange on tradee library
-          User.findOne({username: gameTradee}).lean()
-            .then((tradee) => {
-              let tradeeGames = Array.from(tradee.games);
-              // remove game from tradee's library
-              tradeeGames = tradeeGames.filter((game) => {
-                if (game.id != traderGameToReceive.id) {
-                  return game;
-                }
-              });
-
-              // change owner of game to new owner
-              tradeeGameToReceive.owner = gameTradee;
-
-              // add game to tradee's library
-              tradeeGames = tradeeGames.concat([tradeeGameToReceive]);
-
-              User.findOneAndUpdate({username: gameTradee}, {games: tradeeGames})
-                .then(() => {
-                  res.json(tradeeGames);
-                });
-            });
+        Promise.all([
+          trader[1].games[gameKey1].save(),
+          trader[0].games[gameKey0].save(),
+          trader[1].save(),
+          trader[0].save()
+        ]).then(() => {
+          res.json(trader[0].requests);
         });
+      } else {
+        trader[0].requests = setTradeeRequestToAccepted(trader[0].requests);
+        trader[1].requests = deleteTraderRequest(trader[1].requests);
+
+        Promise.all([
+          trader[1].games[gameKey1].save(),
+          trader[0].games[gameKey0].save(),
+          trader[1].save(),
+          trader[0].save()
+        ]).then(() => {
+          res.json(trader[1].requests);
+        });
+
+      }
     });
 });
 

@@ -2,6 +2,7 @@
 
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
+var requestSchema = require('./requestSchema');
 
 var userSchema = new Schema({
   username: String,
@@ -9,7 +10,7 @@ var userSchema = new Schema({
   email: String,
   city: String,
   state: String,
-  requests: Object,
+  requests: [requestSchema],
   games: [{
     type: Schema.Types.ObjectId,
     ref: 'games'

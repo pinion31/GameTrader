@@ -72,24 +72,14 @@ router.get('/getAllGames/:filter', function (req, res) {
     regSearch = new RegExp(req.params.filter.toLowerCase());
   }
 
-  User.find({}).lean().then(function (users) {
-    users.forEach(function (user) {
-      if (user.games.length > 0) {
-        if (user.games[0].owner != req.session.user) {
-          var userGame = user.games.filter(function (game) {
-            if (game.name.toLowerCase().match(regSearch)) {
-              return game;
-            }
-          });
-
-          allGames = allGames.concat(userGame);
-        }
-      }
+  User.findOne({ username: req.session.user }).lean().then(function (user) {
+    return Game.find({ 'owner': { $ne: user._id } }).lean().populate('owner').limit(36);
+  }).then(function (games) {
+    games.forEach(function (game) {
+      var username = game.owner.username;
+      game.owner = username;
     });
-
-    res.json(allGames);
-  }).catch(function (err) {
-    throw err;
+    res.json(games);
   });
 });
 
@@ -107,7 +97,7 @@ router.post('/addGame', function (req, res) {
   User.findOne({ username: req.session.user }).then(function (user) {
     var newGame = new Game({
       screenshots: req.body[0].screenshots,
-      gameConsole: req.body[0].console,
+      gameConsole: req.body[0].gameConsole,
       cover: req.body[0].cover,
       summary: req.body[0].summary,
       id: req.body[0].id,

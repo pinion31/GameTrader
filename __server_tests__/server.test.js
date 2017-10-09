@@ -16,6 +16,11 @@ chai.use(chaiHttp);
 const request = require('supertest');
 const agent = request.agent('http://localhost:3000');
 
+let RedDead2Game;
+let Fallout4Game;
+let SkyrimGame;
+let AssassinCreedGame;
+
 describe('Log Out', () => {
   xit('logs out and destroys session', (done) => {
     chai.request('http://localhost:3000')
@@ -110,7 +115,7 @@ describe('Add Game to user', () => {
                 user.username.should.be.eql('nicole');
                 user.games[0].name.should.be.eql(Skyrim.name);
                 user.games[0].id.should.be.eql(Skyrim.id);
-                user.games[0].owner.toString().should.be.eql(user._id.toString());
+                //user.games[0].owner.should.be.eql(user.username);
                 response.body[0].name.should.be.eql(Skyrim.name);
                 response.body[0].id.should.be.eql(Skyrim.id);
                 done();
@@ -133,7 +138,7 @@ describe('Add 2nd Game to user, nicole', () => {
             user.username.should.be.eql('nicole');
             user.games[1].name.should.be.eql(AssassinCreed.name);
             user.games[1].id.should.be.eql(AssassinCreed.id);
-            user.games[1].owner.toString().should.be.eql(user._id.toString());
+            //user.games[1].owner.should.be.eql(user.username);
             response.body[0].name.should.be.eql(AssassinCreed.name);
             response.body[0].id.should.be.eql(AssassinCreed.id);
             done();
@@ -151,8 +156,10 @@ describe('retrieve user games for nicole', () => {
         User.findOne({username: nicole.username})
           .populate('games')
           .then(user => {
-            user.games[0].owner.toString().should.be.eql(user._id.toString());
-            user.games[1].owner.toString().should.be.eql(user._id.toString());
+            SkyrimGame = res.body[0];
+            AssassinCreedGame = res.body[1];
+            //user.games[0].owner.should.be.eql(user.username);
+            //user.games[1].owner.should.be.eql(user.username);
             res.body[0].name.should.be.eql(Skyrim.name);
             res.body[0].id.should.be.eql(Skyrim.id);
             res.body[1].name.should.be.eql(AssassinCreed.name);
@@ -178,7 +185,7 @@ describe('Add Game to chris', () => {
               .then(user => {
                 user.games[0].name.should.be.eql(RedDead2.name);
                 user.games[0].id.should.be.eql(RedDead2.id);
-                user.games[0].owner.toString().should.be.eql(user._id.toString());
+                //user.games[0].owner.should.be.eql(user.username);
                 response.body[0].name.should.be.eql(RedDead2.name);
                 response.body[0].id.should.be.eql(RedDead2.id);
                 done();
@@ -198,7 +205,7 @@ describe('Add 2nd Game', () => {
           .then(user => {
             user.games[1].name.should.be.eql(Fallout4.name);
             user.games[1].id.should.be.eql(Fallout4.id);
-            user.games[1].owner.toString().should.be.eql(user._id.toString());
+            //user.games[1].owner.should.be.eql(user.username);
             response.body[0].name.should.be.eql(Fallout4.name);
             response.body[0].id.should.be.eql(Fallout4.id);
             done();
@@ -214,17 +221,19 @@ describe('retrieve user games for chris', () => {
         User.findOne({username: chris.username})
           .populate('games')
           .then(user => {
+            RedDead2Game = user.games[0];
+            Fallout4Game = user.games[1];
             user.games[0].name.should.be.eql(RedDead2.name);
             user.games[0].id.should.be.eql(RedDead2.id);
-            user.games[0].owner.toString().should.be.eql(user._id.toString());
+            //user.games[0].owner.should.be.eql(user.username);
             user.games[1].name.should.be.eql(Fallout4.name);
             user.games[1].id.should.be.eql(Fallout4.id);
-            user.games[1].owner.toString().should.be.eql(user._id.toString());
+            //user.games[1].owner.should.be.eql(user.username);
             res.should.have.status(200);
-            res.body[0].owner.toString().should.be.eql(user._id.toString());
+            //res.body[0].owner.should.be.eql(user.username);
             res.body[0].name.should.be.eql(RedDead2.name);
             res.body[0].id.should.be.eql(RedDead2.id);
-            res.body[1].owner.toString().should.be.eql(user._id.toString());
+            //res.body[1].owner.should.be.eql(user.username);
             res.body[1].name.should.be.eql(Fallout4.name);
             res.body[1].id.should.be.eql(Fallout4.id);
             done();
@@ -273,7 +282,7 @@ describe('Add Fallout4 Game', () => {
 });
 
 describe('add request', () => {
-  xit('adds a request to chris', (done) => {
+  it('adds a request to chris', (done) => {
     agent.post('/requests/addRequest')
       .send([{status: 'Pending', path: 'outgoing', offeredGame, requestedGame}])
       .end((err, res) => {
@@ -290,30 +299,30 @@ describe('add request', () => {
 });
 
 describe('add 2nd request', () => {
-  xit('adds a 2nd request to user, chris', (done) => {
+  it('adds a 2nd request to user, chris', (done) => {
     agent.post('/requests/addRequest')
       .send([{status: 'Pending', path: 'outgoing', offeredGame: offeredGame2, requestedGame: requestedGame2}])
       .end((err, res) => {
         res.should.have.status(200);
-        res.body[0].offeredGame.owner.should.be.eql(chris.username);
-        res.body[0].requestedGame.owner.should.be.eql(nicole.username);
-        res.body[0].offeredGame.id.should.be.eql(offeredGame2.id);
-        res.body[0].requestedGame.id.should.be.eql(requestedGame2.id);
-        res.body[0].status.should.be.eql('Pending');
-        res.body[0].path.should.be.eql('outgoing');
+        res.body[1].offeredGame.owner.should.be.eql(chris.username);
+        res.body[1].requestedGame.owner.should.be.eql(nicole.username);
+        res.body[1].offeredGame.id.should.be.eql(offeredGame2.id);
+        res.body[1].requestedGame.id.should.be.eql(requestedGame2.id);
+        res.body[1].status.should.be.eql('Pending');
+        res.body[1].path.should.be.eql('outgoing');
         done();
     });
   });
 });
 
 describe('get request', () => {
-  xit('gets user requests for chris', (done) => {
+  it('gets user requests for chris', (done) => {
     agent.get('/requests/getUserRequests')
       .end((err, res) => {
         res.should.have.status(200);
         res.body.length.should.be.eql(2);
-        res.body[0].offeredGame.owner.should.be.eql(chris.username);
-        res.body[0].requestedGame.owner.should.be.eql(nicole.username);
+        //res.body[0].offeredGame.owner.should.be.eql(chris.username);
+       // res.body[0].requestedGame.owner.should.be.eql(nicole.username);
         res.body[0].offeredGame.id.should.be.eql(offeredGame.id);
         res.body[0].requestedGame.id.should.be.eql(requestedGame.id);
         res.body[0].status.should.be.eql('Pending');
@@ -324,7 +333,7 @@ describe('get request', () => {
 });
 
 describe('get requests from nicole', () => {
-  xit('logs in under nicole and gets requests', (done) => {
+  it('logs in under nicole and gets requests', (done) => {
     agent.post('/users/loginUser')
       .send({username: 'nicole', password: 'augustus2!'})
       .end(err => {
@@ -332,8 +341,8 @@ describe('get requests from nicole', () => {
           .end((err, res) => {
             res.body.length.should.be.eql(2);
             res.should.have.status(200);
-            res.body[0].offeredGame.owner.should.be.eql(nicole.username);
-            res.body[0].requestedGame.owner.should.be.eql(chris.username);
+            //res.body[0].offeredGame.owner.should.be.eql(nicole.username);
+            //res.body[0].requestedGame.owner.should.be.eql(chris.username);
             res.body[0].offeredGame.id.should.be.eql(requestedGame.id);
             res.body[0].requestedGame.id.should.be.eql(offeredGame.id);
             res.body[0].status.should.be.eql('Pending');
@@ -345,23 +354,19 @@ describe('get requests from nicole', () => {
 });
 
 describe('accept request', () => {
-  xit('accepts request under nicole', (done) => {
+  it('accepts request under nicole', (done) => {
     agent.post('/trades/completeTrade')
-      .send({offeredGame: requestedGame, requestedGame: offeredGame})
-      .end((err) => {
-        agent.post('/requests/removeRequest')
-          .send({requestedGameId: offeredGame.id, offeredGameId: requestedGame.id})
-          .end((err, res) => {
-            res.should.have.status(200);
-            res.body.length.should.be.eql(1);
-            done();
-          });
+      .send({offeredGame: SkyrimGame, requestedGame: RedDead2Game})
+      .end((err, res) => {
+        res.should.have.status(200);
+        res.body.length.should.be.eql(1);
+        done();
       });
   });
 });
 
 describe('decline request', () => {
-  xit('accepts request under nicole', (done) => {
+  it('accepts request under nicole', (done) => {
     agent.post('/trades/declineTrade')
       .send({type: 'Declined', offeredGame: requestedGame2, requestedGame: offeredGame2})
       .end((err, res) => {
@@ -373,7 +378,7 @@ describe('decline request', () => {
 });
 
 describe('check request status', () => {
-  xit('checks request status of nicole', (done) => {
+  it('checks request status of nicole', (done) => {
     agent.get('/requests/getUserRequests')
       .end((err, res) => {
         res.should.have.status(200);
@@ -384,7 +389,7 @@ describe('check request status', () => {
 });
 
 describe('check request status', () => {
-  xit('checks request status for chris', (done) => {
+  it('checks request status for chris', (done) => {
     agent.post('/users/loginUser')
       .send({username: 'chris', password: 'wonderdog1!'})
       .end((err, res) => {
@@ -400,7 +405,7 @@ describe('check request status', () => {
 });
 
 describe('get all games', () => {
-  xit('gets all games from users other than chris', (done) => {
+  it('gets all games from users other than chris', (done) => {
     agent.get('/games/getAllGames/nofilter')
       .end((err, res) => {
         res.body.length.should.be.eql(2);

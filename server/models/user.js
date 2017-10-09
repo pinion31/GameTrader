@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const requestSchema = require('./requestSchema')
 
 const userSchema = new Schema(
   {
@@ -8,7 +9,7 @@ const userSchema = new Schema(
     email: String,
     city: String,
     state: String,
-    requests: Object,
+    requests: [requestSchema],
     games: [{
       type: Schema.Types.ObjectId,
       ref: 'games'
