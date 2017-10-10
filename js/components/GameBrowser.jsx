@@ -65,6 +65,8 @@ export class GameBrowser extends Component {
 
   sendRequest() {
     if (this.state.gameOffer[0]) {
+      console.log('reqgame', this.state.allGames[this.state.requestedGame]);
+      console.log('offgame', this.state.gameOffer[0]);
       this.props.addRequest([{
         status: 'Pending',
         requestedGame: this.state.allGames[this.state.requestedGame],

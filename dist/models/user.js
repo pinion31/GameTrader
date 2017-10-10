@@ -4,7 +4,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var requestSchema = require('./requestSchema');
 
-var userSchema = new Schema({
+var UserSchema = new Schema({
   username: String,
   password: String,
   email: String,
@@ -17,7 +17,7 @@ var userSchema = new Schema({
   }]
 });
 
-var User = mongoose.model('users', userSchema);
+var User = mongoose.model('users', UserSchema);
 
 module.exports = User;
 //# sourceMappingURL=user.js.map

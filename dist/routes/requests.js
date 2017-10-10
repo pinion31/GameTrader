@@ -6,9 +6,7 @@ var User = require('../models/user');
 
 router.post('/addRequest', function (req, res) {
   var userRequests = Array.from(req.body);
-
   User.findOneAndUpdate({ username: req.session.user }, { $push: { requests: userRequests[0] } }, { new: true }).then(function (user) {
-    //console.log('what is', user);
     var incomingRequest = Object.assign({}, req.body[0]);
     // create request for recipient of trade offer and append to their requests
     var newRequest = {
@@ -42,6 +40,7 @@ router.get('/getUserRequests', function (req, res) {
   if (req.session.user) {
     User.findOne({ username: req.session.user }).lean().then(function (user) {
       if (user.requests) {
+        console.dir(user.requests);
         res.json(user.requests);
       } else {
         res.json([]);

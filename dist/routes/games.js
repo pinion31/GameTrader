@@ -84,9 +84,21 @@ router.get('/getAllGames/:filter', function (req, res) {
 });
 
 router.get('/getUserGames', function (req, res) {
-  User.findOne({ username: req.session.user }).lean().populate('games').then(function (user) {
+  User.findOne({ username: req.session.user }).populate({
+    path: 'games',
+    populate: {
+      path: 'owner',
+      model: 'users'
+    }
+  }).then(function (user) {
     if (user.games) {
-      res.json(user.games);
+      var userGames = Array.from(user.games);
+      userGames.map(function (game) {
+        var gameOwner = game.owner.username;
+        game.owner = gameOwner;
+      });
+      //console.log('users games are', user.games);
+      res.json(userGames);
     } else {
       res.json([]);
     }
@@ -104,11 +116,14 @@ router.post('/addGame', function (req, res) {
       name: req.body[0].name,
       owner: user
     });
-
     user.games.push(newGame);
 
+    var gameObj = newGame.toObject();
+    gameObj.mongoId = newGame._id;
+    gameObj.owner = user.username;
+
     Promise.all([user.save(), newGame.save()]).then(function () {
-      res.json(req.body);
+      res.json([gameObj]);
     });
   }).catch(function (err) {
     throw err;
@@ -116,10 +131,46 @@ router.post('/addGame', function (req, res) {
 });
 
 router.post('/removeGame', function (req, res) {
-  Game.findByIdAndRemove(req.body.mongoId).lean().then(function () {
-    User.findOne({ username: req.session.user }).lean().populate('games').then(function (user) {
+  Game.findById(req.body.mongoId).then(function (game) {
+    game.remove();
+    User.findOne({ username: req.session.user }).populate('games').then(function (user) {
       res.json(user.games);
     });
+    /*
+    console.log('new function');
+    User.findOne({username: req.session.user})
+      .populate('games')
+      .then((user) => {
+        Array.from(user.games).map((game, key) => {
+          if(game._id.toString() === req.body.mongoId.toString()) {
+            console.log('removing', user.games[key].name);
+            user.games[key].remove()
+              .then(() => {
+                user.save(() => {
+                  console.log(user.games);
+                  res.json(user.games);
+                });
+              });
+          }
+        });*/
+    /*
+      Game.findByIdAndRemove(req.body.mongoId).lean()
+        .then((game) => {
+          User.findOne({username: req.session.user})
+            .populate('games')
+            .then((user) => {
+              Array.from(user.games).map((game, key) => {
+                if(game._id.toString() === req.body.mongoId.toString()) {
+                  console.log('removing', user.games[key].name);
+                  user.games[key].remove();
+                }
+              });
+    
+              user.save(() => {
+                res.json(user.games);
+              });
+    
+            });*/
   });
 });
 

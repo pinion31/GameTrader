@@ -102,10 +102,11 @@ export class RequestItem extends Component {
       requestedGame: this.props.requestedGame
     });
 
+    /*
     this.props.removeRequest({
       requestedGameId: this.props.requestedGame.id,
       offeredGameId: this.props.offeredGame.id,
-    });
+    });*/
 
     // close modal after action
     this.toggleModal();

@@ -82,11 +82,11 @@ export class GameList extends Component {
                 // add Well only after search results have been returned
                 ReactDOM.findDOMNode(this.refs['searchWell']).className = 'well';
               } catch(e) {
-                //console.log(e);
+                throw e;
               }
 
               this.setState({
-                searchList: result,
+                searchList: JSON.parse(result),
               });
             } else {
               this.setState({
@@ -144,7 +144,7 @@ export class GameList extends Component {
           summary: this.state.selectedGame.summary,
           cover: this.state.selectedGame.cover,
           gameConsole: this.state.selectedGame.gameConsole,
-          screenshots: this.state.selectedGame.screenshots
+          screenshots: this.state.selectedGame.screenshots,
         }]);
       this.toggleModal(); // close modal
     }
@@ -179,7 +179,7 @@ export class GameList extends Component {
                       cover={game.cover}
                       gameConsole={game.gameConsole}
                       screenshots={game.screenshots}
-                      mongoId ={game._id}
+                      mongoId={game._id}
                     />
                   </div>
                 </Col>
