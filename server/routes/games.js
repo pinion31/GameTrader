@@ -152,7 +152,6 @@ router.post('/removeGame', (req, res) => {
       User.findOne({username: req.session.user})
         .populate('games')
         .then((user) => {
-          console.log('sending back',user.games );
           res.json(user.games);
         });
     });

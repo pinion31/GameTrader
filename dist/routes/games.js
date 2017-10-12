@@ -144,7 +144,6 @@ router.post('/removeGame', function (req, res) {
   Game.findById(req.body.mongoId).then(function (game) {
     game.remove();
     User.findOne({ username: req.session.user }).populate('games').then(function (user) {
-      console.log('sending back', user.games);
       res.json(user.games);
     });
   });
