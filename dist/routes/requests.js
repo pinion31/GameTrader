@@ -16,7 +16,7 @@ router.post('/addRequest', function (req, res) {
       path: 'incoming'
     };
 
-    User.findOneAndUpdate({ username: incomingRequest.requestedGame.owner }, { $push: { requests: newRequest } }).then(function () {
+    User.findOneAndUpdate({ username: incomingRequest.requestedGame.owner.username }, { $push: { requests: newRequest } }).then(function () {
       res.json(user.requests);
     });
   });
@@ -40,8 +40,23 @@ router.get('/getUserRequests', function (req, res) {
   if (req.session.user) {
     User.findOne({ username: req.session.user }).lean().then(function (user) {
       if (user.requests) {
-        console.dir(user.requests);
-        res.json(user.requests);
+        var userRequests = Array.from(user.requests);
+        userRequests.map(function (request, key) {
+
+          //request.offeredGame.owner_id = request.offeredGame.owner._id;
+          request.offeredGame.owner = { username: req.session.user, id: user._id };
+
+          console.log('request.requestedGame.owner', request.requestedGame.owner);
+          //request.requestedGame.owner_id = request.requestedGame.owner._id;
+          //request.requestedGame.owner =
+          // user.requests[key].requestedGame.owner.username;
+
+          request.requestedGame.owner = { username: user.requests[key].requestedGame.owner.username,
+            id: user.requests[key].requestedGame.owner._id
+          };
+        });
+
+        res.json(userRequests);
       } else {
         res.json([]);
       }

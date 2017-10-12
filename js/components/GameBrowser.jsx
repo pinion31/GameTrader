@@ -45,7 +45,7 @@ export class GameBrowser extends Component {
         cover={this.state.allGames[this.state.requestedGame].cover}
         key={this.state.allGames[this.state.requestedGame].id}
         screenshots={this.state.allGames[this.state.requestedGame].screenshots}
-        owner={this.state.allGames[this.state.requestedGame].owner}
+        owner={this.state.allGames[this.state.requestedGame].owner.username}
       />);
     }
     return null;
@@ -65,8 +65,6 @@ export class GameBrowser extends Component {
 
   sendRequest() {
     if (this.state.gameOffer[0]) {
-      console.log('reqgame', this.state.allGames[this.state.requestedGame]);
-      console.log('offgame', this.state.gameOffer[0]);
       this.props.addRequest([{
         status: 'Pending',
         requestedGame: this.state.allGames[this.state.requestedGame],

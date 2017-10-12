@@ -80,9 +80,12 @@ router.get('/getAllGames/:filter', (req, res) => {
         .populate('owner')
         .limit(36);
     }).then(games => {
+
       games.forEach(game => {
+        //strips out password info and only sends back id and username to client
         let username = game.owner.username;
-        game.owner = username;
+        let id = game.owner._id;
+        game.owner = {username, id};
       });
       res.json(games);
     });

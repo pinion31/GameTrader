@@ -75,9 +75,12 @@ router.get('/getAllGames/:filter', function (req, res) {
   User.findOne({ username: req.session.user }).lean().then(function (user) {
     return Game.find({ 'owner': { $ne: user._id } }).lean().populate('owner').limit(36);
   }).then(function (games) {
+
     games.forEach(function (game) {
+      //strips out password info and only sends back id and username to client
       var username = game.owner.username;
-      game.owner = username;
+      var id = game.owner._id;
+      game.owner = { username: username, id: id };
     });
     res.json(games);
   });

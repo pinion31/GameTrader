@@ -102,12 +102,10 @@ export class RequestItem extends Component {
       requestedGame: this.props.requestedGame
     });
 
-    /*
     this.props.removeRequest({
       requestedGameId: this.props.requestedGame.id,
       offeredGameId: this.props.offeredGame.id,
-    });*/
-
+    });
     // close modal after action
     this.toggleModal();
   }
@@ -131,7 +129,7 @@ export class RequestItem extends Component {
           </Modal.Header>
           <Modal.Body>
             <h2 className="modal-message">{this.getStatusMessage()}</h2>
-            <p className="owner-text">Owner: {this.props.requestedGame.owner}</p>
+            <p className="owner-text">Owner: {this.props.requestedGame.owner.username}</p>
             <h3 className="modal-sub-header">Your Request</h3>
 
             <GameCard
