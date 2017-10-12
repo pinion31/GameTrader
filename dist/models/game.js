@@ -16,30 +16,15 @@ var GameSchema = new Schema({
   }
 });
 
-GameSchema.pre('remove', function (next) {
-  var User = mongoose.model('users');
-
-  //User.remove({games: this.id}, next);
-  //User.remove({ games: this._id }, next);
-  //next();
-  //console.log(this.owner);
-  //next();
-
-  User.find({ id: this.id }).populate('games').then(function (user) {
-    console.log('user is', user);
-    next();
-    /*
-    Array.from(user.games).map((game, key) => {
-      if (game._id.toString() === this._id.toString()) {
-        console.log( user.games[key]._id);
-        user.games[key]._id = null;
-        user.save(() => {
-          next();
-        });
-      }
-    });*/
-  });
-});
+/*
+GameSchema.pre('remove', function(next) {
+  const User = mongoose.model('users');
+  User.find({id: this.id})
+    .populate('games')
+    .then(user => {
+      next();
+    });
+});*/
 
 var Game = mongoose.model('games', GameSchema);
 

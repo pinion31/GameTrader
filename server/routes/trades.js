@@ -18,7 +18,7 @@ router.post('/declineTrade', (req, res) => {
 
       User.findOneAndUpdate({username: req.session.user}, {requests: userRequests})
         .then(() => {
-          User.findOne({username: req.body.requestedGame.owner}).lean()
+          User.findOne({username: req.body.requestedGame.owner.username}).lean()
             .then((owner) => {
               const ownerRequests = Array.from(owner.requests);
               ownerRequests.map((request) => {
@@ -29,7 +29,7 @@ router.post('/declineTrade', (req, res) => {
               });
 
               User.findOneAndUpdate(
-                {username: req.body.requestedGame.owner},
+                {username: req.body.requestedGame.owner.username},
                 {requests: ownerRequests})
                 .then(() => {
                   res.json(userRequests);

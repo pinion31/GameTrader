@@ -104,7 +104,6 @@ router.post('/addUser', (req, res) => {
 });
 
 router.post('/logoutUser', (req) => {
-  console.log('logged out user all');
   req.session.destroy();
 });
 

@@ -31,7 +31,7 @@ export class RequestItem extends Component {
     } else if (this.props.status === DECLINED) {
       return 'Sorry! Your Trade Offer Was Declined.';
     } else if (this.props.status === CANCELLED) {
-      return `This Trade Offer Was Cancelled By ${this.props.requestedGame.owner}.`;
+      return `This Trade Offer Was Cancelled By ${this.props.requestedGame.owner.username}.`;
     }
     return '';
   }

@@ -17,7 +17,7 @@ router.post('/declineTrade', function (req, res) {
     });
 
     User.findOneAndUpdate({ username: req.session.user }, { requests: userRequests }).then(function () {
-      User.findOne({ username: req.body.requestedGame.owner }).lean().then(function (owner) {
+      User.findOne({ username: req.body.requestedGame.owner.username }).lean().then(function (owner) {
         var ownerRequests = Array.from(owner.requests);
         ownerRequests.map(function (request) {
           if (request.requestedGame.id === traderGameToReceive.id && request.offeredGame.id === tradeeGameToReceive.id) {
@@ -25,7 +25,7 @@ router.post('/declineTrade', function (req, res) {
           }
         });
 
-        User.findOneAndUpdate({ username: req.body.requestedGame.owner }, { requests: ownerRequests }).then(function () {
+        User.findOneAndUpdate({ username: req.body.requestedGame.owner.username }, { requests: ownerRequests }).then(function () {
           res.json(userRequests);
         });
       });
