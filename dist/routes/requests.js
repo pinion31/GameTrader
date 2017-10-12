@@ -42,14 +42,7 @@ router.get('/getUserRequests', function (req, res) {
       if (user.requests) {
         var userRequests = Array.from(user.requests);
         userRequests.map(function (request, key) {
-
-          //request.offeredGame.owner_id = request.offeredGame.owner._id;
           request.offeredGame.owner = { username: req.session.user, id: user._id };
-
-          console.log('request.requestedGame.owner', request.requestedGame.owner);
-          //request.requestedGame.owner_id = request.requestedGame.owner._id;
-          //request.requestedGame.owner =
-          // user.requests[key].requestedGame.owner.username;
 
           request.requestedGame.owner = { username: user.requests[key].requestedGame.owner.username,
             id: user.requests[key].requestedGame.owner._id
