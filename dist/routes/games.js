@@ -141,9 +141,8 @@ router.post('/addGame', function (req, res) {
     newGame.save().then(function () {
       user.save().then(function() {
         res.json([gameObj]);
-      });*/
-
-    });
+      });
+    });*/
   }).catch(function (err) {
     throw err;
   });
