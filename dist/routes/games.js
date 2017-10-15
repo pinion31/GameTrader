@@ -124,7 +124,7 @@ router.post('/addGame', function (req, res) {
       summary: req.body[0].summary,
       id: req.body[0].id,
       name: req.body[0].name,
-      owner: user
+      owner: 'test'
     });
     user.games.push(newGame);
 
