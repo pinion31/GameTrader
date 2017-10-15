@@ -134,13 +134,14 @@ router.post('/addGame', function (req, res) {
 
     //newGame.save()
     //res.json([gameObj]);
-   /*Promise.all([user.save(), newGame.save()]).then(function () {
+   /*Promise.all([newGame.save(), user.save()]).then(function () {
       res.json([gameObj]);
     });*/
+    /*
     newGame.save().then(function () {
       user.save().then(function() {
         res.json([gameObj]);
-      });
+      });*/
 
     });
   }).catch(function (err) {
