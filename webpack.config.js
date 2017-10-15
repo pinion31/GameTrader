@@ -1,5 +1,6 @@
 const webpack = require('webpack');
-const path =  require('path');
+const path = require('path');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
@@ -11,12 +12,15 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, 'static'),
-    filename: '[name].[hash].js'
+    filename: '[name].[chunkhash].js'
   },
   plugins: [
     new webpack.optimize.CommonsChunkPlugin({names: ['vendor', 'manifest']}),
+    new ExtractTextPlugin('bundle.[chunkhash].css'),
     new HtmlWebpackPlugin({
-      template: './static/index.html'
+      template: './static/index.html'}),
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
     })
   ],
   devServer: {
@@ -24,23 +28,24 @@ module.exports = {
     contentBase: 'static',
     proxy: {
       '/': {
-        target: 'http://localhost:3000',
-      },
-    },
+        target: 'http://localhost:3000'
+      }
+    }
   },
-  devtool: 'source-map',
+
   module: {
     loaders: [
       {
         test: /\.jsx?$/,
         loader: 'babel-loader',
         query: {
-          presets: ['react', 'es2015'],
-        },
+          presets: ['react', 'es2015']
+        }
       },
       {
         test: /\.scss$/,
-        loaders: ['style-loader', 'css-loader', 'resolve-url-loader', 'sass-loader'],
+        loaders: ExtractTextPlugin.extract({fallback: 'style-loader',
+        use: 'css-loader!sass-loader!resolve-url-loader'})
       },
       {
         test: /\.jpg$/,
