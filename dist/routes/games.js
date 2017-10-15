@@ -132,9 +132,16 @@ router.post('/addGame', function (req, res) {
     gameObj.mongoId = newGame._id;
     gameObj.owner = user.username;
 
-    Promise.all([user.save(), newGame.save()]).then(function () {
+    user.save()
+      .then(function () {
+        newGame.save()
+          .then(function () {
+            res.json([gameObj]);
+          });
+      });
+    /*Promise.all([user.save(), newGame.save()]).then(function () {
       res.json([gameObj]);
-    });
+    });*/
   }).catch(function (err) {
     throw err;
   });
