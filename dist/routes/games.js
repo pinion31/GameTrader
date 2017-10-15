@@ -124,7 +124,7 @@ router.post('/addGame', function (req, res) {
       summary: req.body[0].summary,
       id: req.body[0].id,
       name: req.body[0].name,
-      owner: 'test'
+      owner: user
     });
     user.games.push(newGame);
 
@@ -132,14 +132,8 @@ router.post('/addGame', function (req, res) {
     gameObj.mongoId = newGame._id;
     gameObj.owner = user.username;
 
-    user.save()
-      .then(function () {
-        newGame.save()
-          .then(function () {
-            res.json([gameObj]);
-          });
-      });
-    /*Promise.all([user.save(), newGame.save()]).then(function () {
+    res.json([gameObj]);
+   /* Promise.all([user.save(), newGame.save()]).then(function () {
       res.json([gameObj]);
     });*/
   }).catch(function (err) {
