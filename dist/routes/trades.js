@@ -11,7 +11,7 @@ router.post('/declineTrade', function (req, res) {
 
   User.findOne({ username: req.session.user }).lean().then(function (user) {
     var userRequests = user.requests.filter(function (request) {
-      if (request.requestedGame.id != req.body.requestedGame.id && request.offeredGame.id != req.body.offeredGame.id) {
+      if (request.requestedGame.id != req.body.requestedGame.id || request.offeredGame.id != req.body.offeredGame.id) {
         return request;
       }
     });
@@ -76,13 +76,7 @@ router.post('/completeTrade', function (req, res) {
   };
 
   // perform exchange on trader library
-  User.find({ _id: { $in: [tradeeGameToReceive.owner.id, traderGameToReceive.owner.id] } }).populate({
-    path: 'games',
-    populate: {
-      path: 'owner',
-      model: 'users'
-    }
-  }).then(function (user) {
+  User.find({ _id: { $in: [tradeeGameToReceive.owner.id, traderGameToReceive.owner.id] } }).populate('games').then(function (user) {
     var tradee = void 0;
     var trader = void 0;
 
@@ -98,20 +92,6 @@ router.post('/completeTrade', function (req, res) {
 
     trader.requests = setTraderRequestToAccepted(trader.requests);
     tradee.requests = deleteTradeeRequest(tradee.requests);
-
-    /*
-    trader.games[gameKeys.trader].save()
-      .then(() => {
-        return tradee.games[gameKeys.tradee].save();
-      }).then(() => {
-        return trader.save();
-      }).then(() => {
-        return tradee.save();
-      }).then(() => {
-        res.json(tradee.games);
-      }).catch((err) => {
-        throw err;
-      });*/
 
     // Promise.all with save() causes issues with mongoose
     Promise.all([trader.games[gameKeys.trader].save(), tradee.games[gameKeys.tradee].save(), trader.save(), tradee.save()]).then(function () {

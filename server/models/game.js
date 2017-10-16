@@ -9,20 +9,10 @@ const GameSchema = new Schema({
   id: Number,
   name: String,
   owner: {
-    type: Schema.Types.ObjectId,
-    ref: 'users'
+    username: String,
+    id: String
   }
 });
-
-/*
-GameSchema.pre('remove', function(next) {
-  const User = mongoose.model('users');
-  User.find({id: this.id})
-    .populate('games')
-    .then(user => {
-      next();
-    });
-});*/
 
 const Game = mongoose.model('games', GameSchema);
 

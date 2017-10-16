@@ -32,8 +32,33 @@ export class GameBrowser extends Component {
     this.getOfferedGameFromUserLib = this.getOfferedGameFromUserLib.bind(this);
   }
 
-  componentDidMount() {
+  shouldComponentUpdate(newProps, newState) {
+    let shouldUpdate = false;
+
+    if (Object.keys(this.state.allGames).length !== Object.keys(newState).length) {
+      return true;
+    } else {
+      Object.keys(this.state.allGames).forEach((game, key) => {
+        if (!shouldUpdate && game.id !== newState[key].id) {
+          shouldUpdate = true;
+          this.props.clearUserGames();
+        }
+      });
+    }
+
+    return shouldUpdate;
+  }
+
+  componentDidUpdate() {
+
+  }
+
+  componentWillMount() {
     this.props.getUserGames();
+  }
+
+  componentDidMount() {
+    // this.props.getUserGames();
     this.fetchGames('nofilter');
   }
 

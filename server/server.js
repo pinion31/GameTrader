@@ -9,7 +9,7 @@ const trades = require('./routes/trades');
 const games = require('./routes/games');
 const requests = require('./routes/requests');
 
-// mongoose.connect('mongodb://localhost/local');
+//mongoose.connect('mongodb://localhost/local');
 mongoose.connect(process.env.MONGOLAB_URI);
 mongoose.Promise = global.Promise;
 

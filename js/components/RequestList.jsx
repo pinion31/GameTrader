@@ -13,11 +13,29 @@ export class RequestList extends Component {
     };
   }
 
+  shouldComponentUpdate(newProps, newState) {
+    let shouldUpdate = false;
+
+    if (this.props.requests.requests.length !== newProps.requests.requests.length) {
+      return true;
+    } else {
+      this.props.requests.requests.forEach((request, key) => {
+        if (!shouldUpdate && request.status !== newProps.requests.requests[key].status) {
+          shouldUpdate = true;
+        } else if (request.requestedGame.id !== newProps.requests.requests[key].requestedGame.id ||
+            request.offeredGame.id !== newProps.requests.requests[key].offeredGame.id)  {
+            shouldUpdate = true;
+        }
+      });
+    }
+    return shouldUpdate;
+  }
+
   componentWillMount() {
     // clears out any requests (and DOM elements)
     // from previous session (from other users)
     // that do not belong to current user
-    this.props.clearUserRequests();
+    // this.props.clearUserRequests();
   }
 
   componentDidMount() {

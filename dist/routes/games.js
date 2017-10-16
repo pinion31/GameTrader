@@ -73,15 +73,9 @@ router.get('/getAllGames/:filter', function (req, res) {
   }
 
   User.findOne({ username: req.session.user }).lean().then(function (user) {
-    return Game.find({ 'owner': { $ne: user._id } }).lean().populate('owner').limit(36);
+    return Game.find({ 'owner.id': { $ne: user._id } }).lean().limit(36);
   }).then(function (games) {
-
     var gamesList = games.filter(function (game) {
-      //strips out password info and only sends back id and username to client
-      var username = game.owner.username;
-      var id = game.owner._id;
-      game.owner = { username: username, id: id };
-
       if (req.params.filter !== 'nofilter') {
         if (game.name.toLowerCase().match(regSearch)) {
           return game;
@@ -95,13 +89,7 @@ router.get('/getAllGames/:filter', function (req, res) {
 });
 
 router.get('/getUserGames', function (req, res) {
-  User.findOne({ username: req.session.user }).populate({
-    path: 'games',
-    populate: {
-      path: 'owner',
-      model: 'users'
-    }
-  }).then(function (user) {
+  User.findOne({ username: req.session.user }).populate('games').then(function (user) {
     if (user.games) {
       var userGames = Array.from(user.games);
       userGames.map(function (game) {
@@ -124,39 +112,18 @@ router.post('/addGame', function (req, res) {
       summary: req.body[0].summary,
       id: req.body[0].id,
       name: req.body[0].name,
-      owner: user
+      owner: { username: user.username, id: user._id }
     });
 
-    var newGames = user.games;
-    newGames.push(newGame);
+    user.games.push(newGame);
 
     var gameObj = newGame.toObject();
     gameObj.mongoId = newGame._id;
-    gameObj.owner = user.username;
+    // gameObj.owner = user.username;
 
-    /*
-    newGame.save();
-      User.findOneAndUpdate({username: req.session.user}, {games: newGames})
-      .then(() => {
-          res.json([gameObj]);
-      });*/
-    // user.games.push(newGame);
-    newGame.save().then(function () {
+    Promise.all([newGame.save(), user.save()]).then(function () {
       res.json([gameObj]);
     });
-
-    /*
-     newGame.save()
-       .then(() => {
-         user.save()
-         res.json([gameObj]);
-       });*/
-    // Promise.all with save() causes issues with mongoose
-    /*
-    Promise.all([newGame.save(), user.save()])
-      .then(() => {
-        res.json([gameObj]);
-      });*/
   }).catch(function (err) {
     throw err;
   });

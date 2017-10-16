@@ -25,7 +25,7 @@ router.post('/addRequest', function (req, res) {
 router.post('/removeRequest', function (req, res) {
   User.findOne({ username: req.session.user }).lean().then(function (user) {
     var userRequests = user.requests.filter(function (request) {
-      if (request.requestedGame.id != req.body.requestedGameId && request.offeredGame.id != req.body.offeredGameId) {
+      if (request.requestedGame.id != req.body.requestedGameId || request.offeredGame.id != req.body.offeredGameId) {
         return request;
       }
     });
@@ -45,10 +45,9 @@ router.get('/getUserRequests', function (req, res) {
           request.offeredGame.owner = { username: req.session.user, id: user._id };
 
           request.requestedGame.owner = { username: user.requests[key].requestedGame.owner.username,
-            id: user.requests[key].requestedGame.owner._id
+            id: user.requests[key].requestedGame.owner.id
           };
         });
-
         res.json(userRequests);
       } else {
         res.json([]);

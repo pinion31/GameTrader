@@ -28,7 +28,7 @@ router.post('/removeRequest', (req, res) => {
   User.findOne({username: req.session.user}).lean()
     .then((user) => {
       const userRequests = user.requests.filter((request) => {
-        if (request.requestedGame.id != req.body.requestedGameId &&
+        if (request.requestedGame.id != req.body.requestedGameId ||
             request.offeredGame.id != req.body.offeredGameId) {
           return request;
         }
@@ -53,10 +53,9 @@ router.get('/getUserRequests', (req, res) => {
 
             request.requestedGame.owner =
             { username: user.requests[key].requestedGame.owner.username,
-              id: user.requests[key].requestedGame.owner._id
+              id: user.requests[key].requestedGame.owner.id
             };
           });
-
           res.json(userRequests);
         } else {
           res.json([]);

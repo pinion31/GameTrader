@@ -12,6 +12,7 @@ import {gameConsoles} from '../constants/gameConsoles';
 export class GameList extends Component {
   constructor(props) {
     super(props);
+    this.shouldUpdate = false;
     this.state = {
       showModal: false,
       searchTerm: '',
@@ -33,11 +34,29 @@ export class GameList extends Component {
     this.verifyClientDoesNotOwnGame = this.verifyClientDoesNotOwnGame.bind(this);
   }
 
+  shouldComponentUpdate(newProps, newState) {
+    if (this.props.games.games.length !== newProps.games.games.length) {
+      return true;
+    } else {
+      this.props.games.games.forEach((game, key) => {
+        if (!this.shouldUpdate && game.id !== newProps.games.games[key].id) {
+          this.shouldUpdate = true;
+          this.props.clearUserGames();
+        }
+      });
+    }
+    return this.shouldUpdate;
+  }
+
   componentWillMount() {
     // clears out any game (and DOM elements)
     // from previous sessions (from other users)
     // that do not belong to current user
-    this.props.clearUserGames();
+    //this.props.clearUserGames();
+  }
+
+  componentDidUpdate() {
+
   }
 
   componentDidMount() {
@@ -45,10 +64,13 @@ export class GameList extends Component {
   }
 
   toggleModal() {
+    this.shouldUpdate = true;
     this.setState({
+     // shouldUpdate: true,
       showModal: !this.state.showModal,
       searchList: [], // erases search result after every toggle
     });
+    //this.shouldUpdate = false;
   }
 
   verifySearchQuery() {

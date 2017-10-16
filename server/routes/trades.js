@@ -10,7 +10,7 @@ router.post('/declineTrade', (req, res) => {
   User.findOne({username: req.session.user}).lean()
     .then((user) => {
       const userRequests = user.requests.filter((request) => {
-        if (request.requestedGame.id != req.body.requestedGame.id &&
+        if (request.requestedGame.id != req.body.requestedGame.id ||
             request.offeredGame.id != req.body.offeredGame.id) {
           return request;
         }
@@ -85,13 +85,7 @@ router.post('/completeTrade', (req, res) => {
 
   // perform exchange on trader library
   User.find({_id: {$in: [tradeeGameToReceive.owner.id, traderGameToReceive.owner.id]}})
-    .populate({
-      path: 'games',
-      populate: {
-        path: 'owner',
-        model: 'users'
-      }
-    }).then((user) => {
+    .populate('games').then((user) => {
       let tradee;
       let trader;
 
@@ -107,20 +101,6 @@ router.post('/completeTrade', (req, res) => {
 
       trader.requests = setTraderRequestToAccepted(trader.requests);
       tradee.requests = deleteTradeeRequest(tradee.requests);
-
-      /*
-      trader.games[gameKeys.trader].save()
-        .then(() => {
-          return tradee.games[gameKeys.tradee].save();
-        }).then(() => {
-          return trader.save();
-        }).then(() => {
-          return tradee.save();
-        }).then(() => {
-          res.json(tradee.games);
-        }).catch((err) => {
-          throw err;
-        });*/
 
       // Promise.all with save() causes issues with mongoose
       Promise.all([
