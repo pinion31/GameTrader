@@ -141,9 +141,7 @@ router.post('/addGame', (req, res) => {
       newGame.save()
         .then(() => {
           user.save()
-            .then(() => {
-              res.json([gameObj]);
-            });
+          res.json([gameObj]);
         });
       // Promise.all with save() causes issues with mongoose
       /*
