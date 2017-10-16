@@ -132,17 +132,28 @@ router.post('/addGame', (req, res) => {
         name: req.body[0].name,
         owner: user,
       });
-      user.games.push(newGame);
+
+      let newGames = user.games;
+      newGames.push(newGame);
 
       let gameObj = newGame.toObject();
       gameObj.mongoId = newGame._id;
       gameObj.owner = user.username;
 
+      User.findOneAndUpdate({username: req.session.user}, {games: newGames})
+        .then(() => {
+          newGame.save();
+          res.json([gameObj]);
+        });
+     // user.games.push(newGame);
+
+
+     /*
       newGame.save()
         .then(() => {
           user.save()
           res.json([gameObj]);
-        });
+        });*/
       // Promise.all with save() causes issues with mongoose
       /*
       Promise.all([newGame.save(), user.save()])
