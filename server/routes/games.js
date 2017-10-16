@@ -140,15 +140,19 @@ router.post('/addGame', (req, res) => {
       gameObj.mongoId = newGame._id;
       gameObj.owner = user.username;
 
+      /*
       newGame.save();
 
       User.findOneAndUpdate({username: req.session.user}, {games: newGames})
         .then(() => {
 
           res.json([gameObj]);
-        });
+        });*/
      // user.games.push(newGame);
-
+     user.save()
+      .then(() => {
+        res.json([gameObj]);
+      });
 
      /*
       newGame.save()
