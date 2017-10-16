@@ -132,9 +132,17 @@ router.post('/addGame', function (req, res) {
     gameObj.mongoId = newGame._id;
     gameObj.owner = user.username;
 
-    Promise.all([newGame.save(), user.save()]).then(function () {
-      res.json([gameObj]);
+    newGame.save().then(function () {
+      user.save().then(function () {
+        res.json([gameObj]);
+      });
     });
+    // Promise.all with save() causes issues with mongoose
+    /*
+    Promise.all([newGame.save(), user.save()])
+      .then(() => {
+        res.json([gameObj]);
+      });*/
   }).catch(function (err) {
     throw err;
   });

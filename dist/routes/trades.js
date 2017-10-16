@@ -99,9 +99,27 @@ router.post('/completeTrade', function (req, res) {
     trader.requests = setTraderRequestToAccepted(trader.requests);
     tradee.requests = deleteTradeeRequest(tradee.requests);
 
-    Promise.all([trader.games[gameKeys.trader].save(), tradee.games[gameKeys.tradee].save(), trader.save(), tradee.save()]).then(function () {
+    trader.games[gameKeys.trader].save().then(function () {
+      return tradee.games[gameKeys.tradee].save();
+    }).then(function () {
+      return trader.save();
+    }).then(function () {
+      return tradee.save();
+    }).then(function () {
       res.json(tradee.games);
+    }).catch(function (err) {
+      throw err;
     });
+
+    // Promise.all with save() causes issues with mongoose
+    /*Promise.all([
+      trader.games[gameKeys.trader].save(),
+      tradee.games[gameKeys.tradee].save(),
+      trader.save(),
+      tradee.save()
+    ]).then(() => {
+      res.json(tradee.games);
+    });*/
   });
 });
 
