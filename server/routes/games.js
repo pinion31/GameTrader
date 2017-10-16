@@ -149,7 +149,7 @@ router.post('/addGame', (req, res) => {
           res.json([gameObj]);
         });*/
      // user.games.push(newGame);
-     user.save()
+     newGame.save()
       .then(() => {
         res.json([gameObj]);
       });
