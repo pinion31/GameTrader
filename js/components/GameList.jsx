@@ -41,7 +41,6 @@ export class GameList extends Component {
       this.props.games.games.forEach((game, key) => {
         if (!this.shouldUpdate && game.id !== newProps.games.games[key].id) {
           this.shouldUpdate = true;
-          this.props.clearUserGames();
         }
       });
     }
