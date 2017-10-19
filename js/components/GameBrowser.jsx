@@ -197,7 +197,6 @@ export class GameBrowser extends Component {
                         summary={this.state.allGames[game].summary}
                         status={'available'}
                         cover={this.state.allGames[game].cover}
-                        key={key}
                       />
                     </a>
                   </div>

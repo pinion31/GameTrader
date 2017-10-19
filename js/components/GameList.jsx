@@ -261,8 +261,8 @@ export class GameList extends Component {
                     <Row>
                       {this.state.searchList.map(game => (
                         <Col sm={3} xs={6} key={game.id}>
-                          <div className="game-container" key={game.id}>
-                            <a onClick={() => { this.highlightGame(game); }} key={game.id}>
+                          <div className="game-container">
+                            <a onClick={() => { this.highlightGame(game); }}>
                               <img className="game-item" src={game.cover} alt={game.name} ref={game.id} />
                             </a>
                           </div>
