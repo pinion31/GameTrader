@@ -29,7 +29,6 @@ export class GameRequestDescription extends Component {
           activeIndex={this.state.index}
           direction={this.state.direction}
           onSelect={this.handleSelect}
-          key={this.props.id}
         >
           {this.props.screenshots.map(screenshot => (
             <Carousel.Item key={this.props.id}>

@@ -178,8 +178,7 @@ router.get('/getUserGames', (req, res) => {
     mongoId: Number,
     name: String,
     owner: {username: String, id: String}
- */
- }
+ }*/
 
 router.post('/addGame', (req, res) => {
   User.findOne({username: req.session.user})

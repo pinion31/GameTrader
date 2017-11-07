@@ -5,16 +5,14 @@ import {Thumbnail} from 'react-bootstrap';
 
 /* Presentational Component used to display Game Requests via Thumbnail
 */
-export const GameRequestIcon = (props) => {
-  render() {
-    return (
-      <div>
-        <Thumbnail src={this.props.cover} alt={this.props.name}>
-          <h5 className="game-request-icon-caption">{this.props.name}</h5>
-        </Thumbnail>
-      </div>
-    );
-  }
-}
+const GameRequestIcon = (props) => {
+  return (
+    <div>
+      <Thumbnail src={props.cover} alt={props.name}>
+        <h5 className="game-request-icon-caption">{props.name}</h5>
+      </Thumbnail>
+    </div>
+  );
+};
 
 export default GameRequestIcon;

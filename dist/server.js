@@ -28,6 +28,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static('static'));
 
+// create new session
 app.use(session({
   secret: 'noodles',
   saveUninitialized: true,
@@ -36,6 +37,9 @@ app.use(session({
   store: new MongoStore({ mongooseConnection: db, ttl: 2 * 24 * 60 * 60 })
 }));
 
+/**
+  set routes for actions
+*/
 app.use('/users', users);
 app.use('/games', games);
 app.use('/trades', trades);
@@ -49,6 +53,7 @@ app.post('/logoutUser', function (req, res) {
 });
 
 app.get('*', function (req, res) {
+
   // makes sure user is logged into before directing
   // to dashboard
   if (res.session === undefined) {

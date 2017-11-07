@@ -15,6 +15,7 @@ export class Login extends Component {
       },
       usernameHelp: '', // error message state
       passwordHelp: '', // error message state
+    }
 
     this.handleOnClick = this.handleOnClick.bind(this);
     this.handleOnChange = this.handleOnChange.bind(this);
