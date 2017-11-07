@@ -1,3 +1,5 @@
+"use strict";
+
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import {bindActionCreators} from 'redux';
@@ -9,6 +11,9 @@ import GameItem from './GameItem';
 import {addGame, getUserGames, removeGame, clearUserGames} from '../actions/gameActions';
 import {gameConsoles} from '../constants/gameConsoles';
 
+/**
+* Component used to display users current games and add new currently owned games via search Modal
+*/
 export class GameList extends Component {
   constructor(props) {
     super(props);
@@ -34,6 +39,10 @@ export class GameList extends Component {
     this.verifyClientDoesNotOwnGame = this.verifyClientDoesNotOwnGame.bind(this);
   }
 
+  /**
+   * Used for optimizing render of games
+   */
+
   shouldComponentUpdate(newProps, newState) {
     if (this.props.games.games.length !== newProps.games.games.length) {
       return true;
@@ -47,30 +56,30 @@ export class GameList extends Component {
     return this.shouldUpdate;
   }
 
-  componentWillMount() {
-    // clears out any game (and DOM elements)
-    // from previous sessions (from other users)
-    // that do not belong to current user
-    //this.props.clearUserGames();
-  }
-
-  componentDidUpdate() {
-
-  }
-
+  /**
+   * Upon component mounting, makes api call to retrieve user games and stored as prop, games
+   */
   componentDidMount() {
     this.props.getUserGames();
   }
 
+  /**
+   * Used to toggle modal (modal used to search for games to add to user lib)
+   * on/off state stored in showModal
+   */
+
   toggleModal() {
     this.shouldUpdate = true;
     this.setState({
-     // shouldUpdate: true,
       showModal: !this.state.showModal,
-      searchList: [], // erases search result after every toggle
+      searchList: [], // set empty state here to erase search results after every toggle
     });
-    //this.shouldUpdate = false;
   }
+
+  /**
+   * Verifies input from user; User must enter a searchTerm for game search and must select a game console
+   * @return {Boolean} - true if verification passes or false with error message if not
+   */
 
   verifySearchQuery() {
     if (this.state.searchTerm.length === 0) {
@@ -88,6 +97,12 @@ export class GameList extends Component {
     }
     return true;
   }
+
+  /**
+   * Makes api call with search criteria (game name and console). This function is used when
+   * user wants to add a currently owned game to their library.
+   * Results are stored in this.state.searchList or error message if no games found
+   */
 
   queryGames() {
     this.setState({
@@ -121,6 +136,11 @@ export class GameList extends Component {
     }
   }
 
+  /**
+   * keeps searchTerm state updated as user enters search input
+   * @param e - onChange event object passed from form
+   */
+
   updateSearchTerm(e) {
     this.setState({
       searchTerm: e.target.value,
@@ -128,6 +148,13 @@ export class GameList extends Component {
       gameSearchMessage: '',
     });
   }
+
+  /**
+   * Presentational function used to highlight game from game search results in modal
+   * Highlighted game will be current candidate to add to user lib
+   * Candidate game is stored in state as selectedGame
+   * @param {Object} candidate game to add to lib
+   */
 
   highlightGame(highlightedGame) {
     // unhighlights previously selected game
@@ -142,8 +169,11 @@ export class GameList extends Component {
     });
   }
 
+  /**
+   *  checks to see if user is trying to add game already in their collection
+   * @return {Boolean} false if user owns game; true otherwise
+   */
   verifyClientDoesNotOwnGame() {
-    // checks to see if client already has game in their collection
     let doesNotOwnGame = true;
     Array.from(this.props.games.games).map((game) => {
       if (game.id.toString() === this.state.selectedGame.id.toString()) {
@@ -156,6 +186,11 @@ export class GameList extends Component {
     return doesNotOwnGame;
   }
 
+  /**
+   * Adds currently selected Game to user library to be used in game trades and closes modal
+   * Verifys user does not already own game before adding
+   * Makes api call and sends game info to db via prop func, addGame.
+   */
   handleOnClickAdd() {
     if (this.verifyClientDoesNotOwnGame()) {
       this.props.addGame([
@@ -167,10 +202,15 @@ export class GameList extends Component {
           gameConsole: this.state.selectedGame.gameConsole,
           screenshots: this.state.selectedGame.screenshots,
         }]);
-      this.toggleModal(); // close modal
+      this.toggleModal(); // closes modal
     }
   }
 
+  /**
+   * Before searching for game to add to lib, user must select console. This func updates selectedConsole based
+   * on drop-down. Selectedconsole is then used to filter games via console
+   * @param event {Event} - onChange event object
+   */
   updateConsole(event) {
     this.setState({
       selectedConsole: parseInt(event.target.value, 10),
@@ -209,6 +249,8 @@ export class GameList extends Component {
             </Row>
           </Grid>
         </Well>
+
+      {/* This modal used to search for games to add to user lib*/}
         <Modal
           show={this.state.showModal}
           onHide={this.toggleModal}

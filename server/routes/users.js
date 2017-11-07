@@ -1,8 +1,17 @@
+'use strict';
+
 const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 
+/**
+ * logs in User
+ * input: {user: {username: String, password: String}}
+ * output: { redirect: String, field: String, validation: String,}
+ *  if successful auth, user is sent to route contained in redirect String. Otherwise, error type sent back in field String
+ *  validation String indicates where auth was successful or sends back error message type
+ */
 router.post('/loginUser', (req, res) => {
   // strips out trailing spaces after username
   const usernameStripped = req.body.username.split(' ')[0];
@@ -60,6 +69,23 @@ router.post('/loginUser', (req, res) => {
     });
 });
 
+/**
+ * Adds new User to db
+ * input:{
+    newUser: {
+      username: String,
+      password1: String,
+      password2: String,
+      email: String,
+      city: String,
+      state: String,
+    }
+  }
+ * output: {
+    redirect: String (route to redirect to if adding user is successful),
+    validation: String (indicates if user add is successful)
+    }
+ */
 router.post('/addUser', (req, res) => {
   // strips out trailing spaces after username
   const usernameStripped = req.body.username.split(' ')[0];
@@ -103,6 +129,9 @@ router.post('/addUser', (req, res) => {
     });
 });
 
+/**
+ * logs out user and destroys current session
+ */
 router.post('/logoutUser', (req) => {
   req.session.destroy();
 });

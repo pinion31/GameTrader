@@ -1,7 +1,14 @@
+"use strict";
+
 import React, {Component} from 'react';
 import 'whatwg-fetch';
 import {Navbar, Nav, NavItem} from 'react-bootstrap';
 import {LinkContainer} from 'react-router-bootstrap';
+
+
+/**
+ * Api call to logout user when clicking Signout on Menu bar
+ */
 
 const logout = () => {
   fetch('/logoutUser', {
@@ -10,7 +17,10 @@ const logout = () => {
   });
 };
 
-export class Menu extends Component {
+/**
+ * Presentational Component used to display menu bar for site
+ */
+export default const Menu = (props) => {
   render() {
     return (
       <Navbar>
@@ -33,4 +43,3 @@ export class Menu extends Component {
   }
 }
 
-export default Menu;

@@ -1,6 +1,10 @@
+"use strict";
+
 import React, {Component} from 'react';
 import {Carousel} from 'react-bootstrap';
 import GameCard from './GameCard';
+
+/* Presentation wrapper component to display Game Request information  via GameCard and Carousel*/
 
 export class GameRequestDescription extends Component {
   constructor(props) {
@@ -14,6 +18,10 @@ export class GameRequestDescription extends Component {
     this.getScreenShots = this.getScreenShots.bind(this);
   }
 
+  /**
+   * Retrieves screenshots for game from props
+   * @return Carousel {Component} - Bootstrap component to display screenshots
+   */
   getScreenShots() {
     if (this.props.screenshots.length > 0) { // checks if screenshots available
       return (
@@ -39,6 +47,11 @@ export class GameRequestDescription extends Component {
     }
   }
 
+  /**
+   * Used to handle Carousel display of game screenshots
+   * @param e - onClick Event
+   * @param {direction - String
+   */
   handleSelect(selectedIndex, e) {
     this.setState({
       index: selectedIndex,

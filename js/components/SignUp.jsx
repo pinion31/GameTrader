@@ -1,12 +1,15 @@
+"use strict";
+
 import React, {Component} from 'react';
 import 'whatwg-fetch';
 import {Row, Col, FormGroup, FormControl, Button, HelpBlock} from 'react-bootstrap';
 
+/** Component handles creation of new users**/
 export class SignUp extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      newUser: {
+      newUser: { // stores new user info in newUser obj to be submitted to db
         username: '',
         password1: '',
         password2: '',
@@ -29,6 +32,10 @@ export class SignUp extends Component {
     this.validateSignUp = this.validateSignUp.bind(this);
   }
 
+  /**
+   * keeps user state updated as user enters username, password and other bio info
+   * @param event - onChange event object passed from form
+   */
   handleChange(event) {
     const user = Object.assign({}, this.state.newUser);
     user[event.target.name] = event.target.value;
@@ -44,7 +51,10 @@ export class SignUp extends Component {
     });
   }
 
-  // client-side verification
+  /**
+   * Client-side verification of sign up info; ensures user has entered valid info for all fields
+   * @return {Boolean} - returns false if verification fails, true if passes
+   */
   validateSignUp() {
     const user = this.state.newUser;
 
@@ -115,6 +125,10 @@ export class SignUp extends Component {
     return true;
   }
 
+  /**
+   * If verification passes, make API POST call to server to submit new user info. Afterward, sets session
+   * user to recently created user; redirects user to dashboard
+   */
   sendUserInfoToDB() {
     if (this.validateSignUp()) {
       fetch('/users/addUser', {

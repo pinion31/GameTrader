@@ -1,3 +1,5 @@
+'use strict';
+
 import igdb from 'igdb-api-node';
 
 const express = require('express');
@@ -8,12 +10,26 @@ const Game = require('../models/game');
 
 const client = igdb(process.env.IGDB_KEY);
 
+/**
+ * Utilizes igdb API to retrieve game information from igdb based on game and console req params
+ * sends back up to 15 games
+ * input params - :console - game console filter
+ *                :game - game title to search for
+ * @return {Array of Objects} searchResults - obj format:
+  {
+    id: String,
+    name: String,
+    summary: String,
+    cover: String,
+    gameConsole: Number
+    screenshots: [String, String, etc],
+  }
+  */
 router.get('/findGame/:console/:game', (req, res) => {
   let searchResults = [];
 
   client.games({
     fields: ['id', 'name', 'cover', 'summary', 'developers', 'screenshots'],
-    // fields: '*',
     search: req.params.game,
     filters: {
       'release_dates.platform-eq': req.params.console,
@@ -63,6 +79,21 @@ router.get('/findGame/:console/:game', (req, res) => {
   });
 });
 
+/**
+ * Retrieves all available games from other users that can be traded to current user
+ * @param {String} :filter - regex used to filter out games
+ * Output: {Array Of Game Objs} - obj format: {
+    _id : ObjectId,
+    gameConsole: Number,
+    cover: String,
+    summary: String,
+    id: Number,
+    name: String,
+    owner: {username: String, id: String}
+    screenshots: [String, String, String, String, String]
+ }
+ */
+
 router.get('/getAllGames/:filter', (req, res) => {
   let allGames = [];
   let regSearch;
@@ -91,6 +122,21 @@ router.get('/getAllGames/:filter', (req, res) => {
     });
 });
 
+/**
+ * Retrieves all games for current user
+ * @param {String} req.session.user
+ * Output: {Array Of Game Objs} - obj format: {
+    _id : ObjectId,
+    gameConsole: Number,
+    cover: String,
+    summary: String,
+    id: Number,
+    name: String,
+    owner: String
+    screenshots: [String, String, String, String, String]
+ }
+ */
+
 router.get('/getUserGames', (req, res) => {
   User.findOne({username: req.session.user})
     .populate('games')
@@ -99,7 +145,7 @@ router.get('/getUserGames', (req, res) => {
         let userGames = Array.from(user.games);
         userGames.map(game => {
           let gameOwner = game.owner.username;
-          game.owner = gameOwner;
+          game.owner = gameOwner; // changes game.owner from obj to string
         });
         res.json(userGames);
       } else {
@@ -107,6 +153,33 @@ router.get('/getUserGames', (req, res) => {
       }
     });
 });
+
+/**
+ * Adds Game to current user lib
+ * @param {String} req.session.user
+ * Input (from req.body) {Array with one Obj} -
+ * obj format : {
+    screenshots: [String, String, String, String, String]
+    gameConsole: Number,
+    cover: String,
+    summary: String,
+    id: Number,
+    name: String,
+    owner: String
+  }
+
+ * Output: {Array with one obj} -
+  * obj format : {
+    screenshots: [String, String, String, String, String]
+    gameConsole: Number,
+    cover: String,
+    summary: String,
+    id: Number,
+    mongoId: Number,
+    name: String,
+    owner: {username: String, id: String}
+ */
+ }
 
 router.post('/addGame', (req, res) => {
   User.findOne({username: req.session.user})
@@ -134,6 +207,11 @@ router.post('/addGame', (req, res) => {
     }).catch(err => {throw err;});
 });
 
+/**
+ * Removes game from user lib
+ * @param {String} (from req.body)- req.body.mongoId
+ * Output: {Array of Objs} - returns Array of user games minus removed Game
+ */
 router.post('/removeGame', (req, res) => {
   Game.findById(req.body.mongoId)
     .then((game) => {

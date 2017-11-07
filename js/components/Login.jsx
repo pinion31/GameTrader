@@ -1,24 +1,31 @@
+"use strict";
+
 import React, {Component} from 'react';
 import 'whatwg-fetch';
 import {Row, Col, FormGroup, FormControl, Button, HelpBlock} from 'react-bootstrap';
 
+/* Component used to handle login of user*/
 export class Login extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      user: {
+      user: { // login creds stored as user Obj to be sent to server
         username: '',
         password: ''
       },
-      usernameHelp: '',
-      passwordHelp: '',
-    };
+      usernameHelp: '', // error message state
+      passwordHelp: '', // error message state
 
     this.handleOnClick = this.handleOnClick.bind(this);
     this.handleOnChange = this.handleOnChange.bind(this);
     this.validateLogin = this.validateLogin.bind(this);
     this.goToSignUp = this.goToSignUp.bind(this);
   }
+
+  /**
+   * keeps user state updated as user enters username or password
+   * @param e - onChange event object passed from form
+   */
 
   handleOnChange(e) {
     const loggedInUser = Object.assign({}, this.state.user);
@@ -31,9 +38,12 @@ export class Login extends Component {
     });
   }
 
-  // client-side verification
+  /**
+   * Client-side verification of login credentials; ensures user has entered some info for username and password
+   * @return {Boolean} - returns false if verification fails, true if passes
+   */
   validateLogin() {
-      // if username is filled
+    // if username is filled
     if (this.state.user.username.length === 0) {
       this.setState({
         usernameHelp: 'Please enter a username.',
@@ -50,6 +60,11 @@ export class Login extends Component {
     return true;
   }
 
+  /**
+   * Handles api call to server to authenication user
+   * If auth successful, user is stored in session and user directed to dashboard.
+   * Otherwise, error message returned
+   */
   handleOnClick() {
     if (this.validateLogin()) {
       fetch('/users/loginUser', {
@@ -74,6 +89,9 @@ export class Login extends Component {
     }
   }
 
+  /**
+   * Redirects to Signup Page if user click Sign up Button
+   */
   goToSignUp() {
     this.props.history.push('/Signup');
   }

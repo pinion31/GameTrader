@@ -1,7 +1,11 @@
-import React, {Component} from 'react';
+"use strict";
+
+import React from 'react';
 import {Thumbnail} from 'react-bootstrap';
 
-export class GameRequestIcon extends Component {
+/* Presentational Component used to display Game Requests via Thumbnail
+*/
+export const GameRequestIcon = (props) => {
   render() {
     return (
       <div>

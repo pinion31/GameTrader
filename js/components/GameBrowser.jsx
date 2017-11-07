@@ -1,3 +1,4 @@
+"use strict";
 
 import React, {Component} from 'react';
 import {bindActionCreators} from 'redux';
@@ -6,13 +7,15 @@ import {Grid, Row, Col, Modal, Button, Well, FormGroup,
 import {connect} from 'react-redux';
 import Menu from './Menu';
 import GameRequestDescription from './GameRequestDescription';
-// import GameRequestItem from './GameRequestItem';
 import GameRequestIcon from './GameRequestIcon';
 import {getUserGames} from '../actions/gameActions';
 import {addRequest} from '../actions/requestActions';
 import GameCard from './GameCard';
 import BrowserSearchBar from './BrowserSearchBar';
 
+/**
+  Displays selection of games that user might want to trade for
+*/
 export class GameBrowser extends Component {
   constructor(props) {
     super(props);
@@ -29,8 +32,11 @@ export class GameBrowser extends Component {
     this.addGameToOffer = this.addGameToOffer.bind(this);
     this.sendRequest = this.sendRequest.bind(this);
     this.fetchGames = this.fetchGames.bind(this);
-    this.getOfferedGameFromUserLib = this.getOfferedGameFromUserLib.bind(this);
   }
+
+  /**
+   * Used for optimizing render of games
+   */
 
   shouldComponentUpdate(newProps, newState) {
     let shouldUpdate = false;
@@ -49,19 +55,22 @@ export class GameBrowser extends Component {
     return shouldUpdate;
   }
 
-  componentDidUpdate() {
-
-  }
-
+  /**
+   * Retrieves user's game library before component mounted
+   */
   componentWillMount() {
     this.props.getUserGames();
   }
 
   componentDidMount() {
-    // this.props.getUserGames();
     this.fetchGames('nofilter');
   }
 
+   /**
+   * After user clicks on desired game in game browser, modal opens and this function presents the desired game
+   * in format of GameRequestDescription component within modal
+   * @return GameRequestDescription component or null if requestedGame is not found in allGames lib
+   */
   getRequestedGame() {
     if (this.state.allGames[this.state.requestedGame] !== undefined) {
       return (<GameRequestDescription
@@ -76,18 +85,11 @@ export class GameBrowser extends Component {
     return null;
   }
 
-  // keep function for future feature (offering multiple games at once in trade)
-  getOfferedGameFromUserLib() {
-    let offGame = {};
-
-    this.props.userGames.games.map((game) => {
-      if (game.id === this.state.offeredGame.id) {
-        offGame = game;
-      }
-    });
-    return offGame;
-  }
-
+  /**
+   * After user has selected game to offer and game to receive in trade, this function sends off
+   * request to db via props func, addRequest. It also updates the requestedGame status to 'requested'
+   *
+   */
   sendRequest() {
     if (this.state.gameOffer[0]) {
       this.props.addRequest([{
@@ -111,6 +113,13 @@ export class GameBrowser extends Component {
       });
     }
   }
+  /**
+   * During trade creation, this function adds game from user library to be offered in trade
+   * Iterates over user games to find game user has selected and adds to gamesToAdd
+   * this.state.gameOffer state is set from gamesToAdd
+   * gamesToAdd is an array to allow for option to offer multiple games at once in future version of app
+   * @param event - onChange click event passed from form
+   */
 
   addGameToOffer(event) {
     const gamesToAdd = Array.from(this.state.gameOffer);
@@ -127,6 +136,13 @@ export class GameBrowser extends Component {
       requestErrorMessage: '',
     });
   }
+
+  /**
+   * Callback func passed to BrowserSearchBar as prop; it is called when search button clicked within BrowserSearchBar
+   * Makes api call to get games library then creates array of games that is compiled in retrievedGames
+   * retrievedGames is then stored in this.state.retrievedGames after retrieval is done
+   * @param filter - String used as regex to filter out games by name
+   */
 
   fetchGames(filter) {
     let retrievedGames = {};
@@ -165,6 +181,13 @@ export class GameBrowser extends Component {
       throw err;
     });
   }
+
+  /**
+   * toggles modal which is used to search for new games to add to user's library
+   * User can select only one game at a time as candidate to add to library.
+   * This game is held in state as requestedGame
+   * @param game - default obj is empty state
+   */
 
   toggleModal(game = {}) {
     this.setState({
@@ -207,6 +230,7 @@ export class GameBrowser extends Component {
           </Grid>
         </Well>
 
+        {/* This Modal used for creation of trade proposal*/}
         <Modal
           show={this.state.showModal}
           onHide={this.toggleModal}

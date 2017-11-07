@@ -1,11 +1,16 @@
+"use strict";
+
 import React, {Component} from 'react';
 import {Modal, Button, Carousel} from 'react-bootstrap';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import {gameConsoles} from '../constants/gameConsoles';
 import {removeGame} from '../actions/gameActions';
 import GameCard from './GameCard';
 
+/** Presentational component used in GameList to display Game
+* Game is initially displayed as icon using cover art. Click on it will toggle modal
+* that displays more details such as description and screenshots
+*/
 export class GameItem extends Component {
   constructor(props) {
     super(props);
@@ -20,18 +25,31 @@ export class GameItem extends Component {
     this.handleSelect = this.handleSelect.bind(this);
   }
 
+  /**
+   * Used to handle Carousel display of game images
+   * @param e - onClick Event
+   * @param {direction - String
+   */
   handleSelect(selectedIndex, e) {
     this.setState({
       index: selectedIndex,
       direction: e.direction
     });
   }
-
+  /**
+   * Used to toggle modal which displays info about game passed as prop
+   * on/off state stored in showModal
+   */
   toggleModal() {
     this.setState({
       showModal: !this.state.showModal,
     });
   }
+
+  /**
+  * Wrapper function used to remove game from user lib via prop func and toggles modal off
+  * Uses mongoId to find game to remove on db
+  */
 
   handleOnClick() {
     this.props.removeGame({

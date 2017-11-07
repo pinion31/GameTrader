@@ -1,7 +1,14 @@
+"use strict";
+
 import React, {Component} from 'react';
 import {Media, Well} from 'react-bootstrap';
 
-export class GameCard extends Component {
+/* Presentational component used to display Game in GameBrowser and GameItem */
+export const GameCard = (props) => {
+
+  /**
+ * retrieves owner of game from props to be presented in component
+ */
   displayOwner() {
     if (this.props.owner) {
       return (

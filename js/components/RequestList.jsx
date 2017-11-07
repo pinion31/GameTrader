@@ -1,10 +1,13 @@
+"use strict";
+
 import React, {Component} from 'react';
 import {Grid, Row, Col, Well} from 'react-bootstrap';
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import RequestItem from './RequestItem';
-import {getUserRequests, clearUserRequests, addRequest, removeRequest} from '../actions/requestActions';
+import {getUserRequests} from '../actions/requestActions';
 
+/* Component displays user requests in dashboard. User request are displayed as RequestItem components*/
 export class RequestList extends Component {
   constructor(props) {
     super(props);
@@ -13,6 +16,9 @@ export class RequestList extends Component {
     };
   }
 
+  /**
+   * optimizes render method of component to only render when changes are made
+   */
   shouldComponentUpdate(newProps, newState) {
     let shouldUpdate = false;
 
@@ -31,13 +37,10 @@ export class RequestList extends Component {
     return shouldUpdate;
   }
 
-  componentWillMount() {
-    // clears out any requests (and DOM elements)
-    // from previous session (from other users)
-    // that do not belong to current user
-    // this.props.clearUserRequests();
-  }
-
+  /**
+   * After component mounting, makes API call to get user requests from db. Also, retrieves session info to store in
+   * this.state.sessionUser
+   */
   componentDidMount() {
     this.props.getUserRequests();
     this.setState({
@@ -86,9 +89,6 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     getUserRequests,
-    addRequest,
-    removeRequest,
-    clearUserRequests,
   }, dispatch);
 }
 

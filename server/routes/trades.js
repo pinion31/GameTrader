@@ -1,8 +1,22 @@
+'use strict';
+
 const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
 const Game = require('../models/game');
 
+/** Trader = user that created offer
+*   Tradee = user that receives offer and decides to accept trade or decline
+**/
+
+/**
+ * Declines Trade that has been offered to user
+ * Removes Request from current user requests
+ * then finds the matching request in other end user and sets that request to status, declined.
+ * @param {Obj} (from req.body) offeredGame
+ * @param {Obj} (from req.body) requestedGame
+ * Output: {Array} - Sends back User Requests minus declined Request
+ */
 router.post('/declineTrade', (req, res) => {
   const traderGameToReceive = Object.assign({}, req.body.offeredGame); // from tradee to trader
   const tradeeGameToReceive = Object.assign({}, req.body.requestedGame); // from trader to tradee
@@ -39,7 +53,12 @@ router.post('/declineTrade', (req, res) => {
     });
 });
 
-// complete trade for trader after tradee accepts trade
+/**
+ * Completes Trade for Trader after Tradee Accepts
+ * Trade is completed by swapping games as specified in trade and removed request from tradee requests
+ * Request in trader lib is set to status, accepted
+ */
+
 router.post('/completeTrade', (req, res) => {
   const traderGameToReceive = Object.assign({}, req.body.offeredGame); // from tradee to trader
   const tradeeGameToReceive = Object.assign({}, req.body.requestedGame); // from trader to tradee
@@ -48,6 +67,7 @@ router.post('/completeTrade', (req, res) => {
   const setTraderRequestToAccepted = (requests) => {
     const newRequests = Array.from(requests);
 
+    // Locates request in trader collection by matching game ids and sets that request to accepted
     newRequests.map((request) => {
       if (request.requestedGame.id === traderGameToReceive.id &&
           request.offeredGame.id === tradeeGameToReceive.id) {
@@ -58,6 +78,7 @@ router.post('/completeTrade', (req, res) => {
     return newRequests;
   };
 
+  // Deletes Trade Request from Tradee Collection by filtering it out using game ids
   const deleteTradeeRequest = (requests) => {
     const newRequests = requests.filter((request) => {
       if (request.requestedGame.id != tradeeGameToReceive.id &&
@@ -69,6 +90,10 @@ router.post('/completeTrade', (req, res) => {
     return newRequests;
   };
 
+  /** No game objs are deleted or added from trader or tradee collections during trade transaction
+  * Game info (such as name, summary, etc) are merely copied over and swapped out between game objs to simulate game trade
+  * Game _id is not changed; it always stays the same even though the game name can change after trade
+  */
   const copyProps = (trader, gameToGive, gameToReceive, traderString) => {
     Array.from(trader.games).map((game, key) => {
       if (game.id.toString() === gameToGive.id.toString()) {
@@ -83,7 +108,7 @@ router.post('/completeTrade', (req, res) => {
     });
   };
 
-  // perform exchange on trader library
+  // Finds tradee and trader obj in user collection then swaps out games
   User.find({_id: {$in: [tradeeGameToReceive.owner.id, traderGameToReceive.owner.id]}})
     .populate('games').then((user) => {
       let tradee;
@@ -96,13 +121,14 @@ router.post('/completeTrade', (req, res) => {
         tradee = user[1];
         trader = user[0];
       }
+
+      // games information swapped out here
       copyProps(tradee, traderGameToReceive, tradeeGameToReceive, 'tradee');
       copyProps(trader, tradeeGameToReceive, traderGameToReceive, 'trader');
 
-      trader.requests = setTraderRequestToAccepted(trader.requests);
-      tradee.requests = deleteTradeeRequest(tradee.requests);
+      trader.requests = setTraderRequestToAccepted(trader.requests); // update request status to accepted for trader
+      tradee.requests = deleteTradeeRequest(tradee.requests); // deleted accepted request from tradee collection
 
-      // Promise.all with save() causes issues with mongoose
       Promise.all([
         trader.games[gameKeys.trader].save(),
         tradee.games[gameKeys.tradee].save(),

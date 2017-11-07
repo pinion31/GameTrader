@@ -1,3 +1,5 @@
+"use strict";
+
 import React, {Component} from 'react';
 import {Modal, Button} from 'react-bootstrap';
 import {connect} from 'react-redux';
@@ -8,6 +10,7 @@ import {OUTGOING, INCOMING, CANCEL_TRADE, ACCEPT_TRADE, DECLINE_TRADE_OFFER, PEN
   ACCEPTED, DECLINED, CANCELLED} from '../constants/requestStrings';
 import GameCard from './GameCard';
 
+/** Component used to display Game Request within RequestList */
 export class RequestItem extends Component {
   constructor(props) {
     super(props);
@@ -25,6 +28,11 @@ export class RequestItem extends Component {
     this.setStatusBackgroundColor = this.setStatusBackgroundColor.bind(this);
   }
 
+  /**
+   * returns status message for user within modal depending on trade status after action taken by other user
+   * Message will inform user if trade was accepted, cancelled, or declined
+   * @return {String} - Message informing user of trade status
+   */
   getStatusMessage() {
     if (this.props.status === ACCEPTED) {
       return 'Your Trade Offer Was Accepted!';
@@ -36,6 +44,12 @@ export class RequestItem extends Component {
     return '';
   }
 
+  /**
+   * Dynamically sets action buttons for user depending trade status (ex. User can accept trade
+   * only if initial trader has not reconsidered and cancelled trader. In that case, Accept Trade button
+   * will not be available. Instead, remove button will only be available)
+   * @return {Button} - returns Button component depending on possible actions (ex. Accept trade, cancel trade)
+   */
   getActionButtons() {
     if (this.props.status === PENDING) {
       if (this.props.path === OUTGOING) {
@@ -61,6 +75,12 @@ export class RequestItem extends Component {
     }
   }
 
+  /**
+   * set background color of RequestItem component to indicate status of trade
+   * Green = Accepted, Red = Declined or Cancelled, Yellow= Pending
+   * @param {String} status - game trade status
+   * @return {String} returns string to be used as css class to set color of background
+   */
   setStatusBackgroundColor(status) {
     if (status === PENDING) {
       return 'request-pending';
@@ -71,12 +91,19 @@ export class RequestItem extends Component {
     }
   }
 
+  /**
+   * Toggles Modals. State of modal stored in showModal
+   */
   toggleModal() {
     this.setState({
       showModal: !this.state.showModal,
     });
   }
 
+  /**
+  * Makes API call to eemoves Game Request from user Requests after trade has been resolved
+  * (other user either accepted or declined trade). Also, toggles modal off and removes Request from render
+  */
   removeTrade() {
     this.props.removeRequest({
       requestedGameId: this.props.requestedGame.id,
@@ -87,6 +114,10 @@ export class RequestItem extends Component {
     this.toggleModal();
   }
 
+  /**
+  * Makes API call to decline trade via props func and update in db. Req status also updated for other user.
+  * @param {String} type - status of trade
+  */
   declineTrade(type) {
     this.props.declineTrade({
       type,
@@ -95,6 +126,10 @@ export class RequestItem extends Component {
     });
   }
 
+  /**
+  * Makes API call to accept trade via prop func and update in db. Request is then removed from db and render
+  * since it has been resolved but not removed from other user request lib. Modal is also toggled off.
+  */
   acceptTrade() {
     // sends info for backend process of transaction for trader
     this.props.completeTrade({
@@ -117,6 +152,8 @@ export class RequestItem extends Component {
           <img src={this.props.requestedGame.cover} alt={this.props.requestedGame.name} />
           <p className={this.setStatusBackgroundColor(this.props.status)}>{this.props.status}</p>
         </a>
+
+      {/* Modal used to display Trade Req info */}
         <Modal
           show={this.state.showModal}
           onHide={this.toggleModal}

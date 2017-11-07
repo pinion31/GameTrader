@@ -1,3 +1,5 @@
+"use strict";
+
 import React from 'react';
 import {Switch} from 'react-router-dom';
 import {Route} from 'react-router';
@@ -9,18 +11,30 @@ import Login from './Login';
 import SignUp from './SignUp';
 
 
-let sessionUser = 'Noodles';
+// var to store user name for welcome message
+let sessionUser = '';
 
-// callback method to set username for welcome message
+/**
+ * Callback method to set username for welcome message on dashboard; passed to Login component as prop
+ */
+
 const setSessionUser = (user) => {
   sessionUser = user;
 };
 
-// retrieves username for welcome message
+/**
+ * callback method to retrieve username for welcome message on dashboard; passed to RequestList component as prop
+ @return {String} sessionUser
+ */
+
 const getSessionUser = () => (
   sessionUser
 );
 
+/**
+ * Dashboard component that combines Menu, RequestList and GameList components to build user dashboard
+ * @return {Component} returns combined component
+ */
 const Main = () => (
   <div>
     <Menu />
@@ -29,12 +43,18 @@ const Main = () => (
   </div>
 );
 
-
+/**
+ * Footer component to be display at bottom of pages
+ */
 const Footer = () => (
   <div className="footer-style">
     <p>Copyright &copy; 2017 Chris Cantu. All Rights Reserved</p>
   </div>
 );
+
+/**
+ * React-Router component for client-side routing
+ */
 const RoutedApp = () => (
   <div>
     <Switch>
