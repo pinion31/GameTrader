@@ -180,12 +180,15 @@ export class GameList extends Component {
   verifyClientDoesNotOwnGame() {
     const {selectedGame} = this.state;
     let doesNotOwnGame = true;
+
     Array.from(this.props.games.games).map((game) => {
-      if (game.id.toString() === this.statselectedGame.id.toString()) {
-        this.setState({
-          gameSearchMessage: 'This game already exists in your library.',
-        });
-        doesNotOwnGame = false;
+      if (game.id) {
+        if (game.id.toString() === selectedGame.id.toString()) {
+          this.setState({
+            gameSearchMessage: 'This game already exists in your library.',
+          });
+          doesNotOwnGame = false;
+        }
       }
     });
     return doesNotOwnGame;
@@ -225,7 +228,14 @@ export class GameList extends Component {
   }
 
   render() {
-    const {showModal, searchList, searchTermMessage, gameSearchMessage, consoleSearchMessage} = this.state;
+    const {
+      showModal,
+      searchList,
+      searchTermMessage,
+      selectedGame,
+      gameSearchMessage,
+      consoleSearchMessage,
+    } = this.state;
 
     return (
       <div>
@@ -328,7 +338,9 @@ export class GameList extends Component {
 
           <Modal.Footer>
             <Button bsStyle="primary" onClick={this.toggleModal}>Close</Button>
-            <Button className="accept-button addGame-button" onClick={this.handleOnClickAdd}>Add Game</Button>
+            { selectedGame.id &&
+              <Button className="accept-button addGame-button" onClick={this.handleOnClickAdd}>Add Game</Button>
+            }
           </Modal.Footer>
         </Modal>
       </div>
