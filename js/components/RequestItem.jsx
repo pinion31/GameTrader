@@ -95,8 +95,9 @@ export class RequestItem extends Component {
    * Toggles Modals. State of modal stored in showModal
    */
   toggleModal() {
+    const {showModal} = this.state;
     this.setState({
-      showModal: !this.state.showModal,
+      showModal: !showModal,
     });
   }
 
@@ -146,39 +147,41 @@ export class RequestItem extends Component {
   }
 
   render() {
+    const {showModal} = this.state;
+    const {requestedGame, offeredGame, status} = this.props;
     return (
       <div className="request-image">
         <a onClick={this.toggleModal}>
-          <img src={this.props.requestedGame.cover} alt={this.props.requestedGame.name} />
-          <p className={this.setStatusBackgroundColor(this.props.status)}>{this.props.status}</p>
+          <img src={requestedGame.cover} alt={requestedGame.name} />
+          <p className={this.setStatusBackgroundColor(status)}>{status}</p>
         </a>
 
       {/* Modal used to display Trade Req info */}
         <Modal
-          show={this.state.showModal}
+          show={showModal}
           onHide={this.toggleModal}
         >
           <Modal.Header>
             <Modal.Title>
-              {this.props.requestedGame.name}
-              <p className={'status-text ' + this.setStatusBackgroundColor(this.props.status)}>Status: {this.props.status}</p>
+              {requestedGame.name}
+              <p className={'status-text ' + this.setStatusBackgroundColor(status)}>Status: {status}</p>
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <h2 className="modal-message">{this.getStatusMessage()}</h2>
-            <p className="owner-text">Owner: {this.props.requestedGame.owner.username}</p>
+            <p className="owner-text">Owner: {requestedGame.owner.username}</p>
             <h3 className="modal-sub-header">Your Request</h3>
 
             <GameCard
-              cover={this.props.requestedGame.cover}
-              name={this.props.requestedGame.name}
-              summary={this.props.requestedGame.summary}
+              cover={requestedGame.cover}
+              name={requestedGame.name}
+              summary={requestedGame.summary}
             />
             <h3 className="modal-sub-header clear-fix">Your Offer</h3>
             <GameCard
-              cover={this.props.offeredGame.cover}
-              name={this.props.offeredGame.name}
-              summary={this.props.offeredGame.summary}
+              cover={offeredGame.cover}
+              name={offeredGame.name}
+              summary={offeredGame.summary}
             />
           </Modal.Body>
           <Modal.Footer>

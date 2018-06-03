@@ -1,5 +1,3 @@
-"use strict";
-
 import React, {Component} from 'react';
 import {Modal, Button, Carousel} from 'react-bootstrap';
 import {connect} from 'react-redux';

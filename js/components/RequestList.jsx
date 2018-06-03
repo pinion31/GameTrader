@@ -49,6 +49,8 @@ export class RequestList extends Component {
   }
 
   render() {
+    const {sessionUser} = this.state;
+    const {requests} = this.props;
     return (
       <Well>
         <Grid>
@@ -57,11 +59,11 @@ export class RequestList extends Component {
               <h1 className="section-header">My Requests</h1>
             </Col>
             <Col sm={6} xs={12} md={4}>
-              <h3 className="welcome-message">{`Welcome, ${this.state.sessionUser}`}</h3>
+              <h3 className="welcome-message">{`Welcome, ${sessionUser}`}</h3>
             </Col>
           </Row>
           <Row>
-            {this.props.requests.requests.map((request, key) => (
+            {requests.requests.map((request, key) => (
               <Col sm={2} xs={6} key={key}>
                 <RequestItem
                   status={request.status}

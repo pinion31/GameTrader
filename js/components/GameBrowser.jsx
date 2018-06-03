@@ -1,5 +1,3 @@
-"use strict";
-
 import React, {Component} from 'react';
 import {bindActionCreators} from 'redux';
 import {Grid, Row, Col, Modal, Button, Well, FormGroup,
@@ -40,11 +38,12 @@ export class GameBrowser extends Component {
 
   shouldComponentUpdate(newProps, newState) {
     let shouldUpdate = false;
+    const {allGames} = this.state;
 
-    if (Object.keys(this.state.allGames).length !== Object.keys(newState).length) {
+    if (Object.keys(allGames).length !== Object.keys(newState).length) {
       return true;
     } else {
-      Object.keys(this.state.allGames).forEach((game, key) => {
+      Object.keys(allGames).forEach((game, key) => {
         if (!shouldUpdate && game.id !== newState[key].id) {
           shouldUpdate = true;
           this.props.clearUserGames();
@@ -72,14 +71,16 @@ export class GameBrowser extends Component {
    * @return GameRequestDescription component or null if requestedGame is not found in allGames lib
    */
   getRequestedGame() {
-    if (this.state.allGames[this.state.requestedGame] !== undefined) {
+    const {allGames, requestedGame} = this.state;
+
+    if (allGames[requestedGame] !== undefined) {
       return (<GameRequestDescription
-        name={this.state.allGames[this.state.requestedGame].name}
-        summary={this.state.allGames[this.state.requestedGame].summary}
-        cover={this.state.allGames[this.state.requestedGame].cover}
-        key={this.state.allGames[this.state.requestedGame].id}
-        screenshots={this.state.allGames[this.state.requestedGame].screenshots}
-        owner={this.state.allGames[this.state.requestedGame].owner.username}
+        name={allGames[requestedGame].name}
+        summary={allGames[requestedGame].summary}
+        cover={allGames[requestedGame].cover}
+        key={allGames[requestedGame].id}
+        screenshots={allGames[requestedGame].screenshots}
+        owner={allGames[requestedGame].owner.username}
       />);
     }
     return null;
@@ -91,20 +92,21 @@ export class GameBrowser extends Component {
    *
    */
   sendRequest() {
-    if (this.state.gameOffer[0]) {
+    const {gameOffer, allGames, requestedGame, showModal} = this.state;
+    if (gameOffer[0]) {
       this.props.addRequest([{
         status: 'Pending',
-        requestedGame: this.state.allGames[this.state.requestedGame],
-        offeredGame: this.state.gameOffer[0],
+        requestedGame: allGames[requestedGame],
+        offeredGame: gameOffer[0],
         path: 'outgoing',
       }]);
 
-      const gameCollection = Object.assign({}, this.state.allGames);
-      gameCollection[this.state.requestedGame].status = 'requested';
+      const gameCollection = Object.assign({}, allGames);
+      gameCollection[requestedGame].status = 'requested';
 
       // update allGame Collection and close modal
       this.setState({
-        showModal: !this.state.showModal,
+        showModal: !showModal,
         allGames: gameCollection,
       });
     } else {
@@ -122,7 +124,8 @@ export class GameBrowser extends Component {
    */
 
   addGameToOffer(event) {
-    const gamesToAdd = Array.from(this.state.gameOffer);
+    const {gameOffer} = this.state;
+    const gamesToAdd = Array.from(gameOffer);
 
     // for only one game offer per trade
     this.props.userGames.games.map((game) => {
@@ -190,13 +193,16 @@ export class GameBrowser extends Component {
    */
 
   toggleModal(game = {}) {
+    const {showModal} = this.state;
     this.setState({
-      showModal: !this.state.showModal,
+      showModal: !showModal,
       requestedGame: game,
     });
   }
 
   render() {
+    const {allGames, showModal, gameOffer, requestErrorMessage} = this.state;
+
     return (
       <div>
         <Menu />
@@ -211,15 +217,15 @@ export class GameBrowser extends Component {
               </Col>
             </Row>
             <Row className="game-browser">
-              {Object.keys(this.state.allGames).map((game, key) => (
+              {Object.keys(allGames).map((game, key) => (
                 <Col sm={2} xs={4} key={key}>
                   <div className="game-container">
                     <a onClick={this.toggleModal.bind(this, game)}>
                       <GameRequestIcon
-                        name={this.state.allGames[game].name}
-                        summary={this.state.allGames[game].summary}
+                        name={allGames[game].name}
+                        summary={allGames[game].summary}
                         status={'available'}
-                        cover={this.state.allGames[game].cover}
+                        cover={allGames[game].cover}
                       />
                     </a>
                   </div>
@@ -232,7 +238,7 @@ export class GameBrowser extends Component {
 
         {/* This Modal used for creation of trade proposal*/}
         <Modal
-          show={this.state.showModal}
+          show={showModal}
           onHide={this.toggleModal}
         >
           <Modal.Header>
@@ -242,7 +248,7 @@ export class GameBrowser extends Component {
             <h2 className="modal-sub-header">Requested Game</h2>
             {this.getRequestedGame()}
             <h2 className="modal-sub-header">Your Offer</h2>
-            {this.state.gameOffer.map((game, key) => (
+            {gameOffer.map((game, key) => (
               <GameCard
                 cover={game.cover}
                 name={game.name}
@@ -265,7 +271,7 @@ export class GameBrowser extends Component {
                 ))
                 }
               </FormControl>
-              <HelpBlock>{this.state.requestErrorMessage}</HelpBlock>
+              <HelpBlock>{requestErrorMessage}</HelpBlock>
             </FormGroup>
           </Modal.Body>
           <Modal.Footer>

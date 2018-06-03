@@ -1,5 +1,3 @@
-"use strict";
-
 import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import {bindActionCreators} from 'redux';
@@ -69,9 +67,10 @@ export class GameList extends Component {
    */
 
   toggleModal() {
+    const {showModal} = this.state;
     this.shouldUpdate = true;
     this.setState({
-      showModal: !this.state.showModal,
+      showModal: !showModal,
       searchList: [], // set empty state here to erase search results after every toggle
     });
   }
@@ -82,14 +81,16 @@ export class GameList extends Component {
    */
 
   verifySearchQuery() {
-    if (this.state.searchTerm.length === 0) {
+    const {searchTerm, selectedConsole} = this.state;
+
+    if (searchTerm.length === 0) {
       this.setState({
         searchTermMessage: 'Please enter a game title to search.',
       });
       return false;
     }
 
-    if (this.state.selectedConsole === 0) {
+    if (selectedConsole === 0) {
       this.setState({
         consoleSearchMessage: 'Please select a gaming console.',
       });
@@ -105,12 +106,14 @@ export class GameList extends Component {
    */
 
   queryGames() {
+    const {selectedConsole, searchTerm} = this.state;
+
     this.setState({
       selectedGame: {},
     });
 
     if (this.verifySearchQuery()) {
-      fetch(`/games/findGame/${this.state.selectedConsole}/${this.state.searchTerm}`)
+      fetch(`/games/findGame/${selectedConsole}/${searchTerm}`)
         .then((res) => {
           res.json().then((result) => {
             if (result.length > 0) {
@@ -157,8 +160,9 @@ export class GameList extends Component {
    */
 
   highlightGame(highlightedGame) {
+    const {searchList} = this.state;
     // unhighlights previously selected game
-    this.state.searchList.map((game) => {
+    searchList.map((game) => {
       ReactDOM.findDOMNode(this.refs[game.id]).style.backgroundColor = 'transparent';
     });
     ReactDOM.findDOMNode(this.refs[highlightedGame.id]).style.backgroundColor = '#46af2c';
@@ -174,9 +178,10 @@ export class GameList extends Component {
    * @return {Boolean} false if user owns game; true otherwise
    */
   verifyClientDoesNotOwnGame() {
+    const {selectedGame} = this.state;
     let doesNotOwnGame = true;
     Array.from(this.props.games.games).map((game) => {
-      if (game.id.toString() === this.state.selectedGame.id.toString()) {
+      if (game.id.toString() === this.statselectedGame.id.toString()) {
         this.setState({
           gameSearchMessage: 'This game already exists in your library.',
         });
@@ -192,15 +197,16 @@ export class GameList extends Component {
    * Makes api call and sends game info to db via prop func, addGame.
    */
   handleOnClickAdd() {
+    const {selectedGame} = this.state;
     if (this.verifyClientDoesNotOwnGame()) {
       this.props.addGame([
         {
-          name: this.state.selectedGame.name,
-          id: this.state.selectedGame.id,
-          summary: this.state.selectedGame.summary,
-          cover: this.state.selectedGame.cover,
-          gameConsole: this.state.selectedGame.gameConsole,
-          screenshots: this.state.selectedGame.screenshots,
+          name: selectedGame.name,
+          id: selectedGame.id,
+          summary: selectedGame.summary,
+          cover: selectedGame.cover,
+          gameConsole: selectedGame.gameConsole,
+          screenshots: selectedGame.screenshots,
         }]);
       this.toggleModal(); // closes modal
     }
@@ -219,6 +225,8 @@ export class GameList extends Component {
   }
 
   render() {
+    const {showModal, searchList, searchTermMessage, gameSearchMessage, consoleSearchMessage} = this.state;
+
     return (
       <div>
         <Well>
@@ -252,7 +260,7 @@ export class GameList extends Component {
 
       {/* This modal used to search for games to add to user lib*/}
         <Modal
-          show={this.state.showModal}
+          show={showModal}
           onHide={this.toggleModal}
         >
           <Modal.Header>
@@ -271,7 +279,7 @@ export class GameList extends Component {
                       placeholder="Search For Games"
                     />
                   </FormGroup>
-                  <HelpBlock>{this.state.searchTermMessage}</HelpBlock>
+                  <HelpBlock>{searchTermMessage}</HelpBlock>
                 </Col>
                 <Col sm={1} xs={1}>
                   <Button bsStyle="primary" onClick={this.queryGames}>Search</Button>
@@ -292,8 +300,8 @@ export class GameList extends Component {
                       ))
                       }
                     </FormControl>
-                    <HelpBlock>{this.state.consoleSearchMessage}</HelpBlock>
-                    <HelpBlock>{this.state.gameSearchMessage}</HelpBlock>
+                    <HelpBlock>{consoleSearchMessage}</HelpBlock>
+                    <HelpBlock>{gameSearchMessage}</HelpBlock>
                   </FormGroup>
                 </Col>
               </Row>
@@ -301,7 +309,7 @@ export class GameList extends Component {
                 <Col sm={12} xs={12} md={12}>
                   <div ref="searchWell">
                     <Row>
-                      {this.state.searchList.map(game => (
+                      {searchList.map(game => (
                         <Col sm={3} xs={6} key={game.id}>
                           <div className="game-container">
                             <a onClick={() => { this.highlightGame(game); }}>

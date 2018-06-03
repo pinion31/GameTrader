@@ -1,5 +1,3 @@
-"use strict";
-
 import React, {Component} from 'react';
 import {Carousel} from 'react-bootstrap';
 import GameCard from './GameCard';
@@ -23,11 +21,13 @@ export class GameRequestDescription extends Component {
    * @return Carousel {Component} - Bootstrap component to display screenshots
    */
   getScreenShots() {
+    const {direction, index} = this.state;
+
     if (this.props.screenshots.length > 0) { // checks if screenshots available
       return (
         <Carousel
-          activeIndex={this.state.index}
-          direction={this.state.direction}
+          activeIndex={index}
+          direction={direction}
           onSelect={this.handleSelect}
         >
           {this.props.screenshots.map(screenshot => (
@@ -67,7 +67,7 @@ export class GameRequestDescription extends Component {
           name={this.props.name}
           summary={this.props.summary}
           owner={this.props.owner}
-          key= {this.props.id}
+          key={this.props.id}
         />
       </div>
     );

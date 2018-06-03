@@ -128,7 +128,7 @@ describe('SignUp', () => {
       expect(signup.find(FormControl).at(3).props().type).toEqual('text');
     });
 
-    it('has name property of `password2`', ()=> {
+    it('has name property of `email`', ()=> {
       expect(signup.find(FormControl).at(3).props().name).toEqual('email');
     });
 

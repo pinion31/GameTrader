@@ -37,7 +37,8 @@ export class SignUp extends Component {
    * @param event - onChange event object passed from form
    */
   handleChange(event) {
-    const user = Object.assign({}, this.state.newUser);
+    const {newUser} = this.state;
+    const user = Object.assign({}, newUser);
     user[event.target.name] = event.target.value;
 
     this.setState({
@@ -56,12 +57,12 @@ export class SignUp extends Component {
    * @return {Boolean} - returns false if verification fails, true if passes
    */
   validateSignUp() {
-    const user = this.state.newUser;
+    const {newUser} = this.state;
 
     // makes sure all fields are filled out with at least one characer
-    Object.keys(user).map((field) => {
+    Object.keys(newUser).map((field) => {
       const help = `${field}Help`;
-      if (user[field].length === 0) {
+      if (newUser[field].length === 0) {
         let fieldString;
 
         if (field.toString() === 'city') {
@@ -80,42 +81,42 @@ export class SignUp extends Component {
       }
     });
 
-    if (user.username.length < 2 || user.username.split(' ').length > 1) {
+    if (newUser.username.length < 2 || newUser.username.split(' ').length > 1) {
       this.setState({
         usernameHelp: 'Username must be at least 2 characters and contain no spaces.',
       });
       return false;
     }
 
-    if (user.password1.length < 6 || user.password1.split(' ').length > 1) {
+    if (newUser.password1.length < 6 || newUser.password1.split(' ').length > 1) {
       this.setState({
         password1Help: 'Password must be at least 6 characters and contain no spaces.',
       });
       return false;
     }
 
-    if (user.password2.length < 6) {
+    if (newUser.password2.length < 6) {
       this.setState({
         password2Help: 'Password must be at least 6 characters.',
       });
       return false;
     }
 
-    if (user.password2 !== user.password1) {
+    if (newUser.password2 !== newUser.password1) {
       this.setState({
         password2Help: 'Passwords must match.',
       });
       return false;
     }
 
-    if (!user.email.match(/^[a-zA-Z0-9.]+[@][a-zA-Z0-9]+[.][a-zA-Z]{2,3}$/)) {
+    if (!newUser.email.match(/^[a-zA-Z0-9.]+[@][a-zA-Z0-9]+[.][a-zA-Z]{2,3}$/)) {
       this.setState({
         emailHelp: 'Please enter a valid email.',
       });
       return false;
     }
 
-    if (!user.city.match(/^[0-9]{5}$/)) {
+    if (!newUser.city.match(/^[0-9]{5}$/)) {
       this.setState({
         cityHelp: 'Please enter a valid zip code.',
       });
@@ -130,12 +131,13 @@ export class SignUp extends Component {
    * user to recently created user; redirects user to dashboard
    */
   sendUserInfoToDB() {
+    const {newUser} = this.state;
     if (this.validateSignUp()) {
       fetch('/users/addUser', {
         method: 'POST',
         credentials: 'include',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(this.state.newUser),
+        body: JSON.stringify(newUser),
       }).then((res) => {
         if (res.ok) {
           res.json().then((result) => {
@@ -144,7 +146,7 @@ export class SignUp extends Component {
                 usernameHelp: result.validation,
               });
             } else {
-              this.props.setSessionUser(this.state.newUser.username);
+              this.props.setSessionUser(newUser.username);
               this.props.history.push(result.redirect);
             }
           });
@@ -154,6 +156,7 @@ export class SignUp extends Component {
   }
 
   render() {
+    const {usernameHelp, password1Help, password2Help, emailHelp} = this.state;
     return (
       <div>
         <Row>
@@ -173,7 +176,7 @@ export class SignUp extends Component {
                 placeholder="Username"
                 onChange={this.handleChange}
               />
-              <HelpBlock>{this.state.usernameHelp}</HelpBlock>
+              <HelpBlock>{usernameHelp}</HelpBlock>
             </FormGroup>
           </Col>
         </Row>
@@ -186,7 +189,7 @@ export class SignUp extends Component {
                 placeholder="Password"
                 onChange={this.handleChange}
               />
-              <HelpBlock>{this.state.password1Help}</HelpBlock>
+              <HelpBlock>{password1Help}</HelpBlock>
             </FormGroup>
           </Col>
         </Row>
@@ -199,7 +202,7 @@ export class SignUp extends Component {
                 placeholder="Reenter Password"
                 onChange={this.handleChange}
               />
-              <HelpBlock>{this.state.password2Help}</HelpBlock>
+              <HelpBlock>{password2Help}</HelpBlock>
             </FormGroup>
           </Col>
         </Row>
@@ -212,7 +215,7 @@ export class SignUp extends Component {
                 placeholder="Email"
                 onChange={this.handleChange}
               />
-              <HelpBlock>{this.state.emailHelp}</HelpBlock>
+              <HelpBlock>{emailHelp}</HelpBlock>
             </FormGroup>
           </Col>
         </Row>
